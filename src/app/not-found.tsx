@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { SiteHeader } from "@/components/layout/site-header";
+import { DevelopmentStatusBanner } from "@/components/layout/development-status-banner";
+import { PublicFooter } from "@/components/layout/public-footer";
+import { PublicHeader } from "@/components/layout/public-header";
 
 export default function NotFoundPage() {
   return (
-    <div className="min-h-screen">
-      <SiteHeader />
-      <main id="main-content" className="mx-auto max-w-3xl px-4 py-16 sm:px-6">
+    <div className="flex min-h-screen flex-col">
+      <DevelopmentStatusBanner />
+      <PublicHeader />
+      <main id="main-content" className="mx-auto max-w-3xl flex-1 px-4 py-16 sm:px-6">
         <h1 className="text-foreground font-serif text-3xl font-semibold">Page not found</h1>
         <p className="text-muted mt-3">The requested page does not exist in the Bundle 1 shell.</p>
         <Link
@@ -15,6 +18,7 @@ export default function NotFoundPage() {
           Return home
         </Link>
       </main>
+      <PublicFooter />
     </div>
   );
 }

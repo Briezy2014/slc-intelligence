@@ -1,6 +1,6 @@
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
-import { cn } from "@/lib/utils";
+import { cn } from "@/lib/utilities";
 
 const alertVariants = cva("rounded-[var(--radius-lg)] border px-4 py-3 text-sm", {
   variants: {
@@ -11,6 +11,7 @@ const alertVariants = cva("rounded-[var(--radius-lg)] border px-4 py-3 text-sm",
       warning:
         "border-[color-mix(in_oklab,var(--warning),white_55%)] bg-warning-soft text-foreground",
       danger: "border-[color-mix(in_oklab,var(--danger),white_55%)] bg-danger-soft text-foreground",
+      neutral: "border-border bg-surface-subtle text-foreground",
     },
   },
   defaultVariants: {

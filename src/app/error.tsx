@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import { ErrorState } from "@/components/feedback/error-state";
 
-export default function GlobalError({
+export default function GlobalRouteError({
   error,
   reset,
 }: {

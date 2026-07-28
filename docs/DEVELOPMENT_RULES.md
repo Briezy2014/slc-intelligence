@@ -33,7 +33,7 @@ At the end of each phase:
 9. Provide rollback instructions
 10. Wait for approval
 
-**Current authorized phase:** Phase 1 and Phase 2 (Bundle 1). Phase 0 is complete. Do not begin Phase 3 unless explicitly authorized.
+**Current phase status:** Phase 0–2 completed for Bundle 1. Phase 3 is not started and must not begin without explicit authorization.
 
 Do not begin Phase 1 or later phases unless the product owner explicitly authorizes the next phase.
 

@@ -18,9 +18,14 @@ This roadmap sequences work. Roadmap order is not automatic authorization. Only 
 
 ## Current Authorized Phase
 
-**Current authorized phases (Bundle 1):** Phase 1 and Phase 2
+**Bundle 1 status**
 
-Phase 0 is complete and approved on `main`.
+| Phase   | Status      |
+| ------- | ----------- |
+| Phase 0 | Completed   |
+| Phase 1 | Completed   |
+| Phase 2 | Completed   |
+| Phase 3 | Not started |
 
 Do not begin Phase 3 or later until the product owner explicitly authorizes the next phase.
 
@@ -66,7 +71,7 @@ Acceptance criteria:
 
 ## Phase 1: Application Scaffold
 
-Status: In progress under Bundle 1 authorization
+Status: Completed
 
 Scope:
 
@@ -85,7 +90,7 @@ No database tables beyond the minimum connection test unless separately approved
 
 ## Phase 2: Design System and Public Shell
 
-Status: In progress under Bundle 1 authorization
+Status: Completed
 
 Scope:
 
@@ -100,6 +105,8 @@ Scope:
 9. Story or component documentation approach
 
 ## Phase 3: Authentication and Tenant Foundation
+
+Status: Not started
 
 Future scope:
 
@@ -373,3 +380,4 @@ Phases 1–18 are **Not authorized** until the product owner explicitly authoriz
 | ---------- | --------------------------------------------------------------------------------------- | ------------ |
 | 2026-07-28 | Initial Phase 0 draft; Phase 0 marked current                                           | Cursor Agent |
 | 2026-07-28 | Bundle 1 authorization: Phase 1 and Phase 2 marked in progress; Phase 0 marked complete | Cursor Agent |
+| 2026-07-28 | Bundle 1 implementation: Phase 1 and Phase 2 marked completed; Phase 3 not started      | Cursor Agent |

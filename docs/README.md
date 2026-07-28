@@ -70,7 +70,7 @@ Supporting documents refine these authorities and must remain consistent with th
 3. Stop and wait for product-owner approval before beginning the next phase.
 4. Do not treat roadmap order as automatic authorization.
 
-**Current authorized phases:** Phase 1 and Phase 2 (Bundle 1). Phase 0 is complete.
+**Current phase status:** Phase 0–2 completed for Bundle 1. Phase 3 is not started.
 
 ## Implementation and Documentation Sync
 

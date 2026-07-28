@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Describe the intended visual and interaction characteristics of SLC Intelligence without finalizing brand colors or implementing components.
+Describe the visual and interaction foundation for SLC Intelligence.
 
 ## Status
 
@@ -14,164 +14,54 @@ Owner: Product Owner
 
 ## Scope
 
-This document guides UI work. Bundle 1 introduces provisional design tokens and accessible shell components. Final brand colors still require product-owner approval.
-
-## Provisional Tokens (Bundle 1)
-
-Bundle 1 ships provisional CSS variables in `src/app/globals.css`:
-
-1. Calm cool-gray surfaces
-2. Deep slate foreground
-3. Teal accent for trust and focus
-4. Status colors that are never color-only in UI copy
-
-These are temporary implementation tokens, not final branding.
+Bundle 1 implements a provisional design system and public/platform shells. Final brand colors still require product-owner approval.
 
 ## Desired Product Characteristics
 
-The application should feel:
+Professional, calm, intelligent, trustworthy, modern, clear, supportive, and data-informed without appearing clinical or punitive.
 
-1. Professional
-2. Calm
-3. Intelligent
-4. Trustworthy
-5. Modern
-6. Clear
-7. Supportive
-8. Data-informed without appearing clinical or punitive
+## Provisional Tokens (Bundle 1)
+
+Implemented in `src/app/globals.css`:
+
+1. Typography scale (`--text-xs` through `--text-5xl`) with Source Sans 3 and Source Serif 4
+2. Spacing scale (`--space-1` through `--space-8`)
+3. Surface hierarchy (`background`, `background-elevated`, `surface-subtle`)
+4. Border-radius conventions (`sm`, `md`, `lg`)
+5. Focus-ring behavior (`:focus-visible` + `--focus-ring`)
+6. Status semantics with text labels/badges (not color alone)
+7. Form-field patterns via Label/Input/Textarea/Select/Checkbox/FormField
+8. Button hierarchy (primary, secondary, ghost, danger)
+9. Card patterns
+10. Table shell patterns
+11. Empty/loading/error-state patterns
+12. Responsive breakpoints via Tailwind defaults (sm/md/lg/xl)
+13. Print considerations in `@media print`
+
+Temporary neutral palette: cool gray surfaces, deep slate foreground, restrained teal accent. Not final branding.
 
 ## Prohibited Visual Patterns
 
-Avoid:
-
-1. Childish classroom graphics
-2. Excessive bright colors
-3. Gamification of disability data
-4. Decorative clutter
-5. Dense dashboards without hierarchy
-6. Red-green-only status systems
-7. Alarmist language
-8. Punitive behavior language
-9. Overuse of icons without labels
-10. Generic AI-looking gradients everywhere
-
-Also avoid defaulting to common AI-generated aesthetic clusters unless the product owner explicitly chooses a related direction later.
+Avoid childish classroom graphics, excessive bright colors, gamification of disability data, decorative clutter, dense dashboards without hierarchy, red-green-only status systems, alarmist language, punitive behavior language, unlabeled icon-only controls, and generic AI-looking gradients everywhere.
 
 ## Accessibility Expectations
 
-Design tokens and components must support:
+See `ACCESSIBILITY_REQUIREMENTS.md`. Bundle 1 includes skip links, visible focus, semantic headings, programmatic labels, reduced-motion support, and accessible feedback states.
 
-1. Sufficient contrast
-2. Visible focus states
-3. Non-color status semantics
-4. Large enough touch targets
-5. Reduced-motion alternatives
-6. Accessible form, table, dialog, and chart patterns
-7. WCAG 2.2 Level AA targets where feasible
+## Component Documentation Approach
 
-See `ACCESSIBILITY_REQUIREMENTS.md`.
-
-## Future Design-Token Categories
-
-Plan tokens for:
-
-1. Typography
-2. Spacing
-3. Border radius
-4. Surface hierarchy
-5. Status semantics
-6. Chart conventions
-7. Form patterns
-8. Table patterns
-9. Navigation patterns
-10. Empty states
-11. Error states
-12. Loading states
-13. Print styles
-14. Accessibility standards
-
-Do not invent final branding colors during Phase 0 unless provided by the product owner.
-
-## Chart-Design Requirements
-
-1. Clear hierarchy and readable axes/labels
-2. Text summary or accessible data-table equivalent for every chart
-3. No color-only encoding
-4. Explicit date range and filter context
-5. Visible limitation or insufficient-data states
-6. Avoid ranking visualizations that compare students competitively
-
-## Form-Design Requirements
-
-1. Visible labels
-2. Clear instructions and errors
-3. Rapid-entry patterns for classroom use
-4. Draft and save-and-return support
-5. Mobile-responsive layouts
-6. Keyboard-friendly controls
-7. Measurement-specific fields that preserve raw values
-
-## Table-Design Requirements
-
-1. Semantic headers
-2. Predictable sorting and filtering affordances
-3. Row actions with labels
-4. Responsive strategies that preserve meaning
-5. Accessible empty states
-
-## Dashboard Hierarchy
-
-Command Center should present role-aware summaries with clear priority, not an undifferentiated widget wall.
-
-First-priority content should help educators act on assigned students and deadlines within authorization scope.
-
-Administrative dashboards must use aggregation and privacy safeguards and must not become surveillance scorecards.
-
-## Responsive Requirements
-
-1. Desktop and mobile-responsive support
-2. Practical classroom data entry on smaller screens
-3. No loss of critical labels when collapsing layouts
-
-## Print Requirements
-
-1. Print-friendly reports
-2. Clear document title, date, scope, and limitations
-3. Charts accompanied by text or tables
-4. Draft versus final status visible when printed
-
-## Branding Notes
-
-1. Product name: SLC Intelligence
-2. Tagline: The Intelligence Platform for Specialized Learning Classrooms
-3. Do not add trademark symbols automatically throughout the UI
-4. Brand assets may later live under `public/brand/`
-5. Final colors and type selections require product-owner direction
-
-## Core Requirements
-
-1. Calm, professional educator-centered UI
-2. Accessibility-first components
-3. Clear hierarchy over decorative density
-4. No punitive or gamified disability aesthetics
-
-## Out of Scope
-
-1. Final color palette
-2. Final font licensing selections
-3. Component implementation in Phase 0
-4. Marketing landing-page production in Phase 0
+Use the in-app `/component-gallery` route and `COMPONENT_DOCUMENTATION.md`. Storybook remains optional for a later phase.
 
 ## Open Questions
 
-1. What typography pairing does the product owner prefer?
-2. Will there be a distinct public marketing visual system versus the authenticated product shell?
-3. What status semantic labels and shapes will replace color-only cues?
-4. Should Command Center favor task queues, calendar deadlines, or data-quality alerts as the top visual priority for intervention specialists?
+1. Final brand colors and logo assets
+2. Whether Storybook should replace the in-app gallery later
+3. Exact touch-target minimum for district procurement checklists
 
 ## Change History
 
-| Date       | Change                                         | Author       |
-| ---------- | ---------------------------------------------- | ------------ |
-| 2026-07-28 | Initial Phase 0 draft                          | Cursor Agent |
-| 2026-07-28 | Bundle 1 provisional tokens and shell guidance | Cursor Agent |
+| Date       | Change                                                    | Author       |
+| ---------- | --------------------------------------------------------- | ------------ |
+| 2026-07-28 | Initial Phase 0 draft                                     | Cursor Agent |
+| 2026-07-28 | Bundle 1 provisional tokens and shell guidance            | Cursor Agent |
+| 2026-07-28 | Document implemented Bundle 1 token and pattern inventory | Cursor Agent |

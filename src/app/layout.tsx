@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Source_Sans_3, Source_Serif_4 } from "next/font/google";
-import { SkipLink } from "@/components/layout/skip-link";
+import { SkipLink } from "@/components/accessibility/skip-link";
 import "./globals.css";
 
 const sourceSans = Source_Sans_3({

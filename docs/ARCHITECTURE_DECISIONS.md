@@ -16,6 +16,8 @@ Owner: Product Owner
 
 Decisions listed here are **Proposed** until the product owner marks them accepted. Do not treat proposed decisions as irreversible.
 
+Bundle 1 implements ADR-001, ADR-002, ADR-008, and ADR-010 in code while leaving their formal status as Proposed pending explicit acceptance.
+
 ## Decision Index
 
 | ID      | Decision                                              | Status   |
