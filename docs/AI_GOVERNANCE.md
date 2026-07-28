@@ -142,6 +142,6 @@ A kill switch must allow rapid disablement of AI features at platform and organi
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
+| Date       | Change                             | Author       |
+| ---------- | ---------------------------------- | ------------ |
 | 2026-07-28 | Initial Phase 0 draft; AI deferred | Cursor Agent |

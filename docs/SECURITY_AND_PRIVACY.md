@@ -224,6 +224,6 @@ Before production use with real educational data:
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
+| Date       | Change                | Author       |
+| ---------- | --------------------- | ------------ |
 | 2026-07-28 | Initial Phase 0 draft | Cursor Agent |

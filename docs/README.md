@@ -38,20 +38,22 @@ Out of scope:
 
 When documents conflict, surface the conflict for product-owner resolution. Do not silently choose one interpretation.
 
-| Document | Authority |
-| --- | --- |
-| `MASTER_PRODUCT_SPEC.md` | Product identity, principles, modules, non-goals |
-| `PRODUCT_ROADMAP.md` | Authorized phase and future phase boundaries |
-| `DEVELOPMENT_RULES.md` | Engineering process and phase-control rules |
-| `SECURITY_AND_PRIVACY.md` | Security, privacy, secrets, tenant isolation |
-| `USER_ROLES_AND_PERMISSIONS.md` | Authorization model |
-| `IEP_ANALYTICS_SPEC.md` | Progress-monitoring analytics requirements |
-| `BEHAVIOR_DETECTIVE_SPEC.md` | Behavior module requirements |
-| `DECISION_SUPPORT_GUARDRAILS.md` | Allowed vs prohibited analytic language |
-| `DATABASE_SCHEMA.md` | Planned data model (no SQL in Phase 0) |
-| `ARCHITECTURE_DECISIONS.md` | Proposed technology and architecture decisions |
+| Document                         | Authority                                        |
+| -------------------------------- | ------------------------------------------------ |
+| `MASTER_PRODUCT_SPEC.md`         | Product identity, principles, modules, non-goals |
+| `PRODUCT_ROADMAP.md`             | Authorized phase and future phase boundaries     |
+| `DEVELOPMENT_RULES.md`           | Engineering process and phase-control rules      |
+| `SECURITY_AND_PRIVACY.md`        | Security, privacy, secrets, tenant isolation     |
+| `USER_ROLES_AND_PERMISSIONS.md`  | Authorization model                              |
+| `IEP_ANALYTICS_SPEC.md`          | Progress-monitoring analytics requirements       |
+| `BEHAVIOR_DETECTIVE_SPEC.md`     | Behavior module requirements                     |
+| `DECISION_SUPPORT_GUARDRAILS.md` | Allowed vs prohibited analytic language          |
+| `DATABASE_SCHEMA.md`             | Planned data model (no SQL in Phase 0)           |
+| `ARCHITECTURE_DECISIONS.md`      | Proposed technology and architecture decisions   |
 
 Supporting documents refine these authorities and must remain consistent with them.
+
+`COMPONENT_DOCUMENTATION.md` describes the Bundle 1 in-app component gallery approach.
 
 ## Document-Review Workflow
 
@@ -68,7 +70,7 @@ Supporting documents refine these authorities and must remain consistent with th
 3. Stop and wait for product-owner approval before beginning the next phase.
 4. Do not treat roadmap order as automatic authorization.
 
-**Current authorized phase:** Phase 0: Foundation and Governance
+**Current authorized phases:** Phase 1 and Phase 2 (Bundle 1). Phase 0 is complete.
 
 ## Implementation and Documentation Sync
 
@@ -97,6 +99,6 @@ Conflicts between documents, or between documents and code, must be surfaced rat
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
+| Date       | Change                | Author       |
+| ---------- | --------------------- | ------------ |
 | 2026-07-28 | Initial Phase 0 draft | Cursor Agent |

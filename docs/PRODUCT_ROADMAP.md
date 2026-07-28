@@ -18,13 +18,15 @@ This roadmap sequences work. Roadmap order is not automatic authorization. Only 
 
 ## Current Authorized Phase
 
-**Current authorized phase: Phase 0**
+**Current authorized phases (Bundle 1):** Phase 1 and Phase 2
 
-Phase title: Foundation and Governance
+Phase 0 is complete and approved on `main`.
 
-Status of Phase 0 work in this repository: In progress for documentation and governance setup; not an application implementation phase.
+Do not begin Phase 3 or later until the product owner explicitly authorizes the next phase.
 
 ## Phase 0: Foundation and Governance
+
+Status: Complete (approved on `main`)
 
 Goals:
 
@@ -64,7 +66,9 @@ Acceptance criteria:
 
 ## Phase 1: Application Scaffold
 
-Future scope:
+Status: In progress under Bundle 1 authorization
+
+Scope:
 
 1. Initialize Next.js
 2. TypeScript strict mode
@@ -81,7 +85,9 @@ No database tables beyond the minimum connection test unless separately approved
 
 ## Phase 2: Design System and Public Shell
 
-Future scope:
+Status: In progress under Bundle 1 authorization
+
+Scope:
 
 1. Design tokens
 2. Accessible components
@@ -334,12 +340,12 @@ Future scope:
 
 ## Phase Status Legend
 
-| Status | Meaning |
-| --- | --- |
-| Authorized | Product owner has authorized work |
-| Not authorized | Must not begin |
-| Complete | Product owner accepted the phase report |
-| Deferred | Explicitly postponed |
+| Status         | Meaning                                 |
+| -------------- | --------------------------------------- |
+| Authorized     | Product owner has authorized work       |
+| Not authorized | Must not begin                          |
+| Complete       | Product owner accepted the phase report |
+| Deferred       | Explicitly postponed                    |
 
 Phases 1–18 are **Not authorized** until the product owner explicitly authorizes them.
 
@@ -363,6 +369,7 @@ Phases 1–18 are **Not authorized** until the product owner explicitly authoriz
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
-| 2026-07-28 | Initial Phase 0 draft; Phase 0 marked current | Cursor Agent |
+| Date       | Change                                                                                  | Author       |
+| ---------- | --------------------------------------------------------------------------------------- | ------------ |
+| 2026-07-28 | Initial Phase 0 draft; Phase 0 marked current                                           | Cursor Agent |
+| 2026-07-28 | Bundle 1 authorization: Phase 1 and Phase 2 marked in progress; Phase 0 marked complete | Cursor Agent |

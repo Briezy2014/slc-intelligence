@@ -201,16 +201,16 @@ Related service providers should see only assigned students and the services, go
 
 Use the following template in later phases. Values are illustrative placeholders only and are not approved grants.
 
-| Capability | Platform Owner | Org Admin | SpEd Admin | Building Admin | Intervention Specialist | Classroom Staff | Paraprofessional | Related Service | Read-Only |
-| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| Manage organization settings | Limited | Yes | No | No | No | No | No | No | No |
-| Invite users | Limited | Yes | TBD | TBD | No | No | No | No | No |
-| View assigned students | Minimized | Scoped | Scoped | Scoped | Yes | Scoped | Scoped | Scoped | Scoped |
-| Enter progress data | No | No | TBD | No | Yes | TBD | Assigned only | Assigned goals | No |
-| Finalize progress reports | No | TBD | TBD | TBD | TBD | No | No | TBD | No |
-| Enter ABC data | No | No | TBD | No | Yes | TBD | Assigned only | TBD | No |
-| Export student reports | Audited only | Scoped | Scoped | Scoped | Scoped | TBD | No by default | Scoped | No |
-| Manage roles | Limited | Yes | TBD | TBD | No | No | No | No | No |
+| Capability                   | Platform Owner | Org Admin | SpEd Admin | Building Admin | Intervention Specialist | Classroom Staff | Paraprofessional | Related Service | Read-Only |
+| ---------------------------- | -------------- | --------- | ---------- | -------------- | ----------------------- | --------------- | ---------------- | --------------- | --------- |
+| Manage organization settings | Limited        | Yes       | No         | No             | No                      | No              | No               | No              | No        |
+| Invite users                 | Limited        | Yes       | TBD        | TBD            | No                      | No              | No               | No              | No        |
+| View assigned students       | Minimized      | Scoped    | Scoped     | Scoped         | Yes                     | Scoped          | Scoped           | Scoped          | Scoped    |
+| Enter progress data          | No             | No        | TBD        | No             | Yes                     | TBD             | Assigned only    | Assigned goals  | No        |
+| Finalize progress reports    | No             | TBD       | TBD        | TBD            | TBD                     | No              | No               | TBD             | No        |
+| Enter ABC data               | No             | No        | TBD        | No             | Yes                     | TBD             | Assigned only    | TBD             | No        |
+| Export student reports       | Audited only   | Scoped    | Scoped     | Scoped         | Scoped                  | TBD             | No by default    | Scoped          | No        |
+| Manage roles                 | Limited        | Yes       | TBD        | TBD            | No                      | No              | No               | No              | No        |
 
 TBD cells require product-owner decisions before enforcement.
 
@@ -252,6 +252,6 @@ Authorization must eventually be enforced through:
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
+| Date       | Change                | Author       |
+| ---------- | --------------------- | ------------ |
 | 2026-07-28 | Initial Phase 0 draft | Cursor Agent |

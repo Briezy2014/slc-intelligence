@@ -18,10 +18,10 @@ Phase 0 creates placeholder folders only. Do not add branding images or applicat
 
 ## Layout
 
-| Path | Intended use |
-| --- | --- |
+| Path     | Intended use                                   |
+| -------- | ---------------------------------------------- |
 | `brand/` | Future approved brand marks and related assets |
-| `icons/` | Future icon assets |
+| `icons/` | Future icon assets                             |
 
 ## Rules
 
@@ -32,6 +32,6 @@ Phase 0 creates placeholder folders only. Do not add branding images or applicat
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
+| Date       | Change                     | Author       |
+| ---------- | -------------------------- | ------------ |
 | 2026-07-28 | Initial placeholder README | Cursor Agent |

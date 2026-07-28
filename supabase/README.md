@@ -18,12 +18,12 @@ Phase 0 creates placeholder structure only.
 
 ## Contents
 
-| Path | Intended use |
-| --- | --- |
-| `migrations/` | Version-controlled SQL migrations (none in Phase 0) |
-| `seed/` | Fictional seed data only |
-| `functions/` | Approved server-side Supabase functions, if used later |
-| `tests/` | Database and RLS policy tests |
+| Path          | Intended use                                           |
+| ------------- | ------------------------------------------------------ |
+| `migrations/` | Version-controlled SQL migrations (none in Phase 0)    |
+| `seed/`       | Fictional seed data only                               |
+| `functions/`  | Approved server-side Supabase functions, if used later |
+| `tests/`      | Database and RLS policy tests                          |
 
 ## Rules
 
@@ -39,6 +39,6 @@ Phase 0: Foundation and Governance — no database objects.
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
+| Date       | Change                     | Author       |
+| ---------- | -------------------------- | ------------ |
 | 2026-07-28 | Initial placeholder README | Cursor Agent |

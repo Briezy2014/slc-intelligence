@@ -18,12 +18,12 @@ Phase 0 creates placeholder folders only. No test frameworks are installed in th
 
 ## Layout
 
-| Path | Intended use |
-| --- | --- |
-| `unit/` | Unit tests |
-| `integration/` | Integration tests |
-| `end-to-end/` | Playwright or equivalent end-to-end tests |
-| `security/` | Permission-boundary and related security tests |
+| Path             | Intended use                                     |
+| ---------------- | ------------------------------------------------ |
+| `unit/`          | Unit tests                                       |
+| `integration/`   | Integration tests                                |
+| `end-to-end/`    | Playwright or equivalent end-to-end tests        |
+| `security/`      | Permission-boundary and related security tests   |
 | `accessibility/` | Accessibility automated and fixture-backed tests |
 
 Additional Supabase policy tests may live under `supabase/tests/`.
@@ -37,6 +37,6 @@ Additional Supabase policy tests may live under `supabase/tests/`.
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
+| Date       | Change                     | Author       |
+| ---------- | -------------------------- | ------------ |
 | 2026-07-28 | Initial placeholder README | Cursor Agent |

@@ -201,6 +201,6 @@ Use terms defined in `GLOSSARY.md`. Prefer:
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
+| Date       | Change                | Author       |
+| ---------- | --------------------- | ------------ |
 | 2026-07-28 | Initial Phase 0 draft | Cursor Agent |

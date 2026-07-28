@@ -6,8 +6,6 @@ The Intelligence Platform for Specialized Learning Classrooms
 
 SLC Intelligence is a special education operations, progress-monitoring, behavior analytics, documentation, communication, and decision-support platform for Specialized Learning Classrooms, intervention specialists, special education teachers, paraprofessionals, related service providers, building administrators, special education administrators, district-level special education programs, school districts, and educational organizations.
 
-The platform is designed to reduce fragmented documentation and turn classroom data into defensible, understandable, actionable educational information while preserving human decision authority.
-
 ## Intended Users
 
 1. Intervention specialists
@@ -22,26 +20,41 @@ Parent and student portals are deferred from the initial release.
 
 ## Current Development Status
 
-**Pre-application planning and governance**
+**Application scaffold and public shell (Bundle 1)**
 
-**Current authorized phase:** Phase 0: Foundation and Governance
+**Current authorized phases for this bundle:** Phase 1 and Phase 2
 
-This repository currently contains documentation, governance rules, and placeholder structure only. Application source code, packages, database schema, and deployment configuration are not part of Phase 0.
+Phase 0 foundation documentation is complete on `main`. Bundle 1 adds the Next.js application scaffold, provisional design system, navigation shell, authentication-page designs, and feedback states. Authentication backends, tenants, and student records are not included.
+
+## Local development
+
+```bash
+npm install
+npm run dev
+```
+
+Useful scripts:
+
+- `npm run lint`
+- `npm run typecheck`
+- `npm run test`
+- `npm run format:check`
+- `npm run build`
+
+Copy `.env.example` to `.env.local` and leave values empty until Phase 3. Never add service-role keys or real secrets.
 
 ## Technology Direction
 
-Planned stack (not installed in Phase 0):
-
 1. Next.js (App Router), React, TypeScript (strict)
 2. Tailwind CSS and shadcn/ui-compatible components
-3. Supabase (PostgreSQL, Auth, Storage, Row Level Security)
+3. Supabase planned for later phases (PostgreSQL, Auth, Storage, RLS)
 4. Vercel for web hosting
-5. Zod and React Hook Form for validation/forms
-6. Vitest, React Testing Library, Playwright, and accessibility/policy testing
+5. Zod for environment and future validation
+6. Vitest and React Testing Library; Playwright planned later
 
 ## Security Warning
 
-This repository is designed with role-based access, tenant isolation, and auditability as architectural requirements.
+Designed with role-based access, tenant isolation, and auditability as architectural requirements.
 
 Never commit secrets, service-role keys, access tokens, private keys, or production credentials.
 
@@ -69,25 +82,30 @@ Start with:
 2. [`docs/PRODUCT_ROADMAP.md`](docs/PRODUCT_ROADMAP.md)
 3. [`docs/DEVELOPMENT_RULES.md`](docs/DEVELOPMENT_RULES.md)
 4. [`docs/SECURITY_AND_PRIVACY.md`](docs/SECURITY_AND_PRIVACY.md)
+5. [`docs/COMPONENT_DOCUMENTATION.md`](docs/COMPONENT_DOCUMENTATION.md)
 
 ## Repository Structure
 
 ```text
 slc-intelligence/
-├── docs/                 # Product and engineering governance documentation
+├── docs/
+├── src/                  # Next.js App Router application
 ├── supabase/             # Future migrations, seeds, functions, and DB tests
-├── tests/                # Future automated test suites
-├── public/               # Future public static assets
+├── tests/                # Automated test suites
+├── public/               # Public static assets
+├── .github/workflows/    # Basic CI checks
+├── .env.example
 ├── .gitignore
 └── README.md
 ```
 
 ## Phase Control
 
-Complete only the currently authorized phase. Do not begin Phase 1: Application Scaffold until the product owner explicitly authorizes it.
+Complete only currently authorized phases. Do not begin Phase 3: Authentication and Tenant Foundation until the product owner explicitly authorizes it.
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
-| 2026-07-28 | Phase 0 root README established | Cursor Agent |
+| Date       | Change                                         | Author       |
+| ---------- | ---------------------------------------------- | ------------ |
+| 2026-07-28 | Phase 0 root README established                | Cursor Agent |
+| 2026-07-28 | Bundle 1 application scaffold and public shell | Cursor Agent |

@@ -14,7 +14,18 @@ Owner: Product Owner
 
 ## Scope
 
-This document guides future UI work. Phase 0 does not create application UI, branding images, or final color tokens.
+This document guides UI work. Bundle 1 introduces provisional design tokens and accessible shell components. Final brand colors still require product-owner approval.
+
+## Provisional Tokens (Bundle 1)
+
+Bundle 1 ships provisional CSS variables in `src/app/globals.css`:
+
+1. Calm cool-gray surfaces
+2. Deep slate foreground
+3. Teal accent for trust and focus
+4. Status colors that are never color-only in UI copy
+
+These are temporary implementation tokens, not final branding.
 
 ## Desired Product Characteristics
 
@@ -160,6 +171,7 @@ Administrative dashboards must use aggregation and privacy safeguards and must n
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
-| 2026-07-28 | Initial Phase 0 draft | Cursor Agent |
+| Date       | Change                                         | Author       |
+| ---------- | ---------------------------------------------- | ------------ |
+| 2026-07-28 | Initial Phase 0 draft                          | Cursor Agent |
+| 2026-07-28 | Bundle 1 provisional tokens and shell guidance | Cursor Agent |

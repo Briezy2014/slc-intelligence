@@ -18,15 +18,15 @@ Applies to IEP analytics, Behavior Detective, intervention summaries, administra
 
 ## Evidence Hierarchy
 
-| Level | Meaning | System role |
-| --- | --- | --- |
-| Observation / recorded fact | What was entered as data | Store and display accurately |
-| Calculation | Deterministic result from recorded values | Compute and explain |
-| Data-quality concern | Limitation in completeness, consistency, or recency | Flag before interpretation |
-| Pattern indicator | Descriptive pattern within selected filters | Present observationally |
-| Hypothesis | Possible explanation requiring professional review | Never auto-assert as fact |
-| Decision-support indicator | Advisory review prompt | Suggest review, not mandate action |
-| Formal decision | IEP team or qualified professional determination | Outside automated system authority |
+| Level                       | Meaning                                             | System role                        |
+| --------------------------- | --------------------------------------------------- | ---------------------------------- |
+| Observation / recorded fact | What was entered as data                            | Store and display accurately       |
+| Calculation                 | Deterministic result from recorded values           | Compute and explain                |
+| Data-quality concern        | Limitation in completeness, consistency, or recency | Flag before interpretation         |
+| Pattern indicator           | Descriptive pattern within selected filters         | Present observationally            |
+| Hypothesis                  | Possible explanation requiring professional review  | Never auto-assert as fact          |
+| Decision-support indicator  | Advisory review prompt                              | Suggest review, not mandate action |
+| Formal decision             | IEP team or qualified professional determination    | Outside automated system authority |
 
 ## Approved Wording
 
@@ -139,6 +139,6 @@ The platform must not automatically direct users to:
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
+| Date       | Change                | Author       |
+| ---------- | --------------------- | ------------ |
 | 2026-07-28 | Initial Phase 0 draft | Cursor Agent |

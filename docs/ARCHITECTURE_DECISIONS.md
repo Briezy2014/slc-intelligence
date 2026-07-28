@@ -18,21 +18,21 @@ Decisions listed here are **Proposed** until the product owner marks them accept
 
 ## Decision Index
 
-| ID | Decision | Status |
-| --- | --- | --- |
-| ADR-001 | Next.js as the web application framework | Proposed |
-| ADR-002 | TypeScript with strict mode | Proposed |
-| ADR-003 | Supabase as backend data and auth platform | Proposed |
-| ADR-004 | PostgreSQL as the primary datastore | Proposed |
-| ADR-005 | Vercel for Next.js hosting | Proposed |
+| ID      | Decision                                              | Status   |
+| ------- | ----------------------------------------------------- | -------- |
+| ADR-001 | Next.js as the web application framework              | Proposed |
+| ADR-002 | TypeScript with strict mode                           | Proposed |
+| ADR-003 | Supabase as backend data and auth platform            | Proposed |
+| ADR-004 | PostgreSQL as the primary datastore                   | Proposed |
+| ADR-005 | Vercel for Next.js hosting                            | Proposed |
 | ADR-006 | Multi-tenant architecture with organization isolation | Proposed |
-| ADR-007 | Row Level Security for protected data | Proposed |
-| ADR-008 | Next.js App Router architecture | Proposed |
-| ADR-009 | Version-controlled database migrations | Proposed |
-| ADR-010 | Web-first responsive application | Proposed |
-| ADR-011 | Deferred native mobile applications | Proposed |
-| ADR-012 | Deferred AI features | Proposed |
-| ADR-013 | Separate development and production environments | Proposed |
+| ADR-007 | Row Level Security for protected data                 | Proposed |
+| ADR-008 | Next.js App Router architecture                       | Proposed |
+| ADR-009 | Version-controlled database migrations                | Proposed |
+| ADR-010 | Web-first responsive application                      | Proposed |
+| ADR-011 | Deferred native mobile applications                   | Proposed |
+| ADR-012 | Deferred AI features                                  | Proposed |
+| ADR-013 | Separate development and production environments      | Proposed |
 
 ## ADR-001: Next.js
 
@@ -144,6 +144,6 @@ Decisions listed here are **Proposed** until the product owner marks them accept
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
+| Date       | Change                                           | Author       |
+| ---------- | ------------------------------------------------ | ------------ |
 | 2026-07-28 | Initial Phase 0 ADR index and proposed decisions | Cursor Agent |

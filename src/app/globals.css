@@ -1,0 +1,107 @@
+@import "tailwindcss";
+
+/*
+  Provisional design tokens for Bundle 1 / Phase 2.
+  These are not final brand colors. Product-owner brand approval is still required.
+  Direction: calm, professional, trustworthy, educator-centered.
+*/
+
+:root {
+  --background: #f4f7f8;
+  --background-elevated: #ffffff;
+  --foreground: #1a2b33;
+  --muted: #5b6b73;
+  --border: #d5dee3;
+  --ring: #1f6f78;
+  --accent: #1f6f78;
+  --accent-foreground: #ffffff;
+  --accent-soft: #e6f2f3;
+  --surface-subtle: #eaf0f2;
+  --danger: #9b3b3b;
+  --danger-foreground: #ffffff;
+  --danger-soft: #f8ecec;
+  --warning: #8a6a1f;
+  --warning-soft: #f7f1df;
+  --success: #2f6b4f;
+  --success-soft: #e7f3ec;
+  --info: #2a5f8f;
+  --info-soft: #e8f1f8;
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --shadow-soft: 0 1px 2px rgb(26 43 51 / 6%), 0 8px 24px rgb(26 43 51 / 6%);
+  --focus-ring: 0 0 0 3px rgb(31 111 120 / 35%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-background-elevated: var(--background-elevated);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-soft: var(--accent-soft);
+  --color-surface-subtle: var(--surface-subtle);
+  --color-danger: var(--danger);
+  --color-danger-foreground: var(--danger-foreground);
+  --color-danger-soft: var(--danger-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --font-sans: var(--font-source-sans);
+  --font-serif: var(--font-source-serif);
+  --radius-sm: var(--radius-sm);
+  --radius-md: var(--radius-md);
+  --radius-lg: var(--radius-lg);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background:
+      radial-gradient(circle at top left, rgb(230 242 243 / 80%), transparent 42%),
+      linear-gradient(180deg, #f7fafb 0%, var(--background) 48%, #eef3f5 100%);
+    color: var(--foreground);
+    font-family: var(--font-source-sans), "Source Sans 3", sans-serif;
+    min-height: 100vh;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+    box-shadow: var(--focus-ring);
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-source-serif), "Source Serif 4", serif;
+    letter-spacing: -0.02em;
+  }
+}
