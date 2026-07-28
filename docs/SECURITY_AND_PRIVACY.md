@@ -72,6 +72,25 @@ Do not use the Supabase service-role key in browser code.
 3. Policies must enforce organization and assignment scope.
 4. RLS tests are required before protected tables are considered production-ready.
 
+## Implemented Phase 3-8 RLS Summary
+
+Implemented migrations enable and force RLS for organization, membership, invitation, audit,
+school/program/classroom, staff assignment, student, IEP goal, and progress-monitoring tables.
+
+Primary helper functions:
+
+1. `is_org_member(p_org_id)` verifies active membership in an active organization.
+2. `has_org_permission(p_org_id, p_permission)` checks role grants through `role_permissions`.
+3. `member_role(p_org_id)` returns the active organization role.
+4. `has_school_scope`, `has_program_scope`, and `has_classroom_scope` enforce assignment scope.
+5. `can_read_student`, `can_edit_student`, `can_manage_goal`, `can_enter_progress`, and
+   `can_finalize_progress` enforce student-level access.
+
+Application data modules also verify authenticated user and active organization membership before
+querying. When Supabase is not configured, protected pages show a development/configuration notice
+and no fake user or fake student data is produced. Server actions validate input with Zod, check
+permissions, write audit events, and return safe generic errors instead of SQL or internal details.
+
 ## Tenant Isolation
 
 1. Every protected record belongs directly or indirectly to an organization.

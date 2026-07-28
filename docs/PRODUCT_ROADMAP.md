@@ -18,16 +18,22 @@ This roadmap sequences work. Roadmap order is not automatic authorization. Only 
 
 ## Current Authorized Phase
 
-**Bundle 1 status**
+**Phases 3–8 bundle complete locally (pending product-owner review)**
 
 | Phase   | Status      |
 | ------- | ----------- |
 | Phase 0 | Completed   |
 | Phase 1 | Completed   |
 | Phase 2 | Completed   |
-| Phase 3 | Not started |
+| Phase 3 | Completed   |
+| Phase 4 | Completed   |
+| Phase 5 | Completed   |
+| Phase 6 | Completed   |
+| Phase 7 | Completed   |
+| Phase 8 | Completed   |
+| Phase 9 | Not started |
 
-Do not begin Phase 3 or later until the product owner explicitly authorizes the next phase.
+Phase 9 progress reporting is not started. No automated progress-report drafting is in scope.
 
 ## Phase 0: Foundation and Governance
 
@@ -106,9 +112,9 @@ Scope:
 
 ## Phase 3: Authentication and Tenant Foundation
 
-Status: Not started
+Status: Completed
 
-Future scope:
+Completed scope:
 
 1. Supabase authentication
 2. Organization model
@@ -123,7 +129,9 @@ Future scope:
 
 ## Phase 4: Schools, Programs, Classrooms, and Staff
 
-Future scope:
+Status: Completed
+
+Completed scope:
 
 1. School management
 2. Program management
@@ -136,7 +144,9 @@ Future scope:
 
 ## Phase 5: Student Foundation
 
-Future scope:
+Status: Completed
+
+Completed scope:
 
 1. Student records
 2. Enrollment
@@ -151,7 +161,9 @@ Future scope:
 
 ## Phase 6: IEP Goal Foundation
 
-Future scope:
+Status: Completed
+
+Completed scope:
 
 1. IEP cycles
 2. Goals
@@ -166,7 +178,9 @@ Future scope:
 
 ## Phase 7: Progress-Monitoring Data Collection
 
-Future scope:
+Status: Completed
+
+Completed scope:
 
 1. Sessions
 2. Data points
@@ -181,7 +195,9 @@ Future scope:
 
 ## Phase 8: IEP Analytics
 
-Future scope:
+Status: Completed
+
+Completed scope:
 
 1. Descriptive analytics
 2. Data quality
@@ -196,6 +212,8 @@ Future scope:
 11. Explainability panels
 
 ## Phase 9: Progress Reporting
+
+Status: Not started
 
 Future scope:
 
@@ -381,3 +399,4 @@ Phases 1–18 are **Not authorized** until the product owner explicitly authoriz
 | 2026-07-28 | Initial Phase 0 draft; Phase 0 marked current                                           | Cursor Agent |
 | 2026-07-28 | Bundle 1 authorization: Phase 1 and Phase 2 marked in progress; Phase 0 marked complete | Cursor Agent |
 | 2026-07-28 | Bundle 1 implementation: Phase 1 and Phase 2 marked completed; Phase 3 not started      | Cursor Agent |
+| 2026-07-28 | Phases 3–8 implemented locally with Stage A/B/C checkpoints; Phase 9 not started        | Cursor Agent |

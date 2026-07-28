@@ -6,62 +6,73 @@ Describe the visual and interaction foundation for SLC Intelligence.
 
 ## Status
 
-Status: Draft
+Status: Active brand system
 
 Last updated: 2026-07-28
 
 Owner: Product Owner
 
-## Scope
+## Brand source of truth
 
-Bundle 1 implements a provisional design system and public/platform shells. Final brand colors still require product-owner approval.
+Official logo assets:
+
+1. `public/brand/slc-logo.png`
+2. `public/brand/slc-logo.svg`
+3. Favicon and app icons under `public/icons/` and `src/app/icon.png`
+
+Do not redesign or reinterpret the logo. Maintain proportions, spacing, and colors.
 
 ## Desired Product Characteristics
 
-Professional, calm, intelligent, trustworthy, modern, clear, supportive, and data-informed without appearing clinical or punitive.
+Modern, premium, professional, clean, data-driven, enterprise SaaS, calm, and approachable. Avoid childish classroom aesthetics.
 
-## Provisional Tokens (Bundle 1)
+## Official Color Palette
 
-Implemented in `src/app/globals.css`:
+| Token | Hex | Usage |
+| --- | --- | --- |
+| Primary background | `#12062D` | App canvas |
+| Surface cards | `#1A0B3F` | Cards, elevated panels |
+| Primary accent | `#8B3DFF` | Primary actions |
+| Secondary accent | `#A65BFF` | Hover / secondary purple |
+| Highlight | `#39D5D0` | Analytics, success, interactive highlights |
+| Secondary highlight | `#22C7BE` | Supporting teal accents |
+| Primary text | `#FFFFFF` | Headings and body |
+| Secondary text | `#CFCFE8` | Muted copy |
+| Borders | translucent white | Subtle separators |
 
-1. Typography scale (`--text-xs` through `--text-5xl`) with Source Sans 3 and Source Serif 4
-2. Spacing scale (`--space-1` through `--space-8`)
-3. Surface hierarchy (`background`, `background-elevated`, `surface-subtle`)
-4. Border-radius conventions (`sm`, `md`, `lg`)
-5. Focus-ring behavior (`:focus-visible` + `--focus-ring`)
-6. Status semantics with text labels/badges (not color alone)
-7. Form-field patterns via Label/Input/Textarea/Select/Checkbox/FormField
-8. Button hierarchy (primary, secondary, ghost, danger)
-9. Card patterns
-10. Table shell patterns
-11. Empty/loading/error-state patterns
-12. Responsive breakpoints via Tailwind defaults (sm/md/lg/xl)
-13. Print considerations in `@media print`
+Purple is the primary action color. Teal is reserved for highlights, analytics, success, and interactive emphasis.
 
-Temporary neutral palette: cool gray surfaces, deep slate foreground, restrained teal accent. Not final branding.
+## Icons
 
-## Prohibited Visual Patterns
+Use Lucide React outline icons consistently:
 
-Avoid childish classroom graphics, excessive bright colors, gamification of disability data, decorative clutter, dense dashboards without hierarchy, red-green-only status systems, alarmist language, punitive behavior language, unlabeled icon-only controls, and generic AI-looking gradients everywhere.
+- Clean, rounded, minimal, professional
+- Consistent sizing (`size-4` / `size-5`)
+- Prefer teal highlight color for navigation icons
+
+## Dashboard Style
+
+Command Center and platform modules use:
+
+- Rounded elevated cards
+- Soft shadows / brand glow
+- Generous whitespace
+- Professional tables
+- Accessible charts with text alternatives
+- Smooth, reduced-motion-safe animations
+
+## Typography
+
+Source Sans 3 for interface text and Source Serif 4 for headings.
 
 ## Accessibility Expectations
 
-See `ACCESSIBILITY_REQUIREMENTS.md`. Bundle 1 includes skip links, visible focus, semantic headings, programmatic labels, reduced-motion support, and accessible feedback states.
-
-## Component Documentation Approach
-
-Use the in-app `/component-gallery` route and `COMPONENT_DOCUMENTATION.md`. Storybook remains optional for a later phase.
-
-## Open Questions
-
-1. Final brand colors and logo assets
-2. Whether Storybook should replace the in-app gallery later
-3. Exact touch-target minimum for district procurement checklists
+See `ACCESSIBILITY_REQUIREMENTS.md`. Dark theme must retain sufficient contrast, visible focus (teal ring), semantic headings, and labeled controls.
 
 ## Change History
 
-| Date       | Change                                                    | Author       |
-| ---------- | --------------------------------------------------------- | ------------ |
-| 2026-07-28 | Initial Phase 0 draft                                     | Cursor Agent |
-| 2026-07-28 | Bundle 1 provisional tokens and shell guidance            | Cursor Agent |
-| 2026-07-28 | Document implemented Bundle 1 token and pattern inventory | Cursor Agent |
+| Date | Change | Author |
+| --- | --- | --- |
+| 2026-07-28 | Initial Phase 0 draft | Cursor Agent |
+| 2026-07-28 | Bundle 1 provisional tokens | Cursor Agent |
+| 2026-07-28 | Official logo palette and dark enterprise SaaS system | Cursor Agent |

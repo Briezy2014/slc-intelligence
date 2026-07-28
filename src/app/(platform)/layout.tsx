@@ -7,9 +7,11 @@ export default function PlatformLayout({ children }: { children: React.ReactNode
     <div className="min-h-screen">
       <DevelopmentStatusBanner />
       <PlatformTopNav />
-      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[220px_minmax(0,1fr)]">
+      <div className="mx-auto grid max-w-6xl gap-6 px-4 py-6 sm:px-6 lg:grid-cols-[240px_minmax(0,1fr)]">
         <PlatformSidebar />
-        <div className="min-w-0">{children}</div>
+        <div className="border-border bg-background-elevated/40 min-w-0 rounded-[var(--radius-xl)] border p-4 shadow-[var(--shadow-soft)] sm:p-6">
+          {children}
+        </div>
       </div>
     </div>
   );

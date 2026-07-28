@@ -1,9 +1,9 @@
 import { z } from "zod";
 
 /**
- * Public environment schema for Bundle 1.
- * Supabase values remain optional until Phase 3.
- * Never place service-role keys in NEXT_PUBLIC_* variables.
+ * Public environment schema for Phase 3+.
+ * Supabase URL and anon key are required only when authentication is enabled.
+ * Never place service-role keys, access tokens, or other secrets in NEXT_PUBLIC_* variables.
  */
 export const publicEnvSchema = z.object({
   NODE_ENV: z.enum(["development", "test", "production"]).optional(),

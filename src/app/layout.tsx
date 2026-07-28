@@ -21,6 +21,15 @@ export const metadata: Metadata = {
     template: "%s | SLC Intelligence",
   },
   description: "The Intelligence Platform for Specialized Learning Classrooms",
+  icons: {
+    icon: [
+      { url: "/icons/favicon-32.png", sizes: "32x32", type: "image/png" },
+      { url: "/icons/favicon-16.png", sizes: "16x16", type: "image/png" },
+      { url: "/brand/slc-logo.svg", type: "image/svg+xml" },
+    ],
+    apple: [{ url: "/icons/apple-touch-icon.png", sizes: "180x180" }],
+  },
+  manifest: "/site.webmanifest",
 };
 
 export default function RootLayout({

@@ -14,7 +14,49 @@ Owner: Product Owner
 
 ## Scope
 
-This document describes authorization intent. It does not create database tables or enforce runtime policies. Role names alone are never sufficient authorization.
+This document describes the implemented role and permission model used by Phase 3-8 migrations,
+RLS helpers, and application permission checks. Role names alone are never sufficient
+authorization; active organization membership and assignment scope are also required.
+
+## Implemented Permission Codes
+
+| Permission | Purpose |
+| --- | --- |
+| `org.manage` | Manage organization settings |
+| `org.members.manage` | Manage memberships and invitations |
+| `org.audit.read` | Read audit events |
+| `school.manage` | Create/update schools |
+| `program.manage` | Create/update programs |
+| `classroom.manage` | Create/update classrooms |
+| `staff.assign` | Manage school/program/classroom/student staff assignments |
+| `student.create` | Create student records |
+| `student.edit` | Edit authorized student records and assignments |
+| `student.archive` | Archive/restore students |
+| `student.read` | Read authorized students |
+| `iep.manage` | Manage IEP cycles |
+| `goal.manage` | Manage goals/objectives/baselines |
+| `goal.read` | Read goals for authorized students |
+| `progress.enter` | Enter progress sessions/data points |
+| `progress.finalize` | Finalize progress sessions |
+| `progress.read` | Read progress sessions/data points |
+| `analytics.read` | Read calculated analytics summaries |
+
+## Implemented Role Matrix
+
+| Role | Permissions |
+| --- | --- |
+| `organization_admin` | All implemented permissions |
+| `district_sped_admin` | Audit, school/program/classroom/staff, student, IEP/goal, progress, analytics |
+| `building_admin` | School/classroom/staff scope, student create/edit/read, goal read, progress read, analytics |
+| `program_admin` | Program/classroom/staff scope, student create/edit/read, IEP/goal, progress, analytics |
+| `intervention_specialist` | Student read, IEP/goal manage/read, progress enter/finalize/read, analytics |
+| `special_education_teacher` | Student read, goal read, progress enter/read, analytics |
+| `related_service_provider` | Student read, goal read, progress enter/read, analytics |
+| `school_psychologist` | Student read, goal read, progress read, analytics |
+| `case_manager` | Student read, IEP/goal manage/read, progress enter/read, analytics |
+| `paraprofessional` | Student read, goal read, progress enter/read |
+| `read_only_reviewer` | Student read, goal read, progress read, analytics |
+| `platform_admin` | Reserved; no blanket student access in the app matrix |
 
 ## Core Authorization Principle
 

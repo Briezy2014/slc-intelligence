@@ -14,7 +14,59 @@ Owner: Product Owner
 
 ## Scope
 
-Phase 0 documents candidate tables and design rules. No SQL, migrations, or database objects are created in this phase.
+This document now describes the implemented Phase 3-8 schema in `supabase/migrations/`.
+No real student data is permitted in migrations, seed files, tests, or documentation.
+
+## Implemented Tables
+
+### Authentication, roles, tenancy, and audit
+
+1. `app_roles`
+2. `app_permissions`
+3. `role_permissions`
+4. `user_profiles`
+5. `organizations`
+6. `organization_memberships`
+7. `organization_invitations`
+8. `audit_events`
+
+### Schools, programs, classrooms, and staff scope
+
+1. `schools`
+2. `programs`
+3. `classrooms`
+4. `school_staff_assignments`
+5. `program_staff_assignments`
+6. `classroom_staff_assignments`
+
+### Student foundation
+
+1. `students`
+2. `student_enrollments`
+3. `student_program_assignments`
+4. `student_classroom_assignments`
+5. `student_staff_assignments`
+6. `student_status_history`
+
+### IEP goals
+
+1. `measurement_types`
+2. `iep_cycles`
+3. `iep_goals`
+4. `iep_objectives`
+5. `goal_baselines`
+6. `goal_status_history`
+
+### Progress monitoring
+
+1. `prompt_level_definitions`
+2. `intervention_phases`
+3. `progress_monitoring_sessions`
+4. `progress_data_points`
+5. `progress_entry_status_history`
+
+Every protected table is organization-scoped directly or through a parent record. Student names are
+stored in protected rows only and are never used in application URLs.
 
 ## Multi-Tenant Hierarchy
 

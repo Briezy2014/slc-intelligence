@@ -48,8 +48,18 @@ When documents conflict, surface the conflict for product-owner resolution. Do n
 | `IEP_ANALYTICS_SPEC.md`          | Progress-monitoring analytics requirements       |
 | `BEHAVIOR_DETECTIVE_SPEC.md`     | Behavior module requirements                     |
 | `DECISION_SUPPORT_GUARDRAILS.md` | Allowed vs prohibited analytic language          |
-| `DATABASE_SCHEMA.md`             | Planned data model (no SQL in Phase 0)           |
+| `DATABASE_SCHEMA.md`             | Implemented Phase 3-8 schema summary             |
 | `ARCHITECTURE_DECISIONS.md`      | Proposed technology and architecture decisions   |
+| `AUTHENTICATION.md`              | Supabase auth and no-fake-auth behavior          |
+| `TENANT_ARCHITECTURE.md`         | Organization tenant boundaries                   |
+| `RLS_STRATEGY.md`                | Row-level security policy strategy               |
+| `ANALYTICS_FORMULAS.md`          | Implemented analytics formulas and exclusions    |
+| `STUDENT_ACCESS_MODEL.md`        | Student access and assignment-scope model        |
+| `PROGRESS_MONITORING_MODEL.md`   | Progress session/data-point model                |
+| `MIGRATION_STRATEGY.md`          | Supabase migration ordering                      |
+| `SEED_DATA.md`                   | Fictional seed user matrix                       |
+| `KNOWN_RISKS.md`                 | Current implementation risks                     |
+| `PHASE_9_BOUNDARIES.md`          | Explicit progress-reporting boundary             |
 
 Supporting documents refine these authorities and must remain consistent with them.
 
@@ -70,7 +80,7 @@ Supporting documents refine these authorities and must remain consistent with th
 3. Stop and wait for product-owner approval before beginning the next phase.
 4. Do not treat roadmap order as automatic authorization.
 
-**Current phase status:** Phase 0–2 completed for Bundle 1. Phase 3 is not started.
+**Current phase status:** Phases 0-8 are implemented locally. Phase 9 progress reporting is not started.
 
 ## Implementation and Documentation Sync
 
