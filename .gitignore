@@ -141,3 +141,46 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Vercel
+.vercel
+.vercel/
+
+# Local env variants (explicit; also covered by .env.*)
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+Thumbs.db
+Desktop.ini
+ehthumbs.db
+
+# Editor and IDE files
+.idea/
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+
+# Optional local VS Code history / workspace storage
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+
+# Test and coverage output (additional)
+coverage/
+playwright-report/
+test-results/
+blob-report/
+
+# TypeScript build info already covered; keep Turbo/cache noise out
+.turbo/
+tmp/
+temp/
