@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
-import { DevelopmentNotice } from "@/components/feedback/development-notice";
+import { ConfigurationState } from "@/components/domain/page-states";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -35,9 +35,7 @@ export default async function SelectOrganizationPage({ searchParams }: SelectOrg
           title="Select organization"
           description="Supabase configuration is required before memberships can load."
         />
-        <DevelopmentNotice title="Configuration needed">
-          Add Supabase environment values to select an organization.
-        </DevelopmentNotice>
+        <ConfigurationState />
       </main>
     );
   }

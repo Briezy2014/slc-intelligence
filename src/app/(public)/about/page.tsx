@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
-import { DevelopmentNotice } from "@/components/feedback/development-notice";
 import { APP_NAME } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -48,9 +47,6 @@ export default function AboutPage() {
           intervention specialist, psychologist, related service provider, parent, or other
           qualified decision-maker.
         </p>
-      </div>
-      <div className="mt-8">
-        <DevelopmentNotice />
       </div>
     </main>
   );

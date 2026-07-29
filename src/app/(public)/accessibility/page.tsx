@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
-import { DevelopmentNotice } from "@/components/feedback/development-notice";
-
 export const metadata: Metadata = {
   title: "Accessibility",
 };
@@ -23,11 +21,8 @@ export default function AccessibilityPage() {
         <li>Accessible tables with captions and headers</li>
         <li>Text alternatives or data-table views for future charts</li>
         <li>Responsive layouts for classroom devices</li>
-        <li>Ongoing accessibility testing in development and CI</li>
+        <li>Ongoing accessibility testing</li>
       </ul>
-      <div className="mt-8">
-        <DevelopmentNotice />
-      </div>
     </main>
   );
 }

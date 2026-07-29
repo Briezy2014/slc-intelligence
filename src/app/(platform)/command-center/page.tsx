@@ -16,10 +16,10 @@ import {
 } from "lucide-react";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
-import { DevelopmentNotice } from "@/components/feedback/development-notice";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Alert } from "@/components/ui/alert";
 import { isServerSupabaseConfigured } from "@/lib/env";
 import { requireActiveMembership } from "@/lib/org/context";
 import { ROLE_LABELS } from "@/lib/permissions/matrix";
@@ -83,10 +83,10 @@ export default async function CommandCenterPage() {
         description={`Signed in with ${organization?.name ?? "your organization"} context.`}
       />
       <div className="space-y-6">
-        <DevelopmentNotice>
-          Command Center summaries are calculated from authorized organization rows and are not
-          high-stakes alerts or recommendations.
-        </DevelopmentNotice>
+        <Alert title="Decision-support notice" tone="neutral">
+          Command Center summaries are calculated from authorized organization records and are not
+          high-stakes alerts or automated recommendations.
+        </Alert>
         <Card className="brand-glow">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>

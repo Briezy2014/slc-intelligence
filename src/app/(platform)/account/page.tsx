@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
-import { DevelopmentNotice } from "@/components/feedback/development-notice";
+import { ConfigurationState } from "@/components/domain/page-states";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { isServerSupabaseConfigured } from "@/lib/env";
@@ -23,9 +23,7 @@ export default async function AccountPage() {
           title="Account"
           description="Supabase configuration is required before account details can load."
         />
-        <DevelopmentNotice title="Configuration needed">
-          Add Supabase environment values to enable account management.
-        </DevelopmentNotice>
+        <ConfigurationState />
       </main>
     );
   }

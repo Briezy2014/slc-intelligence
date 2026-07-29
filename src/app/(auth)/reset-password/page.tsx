@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
-import { DevelopmentNotice } from "@/components/feedback/development-notice";
 import { Card } from "@/components/ui/card";
 import { ResetPasswordForm } from "@/components/forms/reset-password-form";
 import { isServerSupabaseConfigured } from "@/lib/env";
@@ -35,11 +34,6 @@ export default function ResetPasswordPage() {
           </Link>
         </p>
       </Card>
-      <div className="mt-6">
-        <DevelopmentNotice>
-          Password reset requires a configured Supabase project and a valid recovery session.
-        </DevelopmentNotice>
-      </div>
     </main>
   );
 }
