@@ -49,7 +49,7 @@ test.describe("public shell", () => {
       .getByRole("navigation", { name: "Primary" })
       .getByRole("link", { name: "Privacy" })
       .click();
-    await expect(page.getByRole("heading", { name: "Privacy (development stage)" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Privacy" })).toBeVisible();
   });
 
   test("homepage has no critical accessibility violations", async ({ page }) => {

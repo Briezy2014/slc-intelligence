@@ -35,6 +35,9 @@ export default async function StudentOverviewPage({ params }: { params: Promise<
             <Link href={`/students/${student.id}/iep`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">IEP</Link>
             <Link href={`/students/${student.id}/progress`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">Progress</Link>
             <Link href={`/students/${student.id}/analytics`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">Analytics</Link>
+            <Link href={`/students/${student.id}/reports`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">Reports</Link>
+            <Link href={`/students/${student.id}/behavior`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">Behavior</Link>
+            <Link href={`/students/${student.id}/interventions`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">Interventions</Link>
           </div>
         ) : null}
       />

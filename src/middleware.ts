@@ -15,6 +15,16 @@ const PROTECTED_PREFIXES = [
   "/students",
   "/goals",
   "/progress",
+  "/reports",
+  "/behavior-detective",
+  "/interventions",
+  "/accommodations",
+  "/services",
+  "/family-communication",
+  "/meetings",
+  "/executive-function",
+  "/classroom-operations",
+  "/administrative-intelligence",
 ];
 
 const AUTH_PREFIXES = ["/sign-in", "/forgot-password", "/reset-password", "/auth/callback"];

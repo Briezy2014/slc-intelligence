@@ -4,12 +4,21 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
   Building2,
+  BrainCircuit,
   ClipboardList,
+  CalendarDays,
+  ClipboardCheck,
   Gauge,
   Goal,
   Layers3,
+  LibraryBig,
+  MessageCircle,
+  NotebookText,
+  Puzzle,
   School,
   Settings2,
+  Speech,
+  ChartColumn,
   Users,
   UsersRound,
 } from "lucide-react";
@@ -25,6 +34,16 @@ const ICONS = {
   "/staff": UsersRound,
   "/goals": Goal,
   "/progress/enter": ClipboardList,
+  "/reports": NotebookText,
+  "/behavior-detective": BrainCircuit,
+  "/interventions": LibraryBig,
+  "/accommodations": Puzzle,
+  "/services": Speech,
+  "/family-communication": MessageCircle,
+  "/meetings": CalendarDays,
+  "/executive-function": ClipboardCheck,
+  "/classroom-operations": Building2,
+  "/administrative-intelligence": ChartColumn,
   "/organization/settings": Settings2,
 } as const;
 

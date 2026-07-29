@@ -41,3 +41,25 @@ npm run db:reset
 ```
 
 This drops local `public` and `auth` schemas, reapplies migrations, and reseeds fictional data.
+
+## Phase 9-12 fictional rows
+
+`supabase/seed/02_fictional_phase9_12_seed.sql` adds synthetic-only rows for:
+
+1. Reporting periods, progress reports, report sections, evidence links, versions, and export logs.
+2. Behavior definitions, observation sessions, ABC/frequency/duration rows, category assignments, time blocks, and FBA evidence workspaces.
+3. Intervention library items, plans, components, schedules, fidelity checklists/responses, dosage logs, reviews, outcome links, and plan phases.
+
+These rows are used by `npm run test:rls` for cross-organization isolation and restricted-role mutation checks.
+
+## Phase 13-15 fictional rows
+
+`supabase/seed/03_fictional_phase13_15_seed.sql` adds synthetic-only rows for:
+
+1. Accommodation library items, student accommodations, implementation logs, and reviews.
+2. Service definitions, service plans, components, schedules, delivery logs, group participants, makeup links, reviews, and export records.
+3. Student contacts, contact preferences, communication categories/logs/follow-ups/templates, and family-visible/internal examples.
+4. Meeting types, meetings, participants including external participants, notes, action items, acknowledgements, documents, and versions.
+5. Classroom schedules, routines, task analyses, executive-function plans/supports/observations, checklists/responses, daily notes, announcements, reinforcement systems, and choice boards.
+
+These rows remain fictional and support Phase 13-15 RLS isolation tests.
