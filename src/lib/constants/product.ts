@@ -2,8 +2,6 @@ export const APP_NAME = "SLC Intelligence";
 export const APP_TAGLINE = "The Intelligence Platform for Specialized Learning Classrooms";
 export const PRODUCTION_DOMAIN = "slcintelligence.com";
 export const CANONICAL_PRODUCTION_URL = "https://slcintelligence.com";
-export const DEVELOPMENT_STATUS =
-  "This repository is under active development and is not approved for production use or real student data.";
 
 export const PUBLIC_NAV = [
   { href: "/", label: "Home" },

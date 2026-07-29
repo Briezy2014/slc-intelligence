@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
-import { DevelopmentNotice } from "@/components/feedback/development-notice";
 import { Card } from "@/components/ui/card";
 import { ForgotPasswordForm } from "@/components/forms/forgot-password-form";
 import { isServerSupabaseConfigured } from "@/lib/env";
@@ -35,9 +34,6 @@ export default function ForgotPasswordPage() {
           </Link>
         </p>
       </Card>
-      <div className="mt-6">
-        <DevelopmentNotice />
-      </div>
     </main>
   );
 }

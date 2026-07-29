@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
 
 test.describe("public shell", () => {
-  test("homepage renders product identity and development notice", async ({ page }) => {
+  test("homepage renders product identity without development prefacing", async ({ page }) => {
     await page.goto("/");
     await expect(page.getByRole("link", { name: "Skip to main content" })).toBeAttached();
     await expect(page.getByText("SLC Intelligence").first()).toBeVisible();
@@ -11,7 +11,8 @@ test.describe("public shell", () => {
         name: "The Intelligence Platform for Specialized Learning Classrooms",
       }),
     ).toBeVisible();
-    await expect(page.getByText(/not approved for production use/i).first()).toBeVisible();
+    await expect(page.getByText(/not approved for production use/i)).toHaveCount(0);
+    await expect(page.getByText(/Development build/i)).toHaveCount(0);
     await expect(page.getByText(/FERPA-compliant/i)).toHaveCount(0);
   });
 

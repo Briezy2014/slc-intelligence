@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import HomePage from "@/app/(public)/page";
 
 describe("homepage", () => {
-  it("renders product name, tagline, and development notice", () => {
+  it("renders product name and tagline without development prefacing", () => {
     render(<HomePage />);
     expect(screen.getAllByText("SLC Intelligence").length).toBeGreaterThan(0);
     expect(
@@ -11,7 +11,8 @@ describe("homepage", () => {
         name: "The Intelligence Platform for Specialized Learning Classrooms",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByText(/not approved for production use/i)).toBeInTheDocument();
+    expect(screen.queryByText(/not approved for production use/i)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Development build/i)).not.toBeInTheDocument();
     expect(screen.queryByText(/FERPA-compliant/i)).not.toBeInTheDocument();
   });
 });

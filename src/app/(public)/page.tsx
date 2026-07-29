@@ -1,7 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, LineChart, ShieldCheck, Sparkles } from "lucide-react";
-import { DevelopmentNotice } from "@/components/feedback/development-notice";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 
@@ -86,7 +85,6 @@ export default function HomePage() {
             </article>
           ))}
         </div>
-        <DevelopmentNotice />
       </section>
     </main>
   );

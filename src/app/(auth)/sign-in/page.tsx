@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
-import { DevelopmentNotice } from "@/components/feedback/development-notice";
+import { Alert } from "@/components/ui/alert";
 import { Card } from "@/components/ui/card";
 import { SignInForm } from "@/components/forms/sign-in-form";
 import { isServerSupabaseConfigured } from "@/lib/env";
@@ -44,16 +44,15 @@ export default async function SignInPage({ searchParams }: SignInPageProps) {
             title="Sign in"
             description={`Access the ${APP_NAME} Command Center with your authorized educator account.`}
           />
-          <DevelopmentNotice>
-            This development environment must be connected to a Supabase project before real
-            authentication can succeed.
-          </DevelopmentNotice>
+          {configurationNeeded ? (
+            <Alert title="Configuration needed" tone="warning">
+              Authentication is not fully configured for this environment yet.
+            </Alert>
+          ) : null}
         </section>
         <Card className="brand-glow motion-safe-fade-in">
           <h2 className="text-foreground font-serif text-2xl font-semibold">Welcome back</h2>
-          <p className="text-muted mt-1 text-sm">
-            Sessions are managed by Supabase Auth when this environment is configured.
-          </p>
+          <p className="text-muted mt-1 text-sm">Sign in with your authorized educator account.</p>
           <SignInForm next={next} configurationNeeded={configurationNeeded} />
         </Card>
       </div>
