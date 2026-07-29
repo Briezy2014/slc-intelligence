@@ -8,13 +8,13 @@ Describe the planned multi-tenant data model domains, relationships, and databas
 
 Status: Draft
 
-Last updated: 2026-07-28
+Last updated: 2026-07-29
 
 Owner: Product Owner
 
 ## Scope
 
-This document now describes the implemented Phase 3-8 schema in `supabase/migrations/`.
+This document now describes the implemented Phase 3-15 schema in `supabase/migrations/`.
 No real student data is permitted in migrations, seed files, tests, or documentation.
 
 ## Implemented Tables
@@ -64,6 +64,142 @@ No real student data is permitted in migrations, seed files, tests, or documenta
 3. `progress_monitoring_sessions`
 4. `progress_data_points`
 5. `progress_entry_status_history`
+
+### Progress reporting
+
+1. `progress_descriptor_options`
+2. `reporting_periods`
+3. `progress_reports`
+4. `progress_report_goal_sections`
+5. `progress_report_evidence_links`
+6. `progress_report_status_history`
+7. `progress_report_versions`
+8. `report_exports`
+
+### Behavior Detective and FBA support
+
+1. `behavior_definitions`
+2. `behavior_definition_examples`
+3. `behavior_definition_nonexamples`
+4. `replacement_behavior_definitions`
+5. `intensity_scale_definitions`
+6. `intensity_scale_levels`
+7. `behavior_observation_sessions`
+8. `abc_observations`
+9. `frequency_observations`
+10. `duration_observations`
+11. `latency_observations`
+12. `interval_observations`
+13. `intensity_ratings`
+14. `behavior_entry_status_history`
+15. `behavior_observation_corrections`
+16. `abc_category_options`
+17. `abc_observation_category_assignments`
+18. `organization_time_blocks`
+19. `fba_evidence_workspaces`
+20. `fba_evidence_links`
+21. `fba_workspace_status_history`
+
+### Intervention Intelligence
+
+1. `intervention_library_items`
+2. `intervention_plans`
+3. `intervention_plan_versions`
+4. `intervention_components`
+5. `intervention_target_behaviors`
+6. `intervention_replacement_behaviors`
+7. `intervention_staff_assignments`
+8. `intervention_schedules`
+9. `fidelity_checklists`
+10. `fidelity_checklist_items`
+11. `fidelity_observations`
+12. `fidelity_item_responses`
+13. `intervention_dosage_logs`
+14. `intervention_review_records`
+15. `intervention_outcome_links`
+16. `intervention_status_history`
+17. `intervention_plan_phases`
+
+### Accommodations and services
+
+1. `accommodation_library_items`
+2. `student_accommodations`
+3. `student_accommodation_versions`
+4. `accommodation_implementation_logs`
+5. `accommodation_review_records`
+6. `service_definitions`
+7. `student_service_plans`
+8. `student_service_plan_versions`
+9. `service_plan_components`
+10. `service_provider_assignments`
+11. `service_schedules`
+12. `service_delivery_logs`
+13. `service_delivery_participants`
+14. `service_delivery_status_history`
+15. `service_cancellation_reasons`
+16. `makeup_service_links`
+17. `service_note_templates`
+18. `service_review_records`
+19. `service_exports`
+
+### Family communication and meetings
+
+1. `student_contacts`
+2. `contact_preferences`
+3. `communication_categories`
+4. `communication_logs`
+5. `communication_participants`
+6. `communication_followups`
+7. `communication_templates`
+8. `communication_attachments`
+9. `communication_status_history`
+10. `meeting_types`
+11. `meetings`
+12. `meeting_participants`
+13. `meeting_agenda_items`
+14. `meeting_notes`
+15. `meeting_decisions`
+16. `meeting_action_items`
+17. `meeting_acknowledgements`
+18. `meeting_documents`
+19. `meeting_status_history`
+20. `meeting_versions`
+21. `calendar_event_links`
+
+### Executive function and classroom operations
+
+1. `classroom_schedules`
+2. `classroom_schedule_blocks`
+3. `classroom_schedule_exceptions`
+4. `student_schedules`
+5. `student_schedule_blocks`
+6. `classroom_routines`
+7. `routine_steps`
+8. `routine_assignments`
+9. `routine_implementation_logs`
+10. `task_analyses`
+11. `task_analysis_steps`
+12. `student_task_assignments`
+13. `task_completion_logs`
+14. `executive_function_skill_areas`
+15. `student_executive_function_plans`
+16. `executive_function_supports`
+17. `executive_function_observations`
+18. `ef_observation_status_history`
+19. `student_checklists`
+20. `student_checklist_items`
+21. `student_checklist_responses`
+22. `transition_supports`
+23. `classroom_duty_assignments`
+24. `student_support_assignments`
+25. `staff_duty_assignments`
+26. `daily_student_notes`
+27. `classroom_announcements`
+28. `reinforcement_systems`
+29. `reinforcement_options`
+30. `reinforcement_records`
+31. `choice_boards`
+32. `choice_board_items`
 
 Every protected table is organization-scoped directly or through a parent record. Student names are
 stored in protected rows only and are never used in application URLs.

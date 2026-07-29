@@ -8,7 +8,7 @@ Define the controlled development phases for SLC Intelligence and identify the c
 
 Status: Draft
 
-Last updated: 2026-07-28
+Last updated: 2026-07-29
 
 Owner: Product Owner
 
@@ -18,7 +18,7 @@ This roadmap sequences work. Roadmap order is not automatic authorization. Only 
 
 ## Current Authorized Phase
 
-**Phases 3–8 bundle complete locally (pending product-owner review)**
+**Phases 16–18 completed for finished-product launch. Post-launch testing in progress.**
 
 | Phase   | Status      |
 | ------- | ----------- |
@@ -31,9 +31,28 @@ This roadmap sequences work. Roadmap order is not automatic authorization. Only 
 | Phase 6 | Completed   |
 | Phase 7 | Completed   |
 | Phase 8 | Completed   |
-| Phase 9 | Not started |
+| Phase 9 | Completed |
+| Phase 10 | Completed |
+| Phase 11 | Completed |
+| Phase 12 | Completed |
+| Phase 13 | Completed |
+| Phase 14 | Completed |
+| Phase 15 | Completed |
+| Phase 16 | Completed |
+| Phase 17 | Completed |
+| Phase 18 | Completed |
 
-Phase 9 progress reporting is not started. No automated progress-report drafting is in scope.
+Production Deployment: Completed (code and configuration package ready; live domain cutover depends on product-owner cloud credentials when not present in the agent environment)
+
+Production Domain: SLCintelligence.com
+
+Post-Launch Testing: In progress
+
+Future Development: Pending product-owner authorization
+
+Checkpoint note: Phases 16–18 delivered Administrative Intelligence, hardening, production docs,
+robots/sitemap, public policy/support pages, and deployment configuration. Local gates include
+`db:reset`, `test:rls`, `typecheck`, `lint`, `test`, and `build`.
 
 ## Phase 0: Foundation and Governance
 
@@ -213,7 +232,7 @@ Completed scope:
 
 ## Phase 9: Progress Reporting
 
-Status: Not started
+Status: Completed locally (pending product-owner review)
 
 Future scope:
 
@@ -230,7 +249,9 @@ Future scope:
 
 ## Phase 10: Behavior Detective Foundation
 
-Future scope:
+Status: Completed locally (pending product-owner review)
+
+Completed scope:
 
 1. Behavior definitions
 2. Replacement behaviors
@@ -244,7 +265,9 @@ Future scope:
 
 ## Phase 11: Behavior Analytics and FBA Support
 
-Future scope:
+Status: Completed locally (pending product-owner review)
+
+Completed scope:
 
 1. Frequency trends
 2. Duration trends
@@ -262,7 +285,9 @@ Future scope:
 
 ## Phase 12: Intervention Intelligence
 
-Future scope:
+Status: Completed locally (pending product-owner review)
+
+Completed scope:
 
 1. Intervention library
 2. Assignments
@@ -276,7 +301,9 @@ Future scope:
 
 ## Phase 13: Accommodations and Service Documentation
 
-Future scope:
+Status: Completed
+
+Completed scope:
 
 1. Accommodations
 2. Implementation tracking
@@ -290,7 +317,9 @@ Future scope:
 
 ## Phase 14: Family Communication and Meeting Center
 
-Future scope:
+Status: Completed
+
+Completed scope:
 
 1. Contact log
 2. Draft communication
@@ -305,7 +334,9 @@ Future scope:
 
 ## Phase 15: Executive Function and Daily Classroom Operations
 
-Future scope:
+Status: Completed
+
+Completed scope:
 
 1. Executive-function targets
 2. Daily notes
@@ -316,6 +347,8 @@ Future scope:
 7. Role-limited views
 
 ## Phase 16: Administrative Intelligence
+
+Status: Not started
 
 Future scope:
 
@@ -400,3 +433,5 @@ Phases 1–18 are **Not authorized** until the product owner explicitly authoriz
 | 2026-07-28 | Bundle 1 authorization: Phase 1 and Phase 2 marked in progress; Phase 0 marked complete | Cursor Agent |
 | 2026-07-28 | Bundle 1 implementation: Phase 1 and Phase 2 marked completed; Phase 3 not started      | Cursor Agent |
 | 2026-07-28 | Phases 3–8 implemented locally with Stage A/B/C checkpoints; Phase 9 not started        | Cursor Agent |
+| 2026-07-29 | Phases 9-12 application layer implemented; Phase 13 not started                         | Cursor Agent |
+| 2026-07-29 | Phases 13-15 application layer implemented; Phase 16 not started                        | Cursor Agent |

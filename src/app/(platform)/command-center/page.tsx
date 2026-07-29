@@ -1,8 +1,17 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import {
+  BrainCircuit,
+  CalendarDays,
+  ChartColumn,
   ClipboardList,
+  MessageCircle,
   Goal,
+  LibraryBig,
   LineChart,
+  NotebookText,
+  Puzzle,
+  Speech,
   Users,
 } from "lucide-react";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
@@ -15,6 +24,7 @@ import { isServerSupabaseConfigured } from "@/lib/env";
 import { requireActiveMembership } from "@/lib/org/context";
 import { ROLE_LABELS } from "@/lib/permissions/matrix";
 import { getCommandCenterSummary } from "@/lib/data/analytics";
+import { getAdministrativeIntelligence } from "@/lib/data/administrative";
 
 export const metadata: Metadata = {
   title: "Command Center",
@@ -59,9 +69,10 @@ export default async function CommandCenterPage() {
     );
   }
 
-  const [{ membership, memberships, organization }, summaryState] = await Promise.all([
+  const [{ membership, memberships, organization }, summaryState, adminState] = await Promise.all([
     requireActiveMembership(),
     getCommandCenterSummary(),
+    getAdministrativeIntelligence(),
   ]);
 
   return (
@@ -112,8 +123,99 @@ export default async function CommandCenterPage() {
               label={summaryState.data.labels.goalsNeedingData}
               icon={Goal}
             />
+            <SummaryCard
+              value={summaryState.data.draftReportsCount}
+              label={summaryState.data.labels.draftReports}
+              icon={NotebookText}
+            />
+            <SummaryCard
+              value={summaryState.data.reportsReadyForReviewCount}
+              label={summaryState.data.labels.reportsReadyForReview}
+              icon={ClipboardList}
+            />
+            <SummaryCard
+              value={summaryState.data.draftBehaviorObservationsCount}
+              label={summaryState.data.labels.draftBehaviorObservations}
+              icon={BrainCircuit}
+            />
+            <SummaryCard
+              value={summaryState.data.activeInterventionPlansCount}
+              label={summaryState.data.labels.activeInterventionPlans}
+              icon={LibraryBig}
+            />
+            <SummaryCard
+              value={summaryState.data.accommodationsNeedingReviewCount}
+              label={summaryState.data.labels.accommodationsNeedingReview}
+              icon={Puzzle}
+            />
+            <SummaryCard
+              value={summaryState.data.draftServiceLogsCount}
+              label={summaryState.data.labels.draftServiceLogs}
+              icon={Speech}
+            />
+            <SummaryCard
+              value={summaryState.data.communicationFollowupsDueCount}
+              label={summaryState.data.labels.communicationFollowupsDue}
+              icon={MessageCircle}
+            />
+            <SummaryCard
+              value={summaryState.data.meetingsUpcomingCount}
+              label={summaryState.data.labels.meetingsUpcoming}
+              icon={CalendarDays}
+            />
+            <SummaryCard
+              value={summaryState.data.dailyNotesDraftCount}
+              label={summaryState.data.labels.dailyNotesDraft}
+              icon={ClipboardList}
+            />
+            <SummaryCard
+              value={summaryState.data.classroomAnnouncementsDraftCount}
+              label={summaryState.data.labels.classroomAnnouncementsDraft}
+              icon={NotebookText}
+            />
           </div>
         )}
+        {adminState.configured && !adminState.error && adminState.data.canRead ? (
+          <Card className="brand-glow">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <CardTitle className="flex items-center gap-2">
+                  <ChartColumn className="text-highlight size-5" aria-hidden={true} />
+                  Administrative Intelligence
+                </CardTitle>
+                <CardDescription>
+                  Authorized workflow summaries with privacy-aware suppression. Not a staff or student ranking.
+                </CardDescription>
+              </div>
+              <Badge tone="success">Authorized</Badge>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              {adminState.data.metrics
+                .filter((metric) =>
+                  [
+                    "goals_without_recent_finalized_data",
+                    "reports_ready_for_review",
+                    "open_family_follow_ups",
+                    "upcoming_meetings",
+                  ].includes(metric.key),
+                )
+                .map((metric) => (
+                  <div key={metric.key} className="border-border rounded-[var(--radius-md)] border p-3">
+                    <p className="text-muted text-xs font-semibold tracking-[0.1em] uppercase">{metric.label}</p>
+                    <p className="mt-2 text-xl font-semibold tabular-nums">{metric.result.display}</p>
+                  </div>
+                ))}
+            </div>
+            <p className="mt-4">
+              <Link
+                href="/administrative-intelligence"
+                className="text-highlight text-sm font-medium underline-offset-4 hover:underline"
+              >
+                Open Administrative Intelligence
+              </Link>
+            </p>
+          </Card>
+        ) : null}
       </div>
     </main>
   );

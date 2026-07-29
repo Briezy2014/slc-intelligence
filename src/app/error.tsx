@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { ErrorState } from "@/components/feedback/error-state";
+import { logClientSafeError } from "@/lib/monitoring/safe-log";
 
 export default function GlobalRouteError({
   error,
@@ -11,7 +12,7 @@ export default function GlobalRouteError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Application error boundary:", error.message);
+    logClientSafeError(error.message);
   }, [error]);
 
   return (

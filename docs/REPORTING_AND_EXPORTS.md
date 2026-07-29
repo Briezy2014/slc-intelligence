@@ -31,6 +31,14 @@ Applies to progress reports, behavior summaries, administrative aggregates, comm
 
 Exact first-release report set will be authorized in later phases.
 
+## Phase 9 implemented scope
+
+Phase 9 implements progress reporting periods, progress reports, goal sections, evidence links,
+status history, immutable version snapshots for finalization/correction events, and print export
+records. Print routes include draft watermarking when a report is not finalized.
+
+System summaries must be labeled as drafts requiring educator review.
+
 ## Authorization
 
 1. Reports and exports must be permission-controlled.

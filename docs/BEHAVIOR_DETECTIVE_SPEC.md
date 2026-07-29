@@ -18,6 +18,9 @@ Behavior Detective supports special education teams in collecting, organizing, a
 
 ## Behavior Definitions
 
+Phase 10 implemented behavior definitions, examples/nonexamples, replacement behavior definitions,
+intensity scales, direct observations, correction history, and status history.
+
 Each tracked behavior should support:
 
 1. Clear label

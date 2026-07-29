@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { logClientSafeError } from "@/lib/monitoring/safe-log";
 
 export default function GlobalError({
   error,
@@ -10,21 +11,30 @@ export default function GlobalError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Global application error:", error.message);
+    logClientSafeError(error.message);
   }, [error]);
 
   return (
     <html lang="en">
-      <body className="bg-[#f4f7f8] text-[#1a2b33]">
-        <main className="mx-auto max-w-3xl px-4 py-16">
-          <h1 className="text-3xl font-semibold">Application error</h1>
-          <p className="mt-3 text-[#5b6b73]">
+      <body style={{ background: "#12062D", color: "#FFFFFF", fontFamily: "system-ui, sans-serif" }}>
+        <main style={{ maxWidth: "48rem", margin: "0 auto", padding: "4rem 1rem" }}>
+          <h1 style={{ fontSize: "1.875rem", fontWeight: 600 }}>Application error</h1>
+          <p style={{ marginTop: "0.75rem", color: "#C9C2D9" }}>
             An unexpected error occurred. No student data should appear in diagnostics.
           </p>
           <button
             type="button"
-            className="mt-6 min-h-11 rounded-md bg-[#1f6f78] px-4 py-2 text-sm font-semibold text-white"
             onClick={reset}
+            style={{
+              marginTop: "1.5rem",
+              minHeight: "2.75rem",
+              borderRadius: "0.5rem",
+              background: "#8B3DFF",
+              color: "#FFFFFF",
+              border: 0,
+              padding: "0.5rem 1rem",
+              fontWeight: 600,
+            }}
           >
             Try again
           </button>

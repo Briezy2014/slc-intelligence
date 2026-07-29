@@ -21,8 +21,15 @@ run([
 const migrate = spawnSync("node", ["scripts/db-migrate.mjs"], { stdio: "inherit", env: process.env });
 if (migrate.status !== 0) process.exit(migrate.status ?? 1);
 
-const seedPath = "supabase/seed/01_fictional_dev_seed.sql";
-console.log(`Seeding ${seedPath}...`);
-run([databaseUrl, "-v", "ON_ERROR_STOP=1", "-f", seedPath]);
+const seedPaths = [
+  "supabase/seed/01_fictional_dev_seed.sql",
+  "supabase/seed/02_fictional_phase9_12_seed.sql",
+  "supabase/seed/03_fictional_phase13_15_seed.sql",
+  "supabase/seed/04_fictional_admin_intelligence_seed.sql",
+];
+for (const seedPath of seedPaths) {
+  console.log(`Seeding ${seedPath}...`);
+  run([databaseUrl, "-v", "ON_ERROR_STOP=1", "-f", seedPath]);
+}
 
 console.log("Database reset complete.");
