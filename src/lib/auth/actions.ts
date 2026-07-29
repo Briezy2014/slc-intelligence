@@ -1,5 +1,6 @@
 "use server";
 
+import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { isServerSupabaseConfigured, getPublicEnv } from "@/lib/env";
 import {
@@ -32,7 +33,13 @@ function fieldErrorsFrom(error: { flatten: () => { fieldErrors: Record<string, s
   );
 }
 
-function passwordResetRedirectUrl() {
+async function passwordResetRedirectUrl() {
+  const headerStore = await headers();
+  const origin = headerStore.get("origin");
+  if (origin && /^https?:\/\//i.test(origin)) {
+    return `${origin.replace(/\/$/, "")}/auth/callback?next=/reset-password`;
+  }
+
   const appUrl = getPublicEnv().NEXT_PUBLIC_APP_URL;
   if (!appUrl) {
     return undefined;
@@ -125,7 +132,7 @@ export async function requestPasswordReset(
 
   const supabase = await createClient();
   const { error } = await supabase.auth.resetPasswordForEmail(parsed.data.email, {
-    redirectTo: passwordResetRedirectUrl(),
+    redirectTo: await passwordResetRedirectUrl(),
   });
 
   await writeAuditEvent({
