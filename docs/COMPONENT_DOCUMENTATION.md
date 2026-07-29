@@ -22,7 +22,7 @@ Owner: Product Owner
 
 ## Current primitives and patterns
 
-Button, Input, Label, Textarea, Select, Checkbox, Alert, Badge, Card, Dialog, DropdownShell, TableShell, EmptyState, LoadingState, ErrorState, PageHeader, Breadcrumbs, VisuallyHidden, AccessibleIcon, DevelopmentNotice, PublicHeader/Footer, Platform sidebar/top nav, MobileNav, OrganizationSelectorPlaceholder, UserMenuPlaceholder, SkipLink, FormField, SignInFormShell, ForgotPasswordFormShell.
+Button, Input, Label, Textarea, Select, Checkbox, Alert, Badge, Card, Dialog, DropdownShell, TableShell, EmptyState, LoadingState, ErrorState, PageHeader, Breadcrumbs, VisuallyHidden, AccessibleIcon, PublicHeader/Footer, Platform sidebar/top nav, MobileNav, OrganizationSelectorPlaceholder, UserMenuPlaceholder, SkipLink, FormField, SignInFormShell, ForgotPasswordFormShell.
 
 ## Out of scope
 
