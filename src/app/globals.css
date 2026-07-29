@@ -1,38 +1,40 @@
 @import "tailwindcss";
 
 /*
-  Provisional design tokens for Bundle 1 / Phase 2.
-  These are not final brand colors. Product-owner brand approval is still required.
-  Direction: calm, professional, trustworthy, educator-centered.
+  Official SLC Intelligence brand tokens.
+  Source of truth: public/brand/slc-logo.png and the product color palette.
 */
 
 :root {
-  --background: #f4f7f8;
-  --background-elevated: #ffffff;
-  --foreground: #1a2b33;
-  --muted: #5b6b73;
-  --border: #d5dee3;
-  --ring: #1f6f78;
-  --accent: #1f6f78;
+  --background: #12062d;
+  --background-elevated: #1a0b3f;
+  --foreground: #ffffff;
+  --muted: #cfcfe8;
+  --border: rgb(255 255 255 / 12%);
+  --ring: #39d5d0;
+  --accent: #8b3dff;
   --accent-foreground: #ffffff;
-  --accent-soft: #e6f2f3;
-  --surface-subtle: #eaf0f2;
-  --danger: #9b3b3b;
-  --danger-foreground: #ffffff;
-  --danger-soft: #f8ecec;
-  --warning: #8a6a1f;
-  --warning-soft: #f7f1df;
-  --success: #2f6b4f;
-  --success-soft: #e7f3ec;
-  --info: #2a5f8f;
-  --info-soft: #e8f1f8;
-  --radius-sm: 0.375rem;
-  --radius-md: 0.5rem;
-  --radius-lg: 0.75rem;
-  --shadow-soft: 0 1px 2px rgb(26 43 51 / 6%), 0 8px 24px rgb(26 43 51 / 6%);
-  --focus-ring: 0 0 0 3px rgb(31 111 120 / 35%);
+  --accent-soft: rgb(139 61 255 / 18%);
+  --accent-secondary: #a65bff;
+  --highlight: #39d5d0;
+  --highlight-secondary: #22c7be;
+  --surface-subtle: rgb(255 255 255 / 4%);
+  --danger: #ff6b81;
+  --danger-foreground: #12062d;
+  --danger-soft: rgb(255 107 129 / 16%);
+  --warning: #f0c75e;
+  --warning-soft: rgb(240 199 94 / 14%);
+  --success: #39d5d0;
+  --success-soft: rgb(57 213 208 / 14%);
+  --info: #a65bff;
+  --info-soft: rgb(166 91 255 / 14%);
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
+  --shadow-soft: 0 1px 2px rgb(0 0 0 / 24%), 0 18px 40px rgb(8 2 24 / 45%);
+  --focus-ring: 0 0 0 3px rgb(57 213 208 / 35%);
 
-  /* Spacing scale */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -42,7 +44,6 @@
   --space-7: 3rem;
   --space-8: 4rem;
 
-  /* Typography scale */
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -52,8 +53,6 @@
   --text-3xl: 1.875rem;
   --text-4xl: 2.25rem;
   --text-5xl: 3rem;
-
-  /* Breakpoints documented for design reference: sm 640, md 768, lg 1024, xl 1280 */
 }
 
 @theme inline {
@@ -66,6 +65,9 @@
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
   --color-accent-soft: var(--accent-soft);
+  --color-accent-secondary: var(--accent-secondary);
+  --color-highlight: var(--highlight);
+  --color-highlight-secondary: var(--highlight-secondary);
   --color-surface-subtle: var(--surface-subtle);
   --color-danger: var(--danger);
   --color-danger-foreground: var(--danger-foreground);
@@ -81,6 +83,7 @@
   --radius-sm: var(--radius-sm);
   --radius-md: var(--radius-md);
   --radius-lg: var(--radius-lg);
+  --radius-xl: var(--radius-xl);
 }
 
 @layer base {
@@ -90,6 +93,7 @@
 
   html {
     scroll-behavior: smooth;
+    color-scheme: dark;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -108,8 +112,9 @@
 
   body {
     background:
-      radial-gradient(circle at top left, rgb(230 242 243 / 80%), transparent 42%),
-      linear-gradient(180deg, #f7fafb 0%, var(--background) 48%, #eef3f5 100%);
+      radial-gradient(circle at 12% -10%, rgb(139 61 255 / 28%), transparent 36%),
+      radial-gradient(circle at 88% 0%, rgb(57 213 208 / 16%), transparent 30%),
+      linear-gradient(180deg, #160833 0%, var(--background) 42%, #0d0422 100%);
     color: var(--foreground);
     font-family: var(--font-source-sans), "Source Sans 3", sans-serif;
     min-height: 100vh;
@@ -128,6 +133,11 @@
     letter-spacing: -0.02em;
   }
 
+  ::selection {
+    background: rgb(139 61 255 / 45%);
+    color: white;
+  }
+
   @media print {
     body {
       background: white;
@@ -144,5 +154,54 @@
     a[href]::after {
       content: none !important;
     }
+  }
+}
+
+@layer utilities {
+  .brand-grid {
+    background-image:
+      linear-gradient(rgb(255 255 255 / 3%) 1px, transparent 1px),
+      linear-gradient(90deg, rgb(255 255 255 / 3%) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  .brand-glow {
+    box-shadow: 0 0 0 1px rgb(255 255 255 / 8%), 0 18px 40px rgb(8 2 24 / 45%),
+      0 0 40px rgb(139 61 255 / 12%);
+  }
+
+  .motion-safe-fade-in {
+    animation: brand-fade-in 480ms ease-out both;
+  }
+
+  .motion-safe-rise {
+    animation: brand-rise 560ms ease-out both;
+  }
+}
+
+@keyframes brand-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes brand-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe-fade-in,
+  .motion-safe-rise {
+    animation: none;
   }
 }

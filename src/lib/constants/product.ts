@@ -13,5 +13,12 @@ export const PUBLIC_NAV = [
 
 export const PLATFORM_NAV = [
   { href: "/command-center", label: "Command Center" },
-  { href: "/component-gallery", label: "Component gallery" },
+  { href: "/students", label: "Students" },
+  { href: "/schools", label: "Schools" },
+  { href: "/programs", label: "Programs" },
+  { href: "/classrooms", label: "Classrooms" },
+  { href: "/staff", label: "Staff" },
+  { href: "/goals", label: "Goals" },
+  { href: "/progress/enter", label: "Rapid Progress" },
+  { href: "/organization/settings", label: "Organization" },
 ] as const;

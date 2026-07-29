@@ -18,10 +18,15 @@ Owner: Product Owner
 | -------------------------- | ------------------------------------- |
 | `next`                     | App Router web application framework  |
 | `react` / `react-dom`      | UI runtime                            |
-| `zod`                      | Environment and form-shell validation |
+| `zod`                      | Environment and form validation       |
 | `clsx`                     | Conditional class composition         |
 | `tailwind-merge`           | Safe Tailwind class merging           |
 | `class-variance-authority` | shadcn/ui-compatible variant API      |
+| `@supabase/supabase-js`    | Supabase client                       |
+| `@supabase/ssr`            | Cookie-based Auth for App Router      |
+| `react-hook-form`          | Accessible authenticated forms        |
+| `@hookform/resolvers`      | Zod resolvers for forms               |
+| `lucide-react`             | Consistent professional outline icons |
 
 ## Development dependencies
 
@@ -37,13 +42,13 @@ Owner: Product Owner
 | `@vitejs/plugin-react`                                                                 | Vitest React transform        |
 | `@playwright/test`                                                                     | End-to-end testing            |
 | `@axe-core/playwright`                                                                 | Accessibility scanning in e2e |
+| `supabase`                                                                             | Local Supabase CLI support    |
 
 ## Explicitly deferred
 
-1. Supabase client packages (Phase 3+)
-2. React Hook Form (when substantial authenticated forms begin)
-3. AI SDKs
-4. Large third-party UI kits beyond shadcn-compatible primitives
+1. AI SDKs
+2. Large third-party UI kits beyond shadcn-compatible primitives
+3. Service-role key usage in application runtime
 
 ## Change History
 
@@ -51,3 +56,4 @@ Owner: Product Owner
 | ---------- | --------------------------------------- | ------------ |
 | 2026-07-28 | Bundle 1 dependency inventory           | Cursor Agent |
 | 2026-07-28 | Added Playwright and axe-core rationale | Cursor Agent |
+| 2026-07-28 | Supabase, forms, and Lucide brand icons | Cursor Agent |

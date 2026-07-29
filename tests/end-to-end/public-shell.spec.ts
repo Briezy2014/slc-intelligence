@@ -15,24 +15,26 @@ test.describe("public shell", () => {
     await expect(page.getByText(/FERPA-compliant/i)).toHaveCount(0);
   });
 
-  test("sign-in form has accessible labels and deferred auth messaging", async ({ page }) => {
+  test("sign-in form has accessible labels and configuration messaging", async ({ page }) => {
     await page.goto("/sign-in");
     await expect(page.getByLabel("Work email")).toBeVisible();
     await expect(page.getByLabel("Password")).toBeVisible();
     await expect(page.getByRole("link", { name: "Forgot password" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
     await page.getByLabel("Work email").fill("educator@example.org");
     await page.getByLabel("Password").fill("example-password");
-    await page.getByRole("button", { name: "Continue" }).click();
-    await expect(page.getByText(/Authentication is not enabled in this phase/i)).toBeVisible();
+    await page.getByRole("button", { name: "Sign in" }).click();
+    await expect(
+      page.getByText(/Supabase authentication is not configured|Unable to sign in|Configuration needed/i).first(),
+    ).toBeVisible();
   });
 
-  test("command center shows development placeholder language", async ({ page }) => {
+  test("command center redirects to sign-in when Supabase is not configured", async ({ page }) => {
     await page.goto("/command-center");
-    await expect(page.getByRole("heading", { name: "Command Center" })).toBeVisible();
-    await expect(page.getByText("Students requiring review")).toBeVisible();
-    await expect(page.getByText("Not connected").first()).toBeVisible();
+    await expect(page).toHaveURL(/\/sign-in/);
+    await expect(page.getByRole("heading", { level: 1, name: "Sign in" })).toBeVisible();
     await expect(
-      page.getByText("Authentication is not yet active. This dashboard contains fictional placeholder"),
+      page.getByText(/Supabase authentication is not configured|Configuration needed/i).first(),
     ).toBeVisible();
   });
 

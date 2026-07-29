@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Menu, X } from "lucide-react";
 import { useState } from "react";
 import { PUBLIC_NAV } from "@/lib/constants";
 import { Button } from "@/components/ui/button";
@@ -17,7 +18,8 @@ export function MobileNav() {
         aria-controls="mobile-nav-panel"
         onClick={() => setOpen((value) => !value)}
       >
-        Menu
+        {open ? <X className="size-4" aria-hidden="true" /> : <Menu className="size-4" aria-hidden="true" />}
+        <span>{open ? "Close" : "Menu"}</span>
       </Button>
       {open ? (
         <div

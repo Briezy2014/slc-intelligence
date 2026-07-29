@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="SLC Intelligence">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A0B3F"/>
+      <stop offset="100%" stop-color="#12062D"/>
+    </linearGradient>
+    <linearGradient id="violetGlow" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A65BFF"/>
+      <stop offset="100%" stop-color="#8B3DFF"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <path d="M96 196c72-78 248-78 320 0" fill="none" stroke="#39D5D0" stroke-width="8" stroke-linecap="round" opacity="0.95"/>
+  <path d="M96 316c72 78 248 78 320 0" fill="none" stroke="#22C7BE" stroke-width="8" stroke-linecap="round" opacity="0.85"/>
+  <circle cx="96" cy="196" r="10" fill="#39D5D0"/>
+  <circle cx="416" cy="196" r="10" fill="#39D5D0"/>
+  <circle cx="96" cy="316" r="10" fill="#22C7BE"/>
+  <circle cx="416" cy="316" r="10" fill="#22C7BE"/>
+  <circle cx="256" cy="148" r="8" fill="#A65BFF"/>
+  <circle cx="256" cy="364" r="8" fill="#39D5D0"/>
+  <text x="256" y="278" text-anchor="middle" font-family="Arial Black, Helvetica, Arial, sans-serif" font-size="148" font-weight="800" fill="#FFFFFF" letter-spacing="-4">SLC</text>
+  <text x="256" y="278" text-anchor="middle" font-family="Arial Black, Helvetica, Arial, sans-serif" font-size="148" font-weight="800" fill="url(#violetGlow)" letter-spacing="-4" opacity="0.35">SLC</text>
+  <line x1="108" y1="410" x2="148" y2="410" stroke="#39D5D0" stroke-width="4" stroke-linecap="round"/>
+  <line x1="364" y1="410" x2="404" y2="410" stroke="#39D5D0" stroke-width="4" stroke-linecap="round"/>
+  <text x="256" y="416" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="28" font-weight="600" fill="#CFCFE8" letter-spacing="10">INTELLIGENCE</text>
+</svg>

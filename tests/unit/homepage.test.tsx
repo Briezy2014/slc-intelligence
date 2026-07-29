@@ -5,7 +5,7 @@ import HomePage from "@/app/(public)/page";
 describe("homepage", () => {
   it("renders product name, tagline, and development notice", () => {
     render(<HomePage />);
-    expect(screen.getByText("SLC Intelligence")).toBeInTheDocument();
+    expect(screen.getAllByText("SLC Intelligence").length).toBeGreaterThan(0);
     expect(
       screen.getByRole("heading", {
         name: "The Intelligence Platform for Specialized Learning Classrooms",

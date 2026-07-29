@@ -1,27 +1,67 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
+import {
+  Building2,
+  ClipboardList,
+  Gauge,
+  Goal,
+  Layers3,
+  School,
+  Settings2,
+  Users,
+  UsersRound,
+} from "lucide-react";
 import { PLATFORM_NAV } from "@/lib/constants";
+import { cn } from "@/lib/utilities";
+
+const ICONS = {
+  "/command-center": Gauge,
+  "/students": Users,
+  "/schools": School,
+  "/programs": Layers3,
+  "/classrooms": Building2,
+  "/staff": UsersRound,
+  "/goals": Goal,
+  "/progress/enter": ClipboardList,
+  "/organization/settings": Settings2,
+} as const;
 
 export function PlatformSidebar() {
+  const pathname = usePathname();
+
   return (
     <aside
       aria-label="Platform navigation"
-      className="border-border bg-background-elevated h-fit rounded-[var(--radius-lg)] border p-3 shadow-[var(--shadow-soft)]"
+      className="border-border bg-background-elevated brand-glow h-fit rounded-[var(--radius-xl)] border p-3"
     >
-      <p className="text-muted px-2 pb-2 text-xs font-semibold tracking-wide uppercase">
-        Platform shell
+      <p className="text-muted px-2 pb-2 text-xs font-semibold tracking-[0.14em] uppercase">
+        Navigation
       </p>
       <nav>
         <ul className="flex flex-col gap-1">
-          {PLATFORM_NAV.map((item) => (
-            <li key={item.href}>
-              <Link
-                href={item.href}
-                className="text-foreground hover:bg-accent-soft block rounded-[var(--radius-md)] px-3 py-2 text-sm font-medium"
-              >
-                {item.label}
-              </Link>
-            </li>
-          ))}
+          {PLATFORM_NAV.map((item) => {
+            const Icon = ICONS[item.href as keyof typeof ICONS] ?? Layers3;
+            const active = pathname === item.href || pathname.startsWith(`${item.href}/`);
+            return (
+              <li key={item.href}>
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex items-center gap-2 rounded-[var(--radius-md)] px-3 py-2.5 text-sm font-medium transition-colors",
+                    active
+                      ? "bg-accent-soft text-foreground ring-1 ring-[rgb(139_61_255/0.35)]"
+                      : "text-muted hover:bg-surface-subtle hover:text-foreground",
+                  )}
+                  aria-current={active ? "page" : undefined}
+                >
+                  <Icon className="text-highlight size-4 shrink-0" aria-hidden="true" />
+                  <span>{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </nav>
     </aside>
