@@ -21,3 +21,15 @@ export function SafeErrorState({ message }: { message?: string }) {
     />
   );
 }
+
+export function PermissionDeniedState({
+  message = "Your current role can view this area but cannot complete this action.",
+}: {
+  message?: string;
+}) {
+  return (
+    <Alert title="Permission needed" tone="warning">
+      {message}
+    </Alert>
+  );
+}

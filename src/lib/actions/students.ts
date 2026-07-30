@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import {
   auditAndRevalidate,
@@ -9,6 +10,7 @@ import {
   getActionContext,
   type ActionState,
   UNAUTHORIZED_ACTION_MESSAGE,
+  VALIDATION_ACTION_MESSAGE,
   validationError,
 } from "@/lib/actions/shared";
 import { canEditStudent } from "@/lib/permissions/check";
@@ -85,6 +87,83 @@ export async function saveStudentAction(formData: FormData): Promise<ActionState
 
     return { status: "success", message: "Student saved." };
   } catch {
+    return { status: "error", message: GENERIC_ACTION_MESSAGE };
+  }
+}
+
+export async function createDemoStudentAction(formData: FormData): Promise<ActionState> {
+  const organizationId = String(formData.get("organizationId") ?? "");
+  if (!z.string().uuid().safeParse(organizationId).success) {
+    return { status: "error", message: VALIDATION_ACTION_MESSAGE };
+  }
+
+  const context = await getActionContext(organizationId, "student.create");
+  if (!("supabase" in context)) return context;
+
+  const stamp = new Date().toISOString().slice(0, 10).replaceAll("-", "");
+  const localIdentifier = `DEMO-${stamp}-${Math.floor(Math.random() * 900 + 100)}`;
+  const today = new Date().toISOString().slice(0, 10);
+  const cycleEnd = new Date();
+  cycleEnd.setFullYear(cycleEnd.getFullYear() + 1);
+
+  try {
+    const studentResult = await context.supabase
+      .from("students")
+      .insert({
+        organization_id: context.organizationId,
+        first_name: "Demo",
+        last_name: "Student",
+        preferred_name: "Demo",
+        local_identifier: localIdentifier,
+        grade_level: "3",
+        enrollment_status: "active",
+        start_date: today,
+        end_date: null,
+        created_by: context.user.id,
+        updated_by: context.user.id,
+      })
+      .select("id")
+      .single();
+
+    if (studentResult.error || !studentResult.data) {
+      return { status: "error", message: GENERIC_ACTION_MESSAGE };
+    }
+
+    const studentId = studentResult.data.id;
+    await context.supabase.from("iep_cycles").insert({
+      organization_id: context.organizationId,
+      student_id: studentId,
+      label: `Demo IEP cycle ${stamp}`,
+      start_date: today,
+      end_date: cycleEnd.toISOString().slice(0, 10),
+      review_date: null,
+      status: "active",
+      created_by: context.user.id,
+      updated_by: context.user.id,
+    });
+
+    await auditAndRevalidate({
+      organizationId: context.organizationId,
+      actorUserId: context.user.id,
+      actionType: "student.create_demo",
+      resourceType: "student",
+      resourceId: studentId,
+      newState: { local_identifier: localIdentifier, grade_level: "3" },
+      paths: [
+        "/students",
+        `/students/${studentId}`,
+        `/students/${studentId}/overview`,
+        `/students/${studentId}/goals`,
+        `/students/${studentId}/behavior`,
+        "/goals",
+        "/behavior-detective",
+        "/education-documents",
+      ],
+    });
+
+    redirect(`/students/${studentId}/goals`);
+  } catch (error) {
+    if (error && typeof error === "object" && "digest" in error) throw error;
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
   }
 }

@@ -1,5 +1,12 @@
 export type AiAssistDomain =
-  "communication" | "accommodation" | "intervention" | "goal" | "executive_function" | "progress";
+  | "communication"
+  | "accommodation"
+  | "intervention"
+  | "goal"
+  | "executive_function"
+  | "progress"
+  | "education_document"
+  | "behavior";
 
 export type AiSuggestion = {
   id: string;

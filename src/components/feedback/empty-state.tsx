@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export function EmptyState({
@@ -5,11 +6,13 @@ export function EmptyState({
   description,
   actionLabel,
   onAction,
+  actionHref,
 }: {
   title: string;
   description: string;
   actionLabel?: string;
   onAction?: () => void;
+  actionHref?: string;
 }) {
   return (
     <div
@@ -18,7 +21,16 @@ export function EmptyState({
     >
       <h2 className="text-foreground font-serif text-2xl font-semibold">{title}</h2>
       <p className="text-muted mx-auto mt-2 max-w-lg">{description}</p>
-      {actionLabel && onAction ? (
+      {actionLabel && actionHref ? (
+        <div className="mt-6 flex justify-center">
+          <Link
+            href={actionHref}
+            className="bg-accent text-accent-foreground inline-flex rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold"
+          >
+            {actionLabel}
+          </Link>
+        </div>
+      ) : actionLabel && onAction ? (
         <div className="mt-6 flex justify-center">
           <Button type="button" onClick={onAction}>
             {actionLabel}

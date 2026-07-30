@@ -47,4 +47,24 @@ describe("AI Assist local intelligence", () => {
     expect(result.suggestions.length).toBeGreaterThan(0);
     expect(result.disclaimer.toLowerCase()).toContain("review");
   });
+
+  it("maps pasted IEP text into education document fields", () => {
+    const suggestions = buildLocalSuggestions({
+      domain: "education_document",
+      focusArea: "iep",
+      extraNotes:
+        "Strengths: strong visual memory and peer leadership.\nNeeds: decoding multisyllabic words.\nAnnual goals: improve oral reading fluency to 90 wcpm.",
+    });
+    expect(suggestions[0]?.fields?.strengths?.toLowerCase()).toContain("visual");
+    expect(suggestions[0]?.requiresReview).toBe(true);
+  });
+
+  it("suggests behavior definitions from starter templates", () => {
+    const suggestions = buildLocalSuggestions({
+      domain: "behavior",
+      focusArea: "task refusal escape",
+    });
+    expect(suggestions.length).toBeGreaterThan(0);
+    expect(suggestions[0]?.fields?.operationalDefinition?.length).toBeGreaterThan(20);
+  });
 });

@@ -3,7 +3,16 @@ import { getAiProviderConfig } from "@/lib/ai/config";
 
 type ChatMessage = { role: "system" | "user" | "assistant"; content: string };
 
-function systemPrompt(): string {
+function systemPrompt(domain: string): string {
+  if (domain === "education_document") {
+    return [
+      "You are SLC Intelligence Assist for special education documentation.",
+      'Return ONLY valid JSON: {"suggestions":[{"title":"","summary":"","draftText":"","fields":{},"rationale":""}]}',
+      "Extract and map content from pasted IEP/ETR/progress text into fields such as studentName, gradeLevel, strengths, needs, parentInput, howDisabilityAffects, goalSummary, progressMonitoringPlan, speciallyDesignedInstruction, relatedServices, accommodations, lreExplanation, assessmentSummary, eligibilityConsiderations.",
+      "Provide 1-2 suggestions. Put extracted values in fields. Never invent eligibility/placement decisions. Mark uncertain items clearly.",
+      "All output is draft-only for educator/IEP team review.",
+    ].join(" ");
+  }
   return [
     "You are SLC Intelligence Assist for specialized learning classroom educators.",
     'Return ONLY valid JSON: {"suggestions":[{"title":"","summary":"","draftText":"","fields":{},"rationale":""}]}',
@@ -18,8 +27,10 @@ function userPrompt(input: AiSuggestInput): string {
     `Domain: ${input.domain}`,
     `Focus area: ${input.focusArea || "not specified"}`,
     `Student context (minimized): ${input.studentContext || "not specified"}`,
-    `Extra notes: ${input.extraNotes || "none"}`,
-    "Generate assistive drafts for this domain.",
+    `Extra notes / document text: ${input.extraNotes || "none"}`,
+    input.domain === "education_document"
+      ? "Extract document content into template fields for educator review."
+      : "Generate assistive drafts for this domain.",
   ].join("\n");
 }
 
@@ -30,7 +41,7 @@ export async function generateModelSuggestions(
   if (!config.configured) return null;
 
   const messages: ChatMessage[] = [
-    { role: "system", content: systemPrompt() },
+    { role: "system", content: systemPrompt(input.domain) },
     { role: "user", content: userPrompt(input) },
   ];
 
@@ -80,7 +91,10 @@ export async function generateModelSuggestions(
         source: "model_assist" as const,
         requiresReview: true as const,
       }))
-      .filter((suggestion) => suggestion.draftText.length > 0);
+      .filter(
+        (suggestion) =>
+          suggestion.draftText.length > 0 || Object.keys(suggestion.fields ?? {}).length > 0,
+      );
   } catch {
     return null;
   }

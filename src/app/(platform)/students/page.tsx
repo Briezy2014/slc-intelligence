@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { StudentList } from "@/components/domain/lists";
+import { DemoStudentCard } from "@/components/domain/demo-student-card";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
@@ -52,6 +53,9 @@ export default async function StudentsPage({
         <SafeErrorState message={state.error} />
       ) : (
         <div className="space-y-6">
+          {state.data.canCreate && state.data.organizationId ? (
+            <DemoStudentCard organizationId={state.data.organizationId} />
+          ) : null}
           <form
             className="border-border bg-background-elevated grid gap-3 rounded-[var(--radius-lg)] border p-4 sm:grid-cols-[1fr_180px_auto]"
             action="/students"

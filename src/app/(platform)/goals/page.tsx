@@ -17,14 +17,14 @@ export default async function GoalsPage() {
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Goals" }]} />
       <PageHeader
         title="Goals"
-        description="Authorized IEP goals across the selected organization."
+        description="Authorized IEP goals across the selected organization. Create goals from learning progressions on a student’s Goals page."
       />
       {!state.configured ? (
         <ConfigurationState />
       ) : state.error ? (
         <SafeErrorState message={state.error} />
       ) : (
-        <GoalList goals={state.data.rows} students={state.data.students} />
+        <GoalList goals={state.data.rows} students={state.data.students} createHref="/students" />
       )}
     </main>
   );

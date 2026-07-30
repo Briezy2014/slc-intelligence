@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { GoalForm } from "@/components/domain/forms";
+import { GoalForm, IepCycleForm } from "@/components/domain/forms";
 import { GoalList } from "@/components/domain/lists";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
+import { Alert } from "@/components/ui/alert";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { listGoals } from "@/lib/data/goals";
 import { getStudent } from "@/lib/data/students";
@@ -21,6 +22,11 @@ export default async function StudentGoalsPage({
     listGoals(studentId),
   ]);
 
+  const cyclesForStudent =
+    goalsState.configured && !goalsState.error
+      ? goalsState.data.cycles.filter((cycle) => cycle.student_id === studentId)
+      : [];
+
   return (
     <main id="main-content">
       <Breadcrumbs
@@ -32,7 +38,7 @@ export default async function StudentGoalsPage({
       />
       <PageHeader
         title="Student goals"
-        description="IEP goals for the selected authorized student."
+        description="Choose grade + subject to load recommended learning progressions, then save goals for this student."
       />
       {!studentState.configured || !goalsState.configured ? (
         <ConfigurationState />
@@ -41,20 +47,44 @@ export default async function StudentGoalsPage({
       ) : studentState.data.student && goalsState.data.organizationId ? (
         <div className="space-y-6">
           <GoalList goals={goalsState.data.rows} students={goalsState.data.students} />
-          {goalsState.data.canManage ? (
+          {goalsState.data.canManage && cyclesForStudent.length === 0 ? (
             <Card>
-              <CardTitle>Create goal</CardTitle>
+              <CardTitle>Create an IEP cycle first</CardTitle>
               <CardDescription>
-                Create goals only for authorized fictional/development records.
+                Goals attach to an IEP cycle. Create one below, then pick a progression goal.
               </CardDescription>
               <div className="mt-4">
-                <GoalForm
+                <IepCycleForm
                   organizationId={goalsState.data.organizationId}
                   studentId={studentId}
-                  cycles={goalsState.data.cycles}
-                  defaultGradeLevel={studentState.data.student.grade_level}
                 />
               </div>
+            </Card>
+          ) : null}
+          {goalsState.data.canManage ? (
+            <Card>
+              <CardTitle>Create goal from learning progressions</CardTitle>
+              <CardDescription>
+                Grade and subject dropdowns load recommended progression goals across ELA, math,
+                functional math, ASL, science, social studies, executive function, communication,
+                and life skills.
+              </CardDescription>
+              {cyclesForStudent.length === 0 ? (
+                <div className="mt-4">
+                  <Alert title="IEP cycle required" tone="warning">
+                    Create an IEP cycle above before saving a goal.
+                  </Alert>
+                </div>
+              ) : (
+                <div className="mt-4">
+                  <GoalForm
+                    organizationId={goalsState.data.organizationId}
+                    studentId={studentId}
+                    cycles={goalsState.data.cycles}
+                    defaultGradeLevel={studentState.data.student.grade_level}
+                  />
+                </div>
+              )}
             </Card>
           ) : null}
         </div>
