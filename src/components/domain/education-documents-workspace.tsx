@@ -12,6 +12,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { TableShell } from "@/components/data-display/table-shell";
 import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import {
+  recordDistrictFormTemplateAction,
   recordEducationDocumentUploadAction,
   saveEducationDocumentAction,
 } from "@/lib/actions/education-documents";
@@ -37,6 +38,9 @@ const TABS: Array<{ id: EducationDocumentType; label: string }> = [
   { id: "iep", label: "IEP" },
   { id: "etr", label: "ETR" },
   { id: "progress_report", label: "Progress reports" },
+  { id: "section_504", label: "504" },
+  { id: "gifted", label: "Gifted" },
+  { id: "el", label: "EL" },
 ];
 
 export function EducationDocumentsWorkspace({
@@ -55,6 +59,8 @@ export function EducationDocumentsWorkspace({
   const [message, setMessage] = useState<string | null>(null);
   const [uploadFile, setUploadFile] = useState<File | null>(null);
   const [uploadNotes, setUploadNotes] = useState("");
+  const [blankTemplateFile, setBlankTemplateFile] = useState<File | null>(null);
+  const [blankTemplateName, setBlankTemplateName] = useState("");
   const [scanPending, setScanPending] = useState(false);
   const [pending, startTransition] = useTransition();
 
@@ -250,10 +256,108 @@ export function EducationDocumentsWorkspace({
       </p>
 
       <Card>
-        <CardTitle>Upload {tab.toUpperCase()} / ETR file · auto-fill fields</CardTitle>
+        <CardTitle>District blank {tab.replaceAll("_", " ").toUpperCase()} template</CardTitle>
         <CardDescription>
-          Upload a PDF, scanned image, or text export. The app extracts text (PDF text layer or OCR)
-          and populates the draft fields automatically for your review.
+          Upload your official district blank IEP/ETR/504/Gifted/EL form as a master template. SLC
+          stores the blank for reference and extracts text so staff can fill structured drafts for a
+          student. This does not replace the district&apos;s controlling legal form.
+        </CardDescription>
+        {!data.permissions.canManage ? (
+          <div className="mt-4">
+            <Alert title="Permission needed" tone="warning">
+              Your role can view this area but cannot upload district blank templates.
+            </Alert>
+          </div>
+        ) : (
+          <div className="mt-4 space-y-3">
+            <FormField id="blankTemplateName" label="Template name">
+              <Input
+                id="blankTemplateName"
+                value={blankTemplateName}
+                onChange={(event) => setBlankTemplateName(event.target.value)}
+                placeholder={`District blank ${tab.replaceAll("_", " ")} form`}
+              />
+            </FormField>
+            <FormField id="blankTemplateFile" label="Blank official form (PDF/image/text)">
+              <Input
+                id="blankTemplateFile"
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.md,application/pdf,image/*,text/plain"
+                onChange={(event) => setBlankTemplateFile(event.target.files?.[0] ?? null)}
+              />
+            </FormField>
+            <Button
+              type="button"
+              variant="secondary"
+              disabled={scanPending || !blankTemplateFile}
+              onClick={() => {
+                void (async () => {
+                  if (!data.organizationId || !blankTemplateFile) return;
+                  setScanPending(true);
+                  setMessage("Reading blank district form…");
+                  try {
+                    const extraction = await extractDocumentText(blankTemplateFile);
+                    const formData = new FormData();
+                    formData.set("organizationId", data.organizationId);
+                    formData.set("documentType", tab);
+                    formData.set(
+                      "name",
+                      blankTemplateName.trim() ||
+                        `District blank ${tab.replaceAll("_", " ")} · ${blankTemplateFile.name}`,
+                    );
+                    formData.set("fileName", blankTemplateFile.name);
+                    formData.set("contentType", blankTemplateFile.type || "application/octet-stream");
+                    formData.set("byteSize", String(blankTemplateFile.size));
+                    formData.set("extractedText", extraction.text.slice(0, 50000));
+                    formData.set("file", blankTemplateFile);
+                    const result = await recordDistrictFormTemplateAction(formData);
+                    setMessage(
+                      [
+                        result.message,
+                        extraction.warning,
+                        "Next: choose a student and start a blank draft or upload a completed form to auto-fill.",
+                      ]
+                        .filter(Boolean)
+                        .join(" "),
+                    );
+                    setBlankTemplateFile(null);
+                  } catch (error) {
+                    setMessage(
+                      error instanceof Error
+                        ? `Blank template upload failed: ${error.message}`
+                        : "Blank template upload failed.",
+                    );
+                  } finally {
+                    setScanPending(false);
+                  }
+                })();
+              }}
+            >
+              {scanPending ? "Saving blank template…" : "Save district blank template"}
+            </Button>
+            {(data.districtTemplates ?? []).filter((entry) => entry.document_type === tab).length >
+            0 ? (
+              <TableShell
+                caption="Saved district blank templates"
+                headers={["Name", "File", "Updated"]}
+                rows={(data.districtTemplates ?? [])
+                  .filter((entry) => entry.document_type === tab)
+                  .map((entry) => [
+                    entry.name,
+                    entry.file_name ?? "—",
+                    new Date(entry.updated_at).toLocaleString(),
+                  ])}
+              />
+            ) : null}
+          </div>
+        )}
+      </Card>
+
+      <Card>
+        <CardTitle>Upload completed {tab.replaceAll("_", " ").toUpperCase()} · auto-fill fields</CardTitle>
+        <CardDescription>
+          Upload a completed PDF, scanned image, or text export. The app extracts text (PDF text
+          layer or OCR) and populates the draft fields automatically for your review.
         </CardDescription>
         {!data.permissions.canManage ? (
           <div className="mt-4">

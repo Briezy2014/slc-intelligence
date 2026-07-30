@@ -263,6 +263,195 @@ export const PROGRESS_REPORT_TEMPLATE: EducationDocumentTemplate = {
   ],
 };
 
+export const SECTION_504_BLANK_TEMPLATE: EducationDocumentTemplate = {
+  key: "section_504_blank_v1",
+  documentType: "section_504",
+  title: "Section 504 plan draft",
+  description:
+    "Assistive 504 draft sections for team review. Not a controlling district 504 record.",
+  sections: [
+    {
+      id: "cover",
+      title: "Student / plan information",
+      fields: [
+        { key: "studentName", label: "Student name", kind: "text", prefillFrom: "studentName" },
+        { key: "localId", label: "Student ID", kind: "text", prefillFrom: "localId" },
+        {
+          key: "gradeLevel",
+          label: "Grade level",
+          kind: "select",
+          options: [
+            "PreK",
+            "K",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "Transition",
+          ],
+          prefillFrom: "gradeLevel",
+        },
+        { key: "meetingDate", label: "Meeting / review date", kind: "date" },
+      ],
+    },
+    {
+      id: "impairment",
+      title: "Impairment / major life activities",
+      fields: [
+        { key: "impairmentSummary", label: "Impairment summary (team language)", kind: "textarea" },
+        { key: "majorLifeActivities", label: "Major life activities affected", kind: "textarea" },
+        { key: "supportingData", label: "Supporting data / sources", kind: "textarea" },
+      ],
+    },
+    {
+      id: "accommodations",
+      title: "Accommodations / services",
+      fields: [
+        { key: "accommodations", label: "Accommodations", kind: "textarea" },
+        { key: "relatedAidsServices", label: "Related aids / services", kind: "textarea" },
+        { key: "implementationNotes", label: "Implementation notes", kind: "textarea" },
+      ],
+    },
+  ],
+};
+
+export const GIFTED_BLANK_TEMPLATE: EducationDocumentTemplate = {
+  key: "gifted_blank_v1",
+  documentType: "gifted",
+  title: "Gifted services draft",
+  description: "Draft gifted identification/services notes for team review.",
+  sections: [
+    {
+      id: "cover",
+      title: "Student information",
+      fields: [
+        { key: "studentName", label: "Student name", kind: "text", prefillFrom: "studentName" },
+        {
+          key: "gradeLevel",
+          label: "Grade level",
+          kind: "select",
+          options: [
+            "PreK",
+            "K",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "Transition",
+          ],
+          prefillFrom: "gradeLevel",
+        },
+        {
+          key: "identificationArea",
+          label: "Identification area",
+          kind: "select",
+          options: [
+            "Superior cognitive",
+            "Specific academic",
+            "Creative thinking",
+            "Visual/performing arts",
+            "Other / district-defined",
+          ],
+        },
+      ],
+    },
+    {
+      id: "services",
+      title: "Services / goals",
+      fields: [
+        { key: "strengths", label: "Strengths / gifted characteristics", kind: "textarea" },
+        { key: "serviceSummary", label: "Service / acceleration summary", kind: "textarea" },
+        { key: "goalSummary", label: "Goals / outcomes", kind: "textarea" },
+        { key: "progressMonitoringPlan", label: "Progress monitoring plan", kind: "textarea" },
+      ],
+    },
+  ],
+};
+
+export const EL_BLANK_TEMPLATE: EducationDocumentTemplate = {
+  key: "el_blank_v1",
+  documentType: "el",
+  title: "English learner (EL) support draft",
+  description: "EL language support planning draft for educator/team review.",
+  sections: [
+    {
+      id: "cover",
+      title: "Student / language information",
+      fields: [
+        { key: "studentName", label: "Student name", kind: "text", prefillFrom: "studentName" },
+        {
+          key: "gradeLevel",
+          label: "Grade level",
+          kind: "select",
+          options: [
+            "PreK",
+            "K",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "Transition",
+          ],
+          prefillFrom: "gradeLevel",
+        },
+        { key: "homeLanguage", label: "Home / primary language", kind: "text" },
+        {
+          key: "proficiencyLevel",
+          label: "Language proficiency level (district scale)",
+          kind: "select",
+          options: [
+            "Entering",
+            "Emerging",
+            "Developing",
+            "Expanding",
+            "Bridging",
+            "Reaching",
+            "Not assessed",
+          ],
+        },
+      ],
+    },
+    {
+      id: "supports",
+      title: "Instructional supports",
+      fields: [
+        { key: "languageGoals", label: "Language goals", kind: "textarea" },
+        { key: "accommodations", label: "Classroom / assessment supports", kind: "textarea" },
+        {
+          key: "familyCommunicationPlan",
+          label: "Family communication language plan",
+          kind: "textarea",
+        },
+        { key: "progressMonitoringPlan", label: "Progress monitoring plan", kind: "textarea" },
+      ],
+    },
+  ],
+};
+
 export type EducationTemplatePack = "ohio_aligned" | "generic";
 
 export function listEducationDocumentTemplates(
@@ -271,6 +460,9 @@ export function listEducationDocumentTemplates(
   if (documentType === "etr") return [OHIO_ETR_BLANK_TEMPLATE, ETR_BLANK_TEMPLATE];
   if (documentType === "progress_report")
     return [OHIO_PROGRESS_REPORT_TEMPLATE, PROGRESS_REPORT_TEMPLATE];
+  if (documentType === "section_504") return [SECTION_504_BLANK_TEMPLATE];
+  if (documentType === "gifted") return [GIFTED_BLANK_TEMPLATE];
+  if (documentType === "el") return [EL_BLANK_TEMPLATE];
   return [OHIO_IEP_BLANK_TEMPLATE, IEP_BLANK_TEMPLATE];
 }
 
@@ -279,6 +471,9 @@ export function getEducationDocumentTemplate(
   pack: EducationTemplatePack = "ohio_aligned",
 ): EducationDocumentTemplate {
   const templates = listEducationDocumentTemplates(documentType);
+  if (documentType === "section_504" || documentType === "gifted" || documentType === "el") {
+    return templates[0]!;
+  }
   if (pack === "generic") {
     return templates.find((template) => !template.key.startsWith("ohio_")) ?? templates[0]!;
   }

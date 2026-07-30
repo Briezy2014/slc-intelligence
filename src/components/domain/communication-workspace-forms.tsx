@@ -1,19 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { FormField } from "@/components/forms/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/ui/alert";
-import { saveCommunicationLogAction, saveContactAction } from "@/lib/actions/communications";
+import {
+  saveCommunicationLogAction,
+  saveContactAction,
+  translateCommunicationDraftAction,
+} from "@/lib/actions/communications";
 import {
   COMMUNICATION_TEMPLATES,
   applyCommunicationTemplate,
   getCommunicationTemplate,
 } from "@/lib/catalogs";
+import {
+  COMMUNICATION_LANGUAGES,
+  communicationLanguageLabel,
+} from "@/lib/catalogs/communication-languages";
 import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import type { Student, StudentContact } from "@/lib/supabase/types";
 
@@ -24,6 +32,8 @@ function submitAction(action: (formData: FormData) => Promise<unknown>) {
 function studentName(student: Student) {
   return `${student.last_name}, ${student.preferred_name || student.first_name}`;
 }
+
+type ComposeTab = "compose" | "template_language";
 
 export function ContactAndCommunicationForms({
   organizationId,
@@ -50,7 +60,14 @@ export function ContactAndCommunicationForms({
   const [focusArea, setFocusArea] = useState("");
   const [subject, setSubject] = useState("");
   const [summary, setSummary] = useState("");
+  const [sourceSummary, setSourceSummary] = useState("");
   const [visibility, setVisibility] = useState("family_visible");
+  const [languageCode, setLanguageCode] = useState("en");
+  const [method, setMethod] = useState("email");
+  const [acknowledgementRequested, setAcknowledgementRequested] = useState(false);
+  const [composeTab, setComposeTab] = useState<ComposeTab>("template_language");
+  const [translateMessage, setTranslateMessage] = useState<string | null>(null);
+  const [pending, startTransition] = useTransition();
 
   const contactsForStudent = useMemo(
     () =>
@@ -72,7 +89,36 @@ export function ContactAndCommunicationForms({
     });
     setSubject(draft.subject);
     setSummary(draft.summary);
+    setSourceSummary(draft.summary);
     setVisibility(draft.visibility);
+    setMethod(draft.method);
+    setTranslateMessage(
+      languageCode === "en"
+        ? "English template inserted. Review before saving."
+        : `English template inserted. Open Template & language and translate to ${communicationLanguageLabel(languageCode)}.`,
+    );
+    setComposeTab("compose");
+  }
+
+  function runTranslate() {
+    if (!subject.trim() || !summary.trim()) {
+      setTranslateMessage("Add subject and summary (or insert a template) before translating.");
+      return;
+    }
+    startTransition(async () => {
+      const result = await translateCommunicationDraftAction({
+        subject,
+        summary: sourceSummary || summary,
+        targetLanguageCode: languageCode,
+      });
+      if (result.ok) {
+        if (!sourceSummary) setSourceSummary(summary);
+        setSubject(result.subject);
+        setSummary(result.summary);
+      }
+      setTranslateMessage(result.message);
+      setComposeTab("compose");
+    });
   }
 
   return (
@@ -93,8 +139,11 @@ export function ContactAndCommunicationForms({
         onApply={(suggestion) => {
           setSubject(suggestion.fields?.subject ?? suggestion.title);
           setSummary(suggestion.fields?.summary ?? suggestion.draftText);
+          setSourceSummary(suggestion.fields?.summary ?? suggestion.draftText);
           if (suggestion.fields?.visibility) setVisibility(suggestion.fields.visibility);
           if (suggestion.fields?.focusArea) setFocusArea(suggestion.fields.focusArea);
+          if (suggestion.fields?.method) setMethod(suggestion.fields.method);
+          setComposeTab("compose");
         }}
       />
       <div className="grid gap-6 lg:grid-cols-2">
@@ -147,114 +196,230 @@ export function ContactAndCommunicationForms({
         </div>
 
         <div className="border-border bg-background-elevated rounded-[var(--radius-lg)] border p-4">
-          <h3 className="text-lg font-semibold">Communication log</h3>
+          <h3 className="text-lg font-semibold">Communication</h3>
           {canEnterCommunication ? (
-            <form action={submitAction(saveCommunicationLogAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={organizationId} />
-              <FormField id="communicationStudentId" label="Student">
-                <Select
-                  id="communicationStudentId"
-                  name="studentId"
-                  required
-                  value={logStudentId}
-                  onChange={(event) => {
-                    setLogStudentId(event.target.value);
-                    setContactId("");
-                  }}
+            <div className="mt-4 space-y-4">
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant={composeTab === "template_language" ? "primary" : "secondary"}
+                  onClick={() => setComposeTab("template_language")}
                 >
-                  <option value="">Choose student</option>
-                  {visibleStudents.map((student) => (
-                    <option key={student.id} value={student.id}>
-                      {studentName(student)}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-              <FormField id="contactId" label="Contact">
-                <Select
-                  id="contactId"
-                  name="contactId"
-                  value={contactId}
-                  onChange={(event) => setContactId(event.target.value)}
+                  Template & language
+                </Button>
+                <Button
+                  type="button"
+                  variant={composeTab === "compose" ? "primary" : "secondary"}
+                  onClick={() => setComposeTab("compose")}
                 >
-                  <option value="">No contact selected</option>
-                  {contactsForStudent.map((contact) => (
-                    <option key={contact.id} value={contact.id}>
-                      {contact.last_name}, {contact.first_name}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-              <FormField id="draftTemplateId" label="Draft from starter template">
-                <Select
-                  id="draftTemplateId"
-                  value={templateId}
-                  onChange={(event) => setTemplateId(event.target.value)}
-                >
-                  <option value="">Choose a communication template</option>
-                  {COMMUNICATION_TEMPLATES.map((template) => (
-                    <option key={template.id} value={template.id}>
-                      {template.name}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-              <FormField id="focusArea" label="Focus area for draft">
-                <Input
-                  id="focusArea"
-                  value={focusArea}
-                  onChange={(event) => setFocusArea(event.target.value)}
-                  placeholder="reading fluency, calm-down routine, etc."
-                />
-              </FormField>
-              <Button
-                type="button"
-                variant="secondary"
-                onClick={insertDraft}
-                disabled={!templateId}
-              >
-                Insert draft language
-              </Button>
-              <p className="text-muted text-sm">
-                Drafts are starter language for educator review — not automatic AI conclusions.
-              </p>
-              <FormField id="visibility" label="Visibility">
-                <Select
-                  id="visibility"
-                  name="visibility"
-                  value={visibility}
-                  onChange={(event) => setVisibility(event.target.value)}
-                >
-                  <option value="family_visible">Family visible</option>
-                  <option value="internal">Internal</option>
-                  <option value="restricted_admin">Restricted admin</option>
-                </Select>
-              </FormField>
-              <input type="hidden" name="method" value="phone" />
-              <input type="hidden" name="direction" value="outbound" />
-              <input type="hidden" name="status" value="draft" />
-              <FormField id="subject" label="Subject">
-                <Input
-                  id="subject"
-                  name="subject"
-                  required
-                  value={subject}
-                  onChange={(event) => setSubject(event.target.value)}
-                />
-              </FormField>
-              <FormField id="summary" label="Summary">
-                <Textarea
-                  id="summary"
-                  name="summary"
-                  required
-                  value={summary}
-                  onChange={(event) => setSummary(event.target.value)}
-                />
-              </FormField>
-              <Button type="submit" disabled={students.length === 0}>
-                Save communication
-              </Button>
-            </form>
+                  Compose & save
+                </Button>
+              </div>
+
+              {composeTab === "template_language" ? (
+                <div className="space-y-3">
+                  <Alert title="Choose template and language" tone="info">
+                    Select a communication template and a family language (20 options). Insert the
+                    English draft, then translate before saving.
+                  </Alert>
+                  <FormField id="draftTemplateId" label="Communication template">
+                    <Select
+                      id="draftTemplateId"
+                      value={templateId}
+                      onChange={(event) => setTemplateId(event.target.value)}
+                    >
+                      <option value="">Choose a communication template</option>
+                      {COMMUNICATION_TEMPLATES.map((template) => (
+                        <option key={template.id} value={template.id}>
+                          {template.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormField>
+                  <FormField id="languageCodePicker" label="Language">
+                    <Select
+                      id="languageCodePicker"
+                      value={languageCode}
+                      onChange={(event) => setLanguageCode(event.target.value)}
+                    >
+                      {COMMUNICATION_LANGUAGES.map((language) => (
+                        <option key={language.code} value={language.code}>
+                          {language.name} ({language.nativeName})
+                        </option>
+                      ))}
+                    </Select>
+                  </FormField>
+                  <FormField id="focusArea" label="Focus area for draft">
+                    <Input
+                      id="focusArea"
+                      value={focusArea}
+                      onChange={(event) => setFocusArea(event.target.value)}
+                      placeholder="reading fluency, calm-down routine, etc."
+                    />
+                  </FormField>
+                  <div className="flex flex-wrap gap-2">
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      onClick={insertDraft}
+                      disabled={!templateId}
+                    >
+                      Insert template draft
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={runTranslate}
+                      disabled={pending || languageCode === "en"}
+                    >
+                      {pending ? "Translating…" : "Translate draft"}
+                    </Button>
+                  </div>
+                  <p className="text-muted text-sm">
+                    Translation uses AI Assist when configured. Always have a bilingual staff member
+                    or interpreter review before family delivery.
+                  </p>
+                  {translateMessage ? (
+                    <Alert title="Draft language status" tone="info">
+                      {translateMessage}
+                    </Alert>
+                  ) : null}
+                </div>
+              ) : (
+                <form action={submitAction(saveCommunicationLogAction)} className="space-y-3">
+                  <input type="hidden" name="organizationId" value={organizationId} />
+                  <input type="hidden" name="languageCode" value={languageCode} />
+                  <input type="hidden" name="sourceLanguageCode" value="en" />
+                  <input type="hidden" name="sourceSummary" value={sourceSummary} />
+                  <input
+                    type="hidden"
+                    name="acknowledgementRequested"
+                    value={acknowledgementRequested ? "true" : "false"}
+                  />
+                  <FormField id="communicationStudentId" label="Student">
+                    <Select
+                      id="communicationStudentId"
+                      name="studentId"
+                      required
+                      value={logStudentId}
+                      onChange={(event) => {
+                        setLogStudentId(event.target.value);
+                        setContactId("");
+                      }}
+                    >
+                      <option value="">Choose student</option>
+                      {visibleStudents.map((student) => (
+                        <option key={student.id} value={student.id}>
+                          {studentName(student)}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormField>
+                  <FormField id="contactId" label="Contact">
+                    <Select
+                      id="contactId"
+                      name="contactId"
+                      value={contactId}
+                      onChange={(event) => setContactId(event.target.value)}
+                    >
+                      <option value="">No contact selected</option>
+                      {contactsForStudent.map((contact) => (
+                        <option key={contact.id} value={contact.id}>
+                          {contact.last_name}, {contact.first_name}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormField>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <FormField id="method" label="Method">
+                      <Select
+                        id="method"
+                        name="method"
+                        value={method}
+                        onChange={(event) => setMethod(event.target.value)}
+                      >
+                        <option value="email">Email</option>
+                        <option value="phone">Phone</option>
+                        <option value="text">Text</option>
+                        <option value="letter">Letter</option>
+                        <option value="in_person">In person</option>
+                        <option value="portal">Portal</option>
+                        <option value="video">Video</option>
+                        <option value="other">Other</option>
+                      </Select>
+                    </FormField>
+                    <FormField id="languageCodeDisplay" label="Language">
+                      <Select
+                        id="languageCodeDisplay"
+                        value={languageCode}
+                        onChange={(event) => setLanguageCode(event.target.value)}
+                      >
+                        {COMMUNICATION_LANGUAGES.map((language) => (
+                          <option key={language.code} value={language.code}>
+                            {language.name}
+                          </option>
+                        ))}
+                      </Select>
+                    </FormField>
+                  </div>
+                  <FormField id="visibility" label="Visibility">
+                    <Select
+                      id="visibility"
+                      name="visibility"
+                      value={visibility}
+                      onChange={(event) => setVisibility(event.target.value)}
+                    >
+                      <option value="family_visible">Family visible</option>
+                      <option value="internal">Internal</option>
+                      <option value="restricted_admin">Restricted admin</option>
+                    </Select>
+                  </FormField>
+                  <FormField id="ackRequested" label="Request parent acknowledgement">
+                    <Select
+                      id="ackRequested"
+                      value={acknowledgementRequested ? "true" : "false"}
+                      onChange={(event) =>
+                        setAcknowledgementRequested(event.target.value === "true")
+                      }
+                    >
+                      <option value="false">No</option>
+                      <option value="true">Yes — progress / behavior / other family note</option>
+                    </Select>
+                  </FormField>
+                  <input type="hidden" name="direction" value="outbound" />
+                  <input type="hidden" name="status" value="draft" />
+                  <FormField id="subject" label="Subject">
+                    <Input
+                      id="subject"
+                      name="subject"
+                      required
+                      value={subject}
+                      onChange={(event) => setSubject(event.target.value)}
+                    />
+                  </FormField>
+                  <FormField id="summary" label="Message body">
+                    <Textarea
+                      id="summary"
+                      name="summary"
+                      required
+                      value={summary}
+                      onChange={(event) => setSummary(event.target.value)}
+                    />
+                  </FormField>
+                  <p className="text-muted text-sm">
+                    Current language: {communicationLanguageLabel(languageCode)}. Use the Template
+                    & language tab to translate English drafts.
+                  </p>
+                  {translateMessage ? (
+                    <Alert title="Draft language status" tone="info">
+                      {translateMessage}
+                    </Alert>
+                  ) : null}
+                  <Button type="submit" disabled={students.length === 0}>
+                    Save communication
+                  </Button>
+                </form>
+              )}
+            </div>
           ) : (
             <Alert title="Permission needed" tone="warning">
               Communication entry requires an authorized role.
