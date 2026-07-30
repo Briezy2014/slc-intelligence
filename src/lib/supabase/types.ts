@@ -1533,6 +1533,26 @@ export type CommunicationSignLink = {
   updated_at: Timestamp;
 };
 
+export type StaffNotificationKind =
+  | "communication_parent_read"
+  | "communication_parent_signed"
+  | "general";
+
+export type StaffNotification = {
+  id: Uuid;
+  organization_id: Uuid;
+  recipient_user_id: Nullable<Uuid>;
+  kind: StaffNotificationKind;
+  title: string;
+  body: string;
+  communication_log_id: Nullable<Uuid>;
+  student_id: Nullable<Uuid>;
+  acknowledgement_id: Nullable<Uuid>;
+  read_at: Nullable<Timestamp>;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
 export type CommunicationCategory = {
   id: Uuid;
   organization_id: Uuid;
@@ -2373,6 +2393,11 @@ export type Database = {
         Partial<CommunicationSignLink>,
         Partial<CommunicationSignLink>
       >;
+      staff_notifications: RowDefinition<
+        StaffNotification,
+        Partial<StaffNotification>,
+        Partial<StaffNotification>
+      >;
       communication_participants: RowDefinition<
         CommunicationParticipant,
         Partial<CommunicationParticipant>,
@@ -2704,6 +2729,17 @@ export type Database = {
           p_notes?: string | null;
         };
         Returns: Uuid;
+      };
+      notify_staff_parent_communication_ack: {
+        Args: {
+          p_organization_id: Uuid;
+          p_communication_log_id: Uuid;
+          p_student_id: Uuid;
+          p_acknowledgement_id: Uuid;
+          p_signer_display_name: string;
+          p_method: string;
+        };
+        Returns: undefined;
       };
       can_read_meeting: {
         Args: { p_org_id: Uuid; p_student_id: Uuid };

@@ -55,9 +55,9 @@ export function CommunicationEsignPanel({ data }: { data: CommunicationsData }) 
 
   return (
     <div className="space-y-6">
-      <Alert title="Receipt e-signature" tone="info">
-        {ESIGN_RECEIPT_DISCLAIMER} Generate a parent sign link for letters home, or capture a
-        signature on a staff device.
+      <Alert title="Parent read + receipt acknowledgment" tone="info">
+        {ESIGN_RECEIPT_DISCLAIMER} Parents open the link, check <strong>I have read this</strong>,
+        type their name, and send — staff get a notification. Drawn signature is optional.
       </Alert>
 
       <Card>

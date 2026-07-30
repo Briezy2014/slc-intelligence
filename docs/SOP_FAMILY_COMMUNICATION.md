@@ -15,7 +15,8 @@ Family Communication is used to:
 2. Draft and log school-to-home communications  
 3. Choose a template + language  
 4. Translate English drafts into a selected family language  
-5. Request/capture parent receipt e-signatures (receipt only, not IEP consent)
+5. Request/capture parent **read receipt** (checkbox + typed name) with staff notification  
+6. Optionally capture drawn signature
 
 The app logs communications; it does **not** auto-send email/SMS. Staff deliver the message (email, letter, phone, text, etc.).
 
@@ -60,14 +61,17 @@ The app logs communications; it does **not** auto-send email/SMS. Staff deliver 
 
 ---
 
-## Part D — Parent receipt e-signature (optional)
+## Part D — Parent read acknowledgment + staff notification
 
 1. In the e-sign panel, select the family-visible communication.  
-2. Either:
-   - **Create parent sign link** and send/print the link, or  
-   - **Capture signature now** on a staff device.  
-3. Parent acknowledges receipt with typed name and optional drawn signature.  
-4. Status moves toward **signed**.
+2. Click **Create parent sign link** and send/print the link with the letter.  
+3. Parent opens the link and:
+   - Checks **I have read this**  
+   - Types their name  
+   - Clicks **Send acknowledgment to school**  
+   - Optional: add a drawn signature  
+4. Staff see an in-app notification under **Parent read / signature notifications**.  
+5. Status moves to **signed** (receipt acknowledged).
 
 This is **receipt acknowledgment only**, not IDEA/IEP consent.
 
@@ -75,45 +79,76 @@ This is **receipt acknowledgment only**, not IDEA/IEP consent.
 
 ## Complete dropdown inventories
 
-### 1) Communication templates (12 options)
+### 1) Communication templates (43 options)
 
-1. Positive progress update  
-2. Missing work reminder  
-3. IEP meeting invitation summary  
-4. Behavior support update  
-5. Attendance / arrival check-in  
-6. Related service session note  
-7. Accommodation implementation note  
-8. Transition support update  
-9. Celebration / strength note  
-10. Concern follow-up (family visible)  
-11. Internal team coordination note *(default visibility: Internal)*  
-12. Permission / reply requested  
+1. Positive progress update
+2. Celebration / strength note
+3. Missing work reminder
+4. Homework / home practice support
+5. IEP meeting invitation summary
+6. IEP annual review reminder
+7. ETR / evaluation meeting notice
+8. Reevaluation planning notice
+9. Section 504 meeting notice
+10. Parent input / questionnaire request
+11. Permission / reply requested
+12. Behavior support update
+13. Behavior incident notice (family)
+14. Safety / crisis follow-up
+15. Body boundary / safe touch follow-up
+16. Bus / transportation behavior note
+17. Attendance / arrival check-in
+18. Tardy / late arrival pattern
+19. Related service session note
+20. Missed related service notice
+21. Accommodation implementation note
+22. Transition support update
+23. Concern follow-up (family visible)
+24. Parent–teacher conference request
+25. Discipline / administrative conference invite
+26. Progress report send-home notice
+27. Mid-year IEP / goal update
+28. Interpreter / language support offer
+29. Emergency contact update request
+30. Medication / health information reminder
+31. Clothing / supplies request
+32. Field trip / community outing notice
+33. Transportation change notice
+34. Bullying / peer conflict follow-up
+35. Technology / device expectations
+36. Sensory / regulation tools for home
+37. Gifted / enrichment update
+38. English learner / language support update
+39. Extended school year / summer services info
+40. Weekly positive summary
+41. Please read and acknowledge receipt
+42. Internal team coordination note *(default: internal)*
+43. Internal behavior debrief *(default: internal)*
 
 ### 2) Languages (20 options)
 
 Displayed as `English name (native name)` in Template & language:
 
-1. English (English)  
-2. Spanish (Español)  
-3. Arabic (العربية)  
-4. Chinese (Simplified) (简体中文)  
-5. Chinese (Traditional) (繁體中文)  
-6. French (Français)  
-7. Haitian Creole (Kreyòl ayisyen)  
-8. Hindi (हिन्दी)  
-9. Korean (한국어)  
-10. Portuguese (Português)  
-11. Russian (Русский)  
-12. Somali (Soomaali)  
-13. Swahili (Kiswahili)  
-14. Tagalog (Tagalog)  
-15. Ukrainian (Українська)  
-16. Urdu (اردو)  
-17. Vietnamese (Tiếng Việt)  
-18. Amharic (አማርኛ)  
-19. Nepali (नेपाली)  
-20. Bengali (বাংলা)  
+1. English (English)
+2. Spanish (Español)
+3. Arabic (العربية)
+4. Chinese (Simplified) (简体中文)
+5. Chinese (Traditional) (繁體中文)
+6. French (Français)
+7. Haitian Creole (Kreyòl ayisyen)
+8. Hindi (हिन्दी)
+9. Korean (한국어)
+10. Portuguese (Português)
+11. Russian (Русский)
+12. Somali (Soomaali)
+13. Swahili (Kiswahili)
+14. Tagalog (Tagalog)
+15. Ukrainian (Українська)
+16. Urdu (اردو)
+17. Vietnamese (Tiếng Việt)
+18. Amharic (አማርኛ)
+19. Nepali (नेपाली)
+20. Bengali (বাংলা)
 
 ### 3) Method (8 options)
 
@@ -134,7 +169,7 @@ Displayed as `English name (native name)` in Template & language:
 
 ### 5) Request parent e-signature (2 options; family-visible only)
 
-1. Yes — trap communication and collect receipt signature  
+1. Yes — request read/signature acknowledgment  
 2. Not for this log  
 
 ### 6) Signature method — staff capture (3 options)
@@ -143,10 +178,11 @@ Displayed as `English name (native name)` in Template & language:
 2. Typed acknowledgment  
 3. Staff attested (in person / phone)  
 
-### 7) Signature style — parent public sign page (2 options)
+### 7) Parent public acknowledgment options
 
-1. Draw signature  
-2. Typed name only  
+1. Required: **I have read this** checkbox  
+2. Required: type name + **Send acknowledgment to school**  
+3. Optional: drawn signature  
 
 ### 8) E-sign status values shown in the communications table (4 options)
 
@@ -170,7 +206,7 @@ Displayed as `English name (native name)` in Template & language:
 3. Click **Translate draft**.  
 4. Have a bilingual staff member or interpreter review before sending home.  
 5. Save the communication so it is trapped in the log.  
-6. If needed, create a parent sign link so the family can acknowledge receipt.
+6. Create a parent sign link so the family can check **I have read this**, type their name, and send.
 
 ---
 
@@ -178,5 +214,6 @@ Displayed as `English name (native name)` in Template & language:
 
 - App records communications; staff deliver them.  
 - Translation requires human review.  
-- E-sign = receipt acknowledgment only (not IEP consent).  
+- Parent read checkbox + typed name = receipt acknowledgment only (not IEP consent).  
+- Staff notification is in-app (not automatic email/SMS to staff unless district configures email elsewhere).  
 - During pilot: no real student/parent PII.
