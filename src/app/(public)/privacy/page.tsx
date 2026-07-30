@@ -22,8 +22,12 @@ export default function PrivacyPage() {
         </p>
         <p>
           Protected student, family, behavior, service, meeting, and narrative content must remain
-          inside authorized organization scopes. Development and demonstration environments use
-          fictional data only.
+          inside authorized organization scopes. Development, demonstration, and the current
+          classroom pilot use coded or fictional data only. See the{" "}
+          <a className="text-highlight underline-offset-4 hover:underline" href="/pilot-use">
+            pilot use rules
+          </a>
+          .
         </p>
         <p>
           Aggregate Administrative Intelligence values may be suppressed below a configured
@@ -32,6 +36,16 @@ export default function PrivacyPage() {
         <p>
           No FERPA, IDEA, Section 504, HIPAA, or WCAG certification claim is made by this page or
           the product.
+        </p>
+        <p>
+          A counsel review package (draft privacy notice, data-processing terms, FERPA coded-ID
+          questions, and proposed electronic acknowledgment for family communications) is prepared
+          for attorney review. Until counsel approves replacement language, this page remains a
+          design notice only—not a final district privacy policy.
+        </p>
+        <p>
+          Proposed electronic acknowledgment / e-sign for family communications is not enabled until
+          counsel approves the communications e-sign specification.
         </p>
         <p>
           For account deletion instructions, see{" "}

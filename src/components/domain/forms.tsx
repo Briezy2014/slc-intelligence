@@ -203,31 +203,40 @@ export function StudentForm({
       <input type="hidden" name="organizationId" value={organizationId} />
       {student ? <input type="hidden" name="studentId" value={student.id} /> : null}
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="firstName" label="First name">
+        <FormField id="firstName" label="First name (pilot: use code, e.g. S1)">
           <Input
             id="firstName"
             name="firstName"
             required
+            placeholder="S1"
             defaultValue={student?.first_name ?? ""}
           />
         </FormField>
-        <FormField id="lastName" label="Last name">
-          <Input id="lastName" name="lastName" required defaultValue={student?.last_name ?? ""} />
+        <FormField id="lastName" label="Last name (pilot: use Student or code)">
+          <Input
+            id="lastName"
+            name="lastName"
+            required
+            placeholder="Student"
+            defaultValue={student?.last_name ?? ""}
+          />
         </FormField>
       </div>
-      <FormField id="preferredName" label="Preferred name">
+      <FormField id="preferredName" label="Preferred name (optional coded label)">
         <Input
           id="preferredName"
           name="preferredName"
+          placeholder="S1"
           defaultValue={student?.preferred_name ?? ""}
         />
       </FormField>
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="localIdentifier" label="Local identifier">
+        <FormField id="localIdentifier" label="Local identifier (pilot classroom code)">
           <Input
             id="localIdentifier"
             name="localIdentifier"
             required
+            placeholder="S1"
             defaultValue={student?.local_identifier ?? ""}
           />
         </FormField>

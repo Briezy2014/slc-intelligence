@@ -10,7 +10,7 @@ Documentation is the source of truth for product intent during Phase 0 and remai
 
 Status: Draft
 
-Last updated: 2026-07-29
+Last updated: 2026-07-30
 
 Owner: Product Owner
 
@@ -92,7 +92,18 @@ When documents conflict, surface the conflict for product-owner resolution. Do n
 | `ISSUE_TEMPLATE.md`                  | Post-launch issue template                       |
 | `PRODUCTION_RELEASE_NOTES.md`        | Finished-product release notes                   |
 | `KNOWN_LIMITATIONS.md`               | Known limitations after launch                   |
+<<<<<<< HEAD
 | `COMMUNICATION_TRANSLATION_AND_PLANS.md` | Template/language translate, ack, 504/Gifted/EL |
+=======
+| `PILOT_DEIDENTIFIED_USE.md`          | Active pilot coded / de-identified use rules     |
+| `legal/COUNSEL_PRIVACY_PACKAGE.md`   | Counsel-ready privacy package index (draft)      |
+| `legal/COUNSEL_REVIEW_CHECKLIST.md`  | Counsel sign-off checklist                       |
+| `legal/DRAFT_PRIVACY_NOTICE.md`      | Draft privacy notice for counsel edit            |
+| `legal/DRAFT_DATA_PROCESSING_ADDENDUM.md` | Draft org/district DPA                      |
+| `legal/DRAFT_FERPA_COUNSEL_MEMO.md`  | FERPA / coded student ID memo for counsel        |
+| `legal/COUNSEL_QUESTION_CODED_STUDENT_IDS.md` | Short coded-ID counsel question         |
+| `legal/DRAFT_ESIGN_COMMUNICATIONS_SPEC.md` | E-sign for family communications (pre-build) |
+>>>>>>> origin/main
 
 Supporting documents refine these authorities and must remain consistent with them.
 
@@ -146,3 +157,4 @@ Conflicts between documents, or between documents and code, must be surfaced rat
 | ---------- | --------------------------------- | ------------ |
 | 2026-07-28 | Initial Phase 0 draft             | Cursor Agent |
 | 2026-07-29 | Phase 9-12 application docs added | Cursor Agent |
+| 2026-07-30 | Counsel privacy package index added | Cursor Agent |
