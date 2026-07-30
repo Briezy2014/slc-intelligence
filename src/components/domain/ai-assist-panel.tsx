@@ -12,8 +12,8 @@ import type { AiAssistDomain, AiSuggestion } from "@/lib/ai/types";
 
 export function AiAssistPanel({
   domain,
-  title = "AI Assist",
-  description = "Generate reviewable drafts and dropdown-ready suggestions from SLC intelligence.",
+  title = "Draft assistant",
+  description = "Generate a reviewable starting draft. Edit before sending or saving.",
   defaultFocusArea = "",
   onApply,
 }: {

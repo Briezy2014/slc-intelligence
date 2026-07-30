@@ -9,12 +9,36 @@ import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 export const metadata: Metadata = { title: "AI Assist" };
 
 const MODULE_LINKS = [
-  { href: "/family-communication", label: "Family Communication", domain: "communication drafts" },
-  { href: "/accommodations", label: "Accommodations", domain: "support suggestions" },
-  { href: "/interventions", label: "Interventions", domain: "plan suggestions" },
-  { href: "/goals", label: "Goals", domain: "goal language" },
-  { href: "/executive-function", label: "Executive Function", domain: "EF focuses" },
-  { href: "/progress/enter", label: "Rapid Progress", domain: "session prompts" },
+  {
+    href: "/family-communication",
+    label: "Family Communication",
+    description: "Draft family updates, meeting notes, and parent messages.",
+  },
+  {
+    href: "/accommodations",
+    label: "Accommodations",
+    description: "Build classroom and testing accommodation plans.",
+  },
+  {
+    href: "/interventions",
+    label: "Interventions",
+    description: "Plan interventions, track fidelity, and review dosage.",
+  },
+  {
+    href: "/goals",
+    label: "Goals",
+    description: "Create measurable IEP goals and learning progressions.",
+  },
+  {
+    href: "/executive-function",
+    label: "Executive Function",
+    description: "Support planning, organization, and self-management skills.",
+  },
+  {
+    href: "/progress/enter",
+    label: "Rapid Progress",
+    description: "Enter progress data and prepare monitoring prompts.",
+  },
 ] as const;
 
 export default function AiAssistPage() {
@@ -23,13 +47,12 @@ export default function AiAssistPage() {
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "AI Assist" }]} />
       <PageHeader
         title="AI Assist"
-        description="Generate reviewable drafts and suggestions across SLC Intelligence. Educators stay in control of every final decision."
+        description="Create reviewable drafts for classroom workflows. You approve every final version."
       />
       <div className="space-y-6">
-        <Alert title="Assistive, not autonomous" tone="info">
-          AI Assist drafts communications, accommodations, interventions, goals, and EF ideas for
-          your review. It does not diagnose, determine eligibility/placement, or auto-finalize IEP
-          decisions.
+        <Alert title="Review before use" tone="info">
+          Suggestions support educator drafting only. They do not diagnose, determine eligibility or
+          placement, or finalize IEP decisions.
         </Alert>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {MODULE_LINKS.map((link) => (
@@ -39,18 +62,22 @@ export default function AiAssistPage() {
               className="border-border bg-background-elevated hover:border-highlight/50 rounded-[var(--radius-lg)] border p-4 transition-colors"
             >
               <CardTitle className="text-base">{link.label}</CardTitle>
-              <CardDescription>Open module AI Assist for {link.domain}.</CardDescription>
+              <CardDescription>{link.description}</CardDescription>
             </Link>
           ))}
         </div>
         <Card>
-          <CardTitle>Try a draft here</CardTitle>
+          <CardTitle>Start a draft</CardTitle>
           <CardDescription>
-            Use this hub to generate ideas quickly, then apply or copy them into the matching module
-            form.
+            Generate a starting draft here, then move it into the matching module to complete and
+            save.
           </CardDescription>
           <div className="mt-4">
-            <AiAssistPanel domain="communication" title="Quick communication draft" />
+            <AiAssistPanel
+              domain="communication"
+              title="Family communication draft"
+              description="Create a clear parent or guardian message for review."
+            />
           </div>
         </Card>
       </div>
