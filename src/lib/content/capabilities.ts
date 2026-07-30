@@ -60,6 +60,10 @@ export const ACTIVE_CAPABILITIES = [
     title: "Instructional intelligence toolkit",
     body: "Present levels drafts, goal–need matching, measurability flags, consistency checks, meeting prep, and para-friendly supports.",
   },
+  {
+    title: "Differentiated instructional packets",
+    body: "Generate 30–100 page educator-reviewed packets from learner profiles—visuals, games, assessments, data sheets, and Easy/Moderate/Challenging/Errorless/Task analysis/ABA/UDL styles.",
+  },
 ] as const;
 
 export const BENEFIT_POINTS = [

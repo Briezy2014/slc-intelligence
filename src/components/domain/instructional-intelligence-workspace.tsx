@@ -380,6 +380,9 @@ export function InstructionalIntelligenceWorkspace() {
           <Link href="/ai-assist" className="text-highlight underline">
             AI Assist (human-reviewed drafting)
           </Link>
+          <Link href="/instructional-packets" className="text-highlight underline">
+            Differentiated instructional packets
+          </Link>
           <Link href="/para-supports" className="text-highlight underline">
             Para supports page
           </Link>

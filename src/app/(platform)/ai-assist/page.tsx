@@ -50,6 +50,11 @@ const MODULE_LINKS = [
     description: "Present levels, goal checks, consistency review, meeting prep, and more.",
   },
   {
+    href: "/instructional-packets",
+    label: "Instructional packets",
+    description: "Generate 30–100 page differentiated packets from learner profiles and IEP goals.",
+  },
+  {
     href: "/para-supports",
     label: "Para supports",
     description: "Plain-language approved supports for paraprofessionals.",
