@@ -30,7 +30,7 @@ export default async function EducationDocumentsPage({
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Education documents" }]} />
       <PageHeader
         title="IEP, ETR, and progress documents"
-        description="Blank templates, pre-populated fields, dropdown sections, and upload tracking for team review."
+        description="Ohio-aligned blank IEP/ETR/progress drafts, pre-populated fields, dropdown sections, and upload assist for team review."
       />
       {!state.configured ? (
         <ConfigurationState />
