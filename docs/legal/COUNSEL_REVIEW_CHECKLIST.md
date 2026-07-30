@@ -53,9 +53,9 @@ Use this checklist during review. Mark each item and return with the cover packa
 
 ## Counsel sign-off
 
-| Field | Response |
-|---|---|
-| Counsel | |
-| Date | |
+| Field               | Response                                    |
+| ------------------- | ------------------------------------------- |
+| Counsel             |                                             |
+| Date                |                                             |
 | Overall disposition | ☐ Approve pilot ☐ Approve production ☐ Hold |
-| Conditions | |
+| Conditions          |                                             |

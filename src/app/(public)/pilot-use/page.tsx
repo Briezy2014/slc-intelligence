@@ -26,8 +26,8 @@ export default function PilotUsePage() {
       <div className="text-muted space-y-6">
         <p>{PILOT_DEIDENTIFIED_USE_SUMMARY}</p>
         <p>
-          Keep any private key that links codes (S1, S2, S3) to real students outside this system. Do
-          not type that key into SLC Intelligence, AI Assist, notes, uploads, or communications.
+          Keep any private key that links codes (S1, S2, S3) to real students outside this system.
+          Do not type that key into SLC Intelligence, AI Assist, notes, uploads, or communications.
         </p>
 
         <section className="space-y-3">

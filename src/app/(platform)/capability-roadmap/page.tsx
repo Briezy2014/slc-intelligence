@@ -9,7 +9,10 @@ import {
   BENEFIT_POINTS,
   CAPABILITY_GUARDRAIL,
   FUTURE_GATED_CAPABILITIES,
+  INSTRUCTIONAL_CAPABILITIES,
+  INSTRUCTIONAL_POSITIONING,
 } from "@/lib/content/capabilities";
+import { INSTRUCTIONAL_STATUS_LABEL } from "@/lib/instructional-intelligence/matrix";
 
 export const metadata: Metadata = { title: "Capability roadmap" };
 
@@ -25,6 +28,25 @@ export default function CapabilityRoadmapPage() {
         <Alert title="Privacy and authority guardrail" tone="warning">
           {CAPABILITY_GUARDRAIL}
         </Alert>
+        <Alert title="Instructional positioning" tone="info">
+          {INSTRUCTIONAL_POSITIONING}
+        </Alert>
+
+        <section className="space-y-3">
+          <h2 className="text-xl font-semibold">Instructional differentiators</h2>
+          <div className="grid gap-3 md:grid-cols-2">
+            {INSTRUCTIONAL_CAPABILITIES.map((item) => (
+              <Card key={item.title}>
+                <CardTitle className="text-base">{item.title}</CardTitle>
+                <CardDescription>{item.body}</CardDescription>
+                <p className="text-highlight mt-3 text-xs font-semibold tracking-wide uppercase">
+                  {INSTRUCTIONAL_STATUS_LABEL[item.status]}
+                </p>
+                <p className="text-muted mt-1 text-xs">{item.where}</p>
+              </Card>
+            ))}
+          </div>
+        </section>
 
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Active classroom capabilities</h2>
@@ -70,6 +92,12 @@ export default function CapabilityRoadmapPage() {
         </section>
 
         <div className="flex flex-wrap gap-3 text-sm">
+          <Link href="/instructional-intelligence" className="text-highlight underline">
+            Instructional intelligence toolkit
+          </Link>
+          <Link href="/para-supports" className="text-highlight underline">
+            Para supports
+          </Link>
           <Link href="/education-documents" className="text-highlight underline">
             Ohio-aligned IEP / ETR / progress blanks
           </Link>

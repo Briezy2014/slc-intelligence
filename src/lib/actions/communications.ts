@@ -298,7 +298,6 @@ export async function recordFamilyCommunicationExportAction(
   }
 }
 
-
 export async function translateCommunicationDraftAction(input: {
   subject: string;
   summary: string;
@@ -400,7 +399,8 @@ export async function recordCommunicationAcknowledgementAction(
       .from("communication_logs")
       .update({
         acknowledgement_requested: true,
-        esign_status: values.status === "requested_clarification" ? "clarification_requested" : "signed",
+        esign_status:
+          values.status === "requested_clarification" ? "clarification_requested" : "signed",
         signed_content_hash: contentHash,
       })
       .eq("id", values.communicationLogId)

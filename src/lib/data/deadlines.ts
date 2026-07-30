@@ -64,7 +64,12 @@ export async function listDeadlineTracker(): Promise<DataState<DeadlinesData>> {
           .order("due_date", { ascending: true }),
       ]);
 
-    if (studentsResult.error || cyclesResult.error || followupsResult.error || meetingsResult.error) {
+    if (
+      studentsResult.error ||
+      cyclesResult.error ||
+      followupsResult.error ||
+      meetingsResult.error
+    ) {
       return safeDataError(empty);
     }
 

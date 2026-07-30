@@ -33,7 +33,10 @@ export function StaffNotificationsPanel({
             New parent read/sign events will appear here automatically.
           </Alert>
         ) : (
-          <Alert title={`${unread.length} unread parent acknowledgment${unread.length === 1 ? "" : "s"}`} tone="info">
+          <Alert
+            title={`${unread.length} unread parent acknowledgment${unread.length === 1 ? "" : "s"}`}
+            tone="info"
+          >
             Open Family Communication regularly to clear these after review.
           </Alert>
         )}

@@ -348,12 +348,7 @@ export type OrganizationAccessRequest = {
 };
 
 export type EducationDocumentType =
-  | "iep"
-  | "etr"
-  | "progress_report"
-  | "section_504"
-  | "gifted"
-  | "el";
+  "iep" | "etr" | "progress_report" | "section_504" | "gifted" | "el";
 export type EducationDocumentStatus = "draft" | "in_review" | "finalized" | "archived";
 
 export type DistrictFormTemplate = {
@@ -1463,11 +1458,7 @@ export type ContactPreference = {
 };
 
 export type CommunicationVisibility = "family_visible" | "internal" | "restricted_admin";
-export type CommunicationEsignStatus =
-  | "none"
-  | "pending"
-  | "signed"
-  | "clarification_requested";
+export type CommunicationEsignStatus = "none" | "pending" | "signed" | "clarification_requested";
 
 export type CommunicationLog = {
   id: Uuid;
@@ -1534,9 +1525,7 @@ export type CommunicationSignLink = {
 };
 
 export type StaffNotificationKind =
-  | "communication_parent_read"
-  | "communication_parent_signed"
-  | "general";
+  "communication_parent_read" | "communication_parent_signed" | "general";
 
 export type StaffNotification = {
   id: Uuid;

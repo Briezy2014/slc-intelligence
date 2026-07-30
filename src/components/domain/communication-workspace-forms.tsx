@@ -221,8 +221,7 @@ export function ContactAndCommunicationForms({
                 <div className="space-y-3">
                   <Alert title="Choose template and language" tone="info">
                     Select a communication template (expanded school letter library) and a family
-                    language (20 options). Insert the
-                    English draft, then translate before saving.
+                    language (20 options). Insert the English draft, then translate before saving.
                   </Alert>
                   <FormField id="draftTemplateId" label="Communication template">
                     <Select
@@ -415,8 +414,8 @@ export function ContactAndCommunicationForms({
                     />
                   </FormField>
                   <p className="text-muted text-sm">
-                    Current language: {communicationLanguageLabel(languageCode)}. Use the Template
-                    & language tab to translate English drafts. After saving a family-visible note,
+                    Current language: {communicationLanguageLabel(languageCode)}. Use the Template &
+                    language tab to translate English drafts. After saving a family-visible note,
                     use Parent e-signature below to create a sign link or capture a signature.
                   </p>
                   {translateMessage ? (

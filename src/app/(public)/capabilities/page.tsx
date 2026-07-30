@@ -7,12 +7,15 @@ import {
   BENEFIT_POINTS,
   CAPABILITY_GUARDRAIL,
   FUTURE_GATED_CAPABILITIES,
+  INSTRUCTIONAL_CAPABILITIES,
+  INSTRUCTIONAL_POSITIONING,
 } from "@/lib/content/capabilities";
+import { INSTRUCTIONAL_STATUS_LABEL } from "@/lib/instructional-intelligence/matrix";
 
 export const metadata: Metadata = {
   title: "Capabilities",
   description:
-    "SLC Intelligence special education classroom capabilities, benefits, and future district integrations.",
+    "SLC Intelligence special education classroom capabilities, instructional intelligence differentiators, and future district integrations.",
 };
 
 export default function CapabilitiesPage() {
@@ -26,6 +29,27 @@ export default function CapabilitiesPage() {
 
       <div className="space-y-10">
         <p className="text-muted">{CAPABILITY_GUARDRAIL}</p>
+        <p className="text-foreground font-medium">{INSTRUCTIONAL_POSITIONING}</p>
+
+        <section className="space-y-4">
+          <h2 className="text-foreground font-serif text-2xl font-semibold">
+            Instructional intelligence (beyond paperwork-only systems)
+          </h2>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {INSTRUCTIONAL_CAPABILITIES.map((item) => (
+              <article
+                key={item.title}
+                className="border-border bg-background-elevated/80 rounded-[var(--radius-lg)] border p-4"
+              >
+                <h3 className="text-foreground font-semibold">{item.title}</h3>
+                <p className="text-muted mt-2 text-sm">{item.body}</p>
+                <p className="text-highlight mt-3 text-xs font-semibold tracking-wide uppercase">
+                  {INSTRUCTIONAL_STATUS_LABEL[item.status]}
+                </p>
+              </article>
+            ))}
+          </div>
+        </section>
 
         <section className="space-y-4">
           <h2 className="text-foreground font-serif text-2xl font-semibold">What teams can use</h2>

@@ -307,13 +307,12 @@ export const BEHAVIOR_DEFINITION_TEMPLATES: BehaviorDefinitionTemplate[] = [
     category: "Attention",
     operationalDefinition:
       "Student repeats the same question or statement 3+ times within 2 minutes after an answer was already provided, interrupting instruction to obtain adult response.",
-    examples: ["Asks “What are we doing?” repeatedly after explanation", "Repeats “Watch me” until adult looks"],
-    nonexamples: ["Asks a new clarifying question once"],
-    suggestedStrategies: [
-      "Visual answer board",
-      "Teach wait / later card",
-      "Scheduled talk time",
+    examples: [
+      "Asks “What are we doing?” repeatedly after explanation",
+      "Repeats “Watch me” until adult looks",
     ],
+    nonexamples: ["Asks a new clarifying question once"],
+    suggestedStrategies: ["Visual answer board", "Teach wait / later card", "Scheduled talk time"],
   },
   {
     id: "access-item",
@@ -394,7 +393,10 @@ export const BEHAVIOR_DEFINITION_TEMPLATES: BehaviorDefinitionTemplate[] = [
     category: "Verbal",
     operationalDefinition:
       "Student directs insults, put-downs, or demeaning labels at peers or adults that interrupt instruction or escalate conflict.",
-    examples: ["Calls peer stupid/ugly during group work", "Uses demeaning nickname after correction"],
+    examples: [
+      "Calls peer stupid/ugly during group work",
+      "Uses demeaning nickname after correction",
+    ],
     nonexamples: ["Friendly teasing clearly welcomed by peer during free time"],
     suggestedStrategies: [
       "Teach respectful disagreement scripts",
@@ -729,7 +731,10 @@ export const BEHAVIOR_DEFINITION_TEMPLATES: BehaviorDefinitionTemplate[] = [
     category: "Social / peer",
     operationalDefinition:
       "Student repeatedly uses physical intimidation (blocking, poking, pushing) toward the same peer across incidents to coerce or exclude.",
-    examples: ["Repeatedly blocks same peer from joining game", "Daily poking of same peer after redirects"],
+    examples: [
+      "Repeatedly blocks same peer from joining game",
+      "Daily poking of same peer after redirects",
+    ],
     nonexamples: ["Single conflict that is repaired"],
     suggestedStrategies: [
       "Active supervision + seating/play plans",
@@ -783,8 +788,7 @@ export const BEHAVIOR_DEFINITION_TEMPLATES: BehaviorDefinitionTemplate[] = [
     id: "food-refusal-grab",
     name: "Food stealing / grabbing",
     category: "Access / tangible",
-    operationalDefinition:
-      "Student grabs food from peers or serving areas without permission.",
+    operationalDefinition: "Student grabs food from peers or serving areas without permission.",
     examples: ["Takes food from peer’s tray", "Grabs extras from serving line without asking"],
     nonexamples: ["Requests seconds appropriately"],
     suggestedStrategies: [
@@ -799,7 +803,10 @@ export const BEHAVIOR_DEFINITION_TEMPLATES: BehaviorDefinitionTemplate[] = [
     category: "Escape / avoidance",
     operationalDefinition:
       "Student drops body to floor and remains there for 30+ seconds when presented with a demand or transition, impeding movement or instruction.",
-    examples: ["Drops to hallway floor when told to line up", "Lies on classroom floor refusing to stand for transition"],
+    examples: [
+      "Drops to hallway floor when told to line up",
+      "Lies on classroom floor refusing to stand for transition",
+    ],
     nonexamples: ["Sits on floor during approved floor activity"],
     suggestedStrategies: [
       "Teach break/help before flop",
@@ -827,7 +834,10 @@ export const BEHAVIOR_DEFINITION_TEMPLATES: BehaviorDefinitionTemplate[] = [
     category: "Sensory / regulation",
     operationalDefinition:
       "Student engages in repetitive motor movements that interrupt instruction or safety for 1+ continuous minute after one redirect to an alternative.",
-    examples: ["Hand-flapping that prevents writing after redirect", "Body rocking that blocks peer pathway"],
+    examples: [
+      "Hand-flapping that prevents writing after redirect",
+      "Body rocking that blocks peer pathway",
+    ],
     nonexamples: ["Brief stim that stops with cue and does not block learning"],
     suggestedStrategies: [
       "Offer competing functional alternative",
