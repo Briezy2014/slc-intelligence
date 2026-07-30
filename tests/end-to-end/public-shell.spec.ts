@@ -27,7 +27,9 @@ test.describe("public shell", () => {
     ).toBeVisible();
     // Sign-in is disabled until Supabase env is present; messaging is shown up front.
     await expect(page.getByRole("button", { name: "Sign in" })).toBeDisabled();
-    await expect(page.getByRole("link", { name: /Request access/i })).toBeVisible();
+    await expect(
+      page.locator("#main-content").getByRole("link", { name: /Request access/i }),
+    ).toBeVisible();
   });
 
   test("command center redirects to sign-in when Supabase is not configured", async ({ page }) => {
