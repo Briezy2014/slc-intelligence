@@ -13,11 +13,9 @@ import {
   saveAccommodationLibraryItemAction,
   saveStudentAccommodationAction,
 } from "@/lib/actions/accommodations";
-import {
-  recordCommunicationAcknowledgementAction,
-  recordFamilyCommunicationExportAction,
-} from "@/lib/actions/communications";
+import { recordFamilyCommunicationExportAction } from "@/lib/actions/communications";
 import { ContactAndCommunicationForms } from "@/components/domain/communication-workspace-forms";
+import { CommunicationEsignPanel } from "@/components/domain/communication-esign-panel";
 import { communicationLanguageLabel } from "@/lib/catalogs/communication-languages";
 import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import {
@@ -454,18 +452,12 @@ export function CommunicationsWorkspace({
   data: CommunicationsData;
   studentId?: string;
 }) {
-  const ackCandidates = data.communications.filter(
-    (log) =>
-      log.visibility === "family_visible" &&
-      (log.acknowledgement_requested || log.status === "finalized" || log.status === "draft"),
-  );
-  const firstAckCandidate = ackCandidates[0];
-
   return (
     <div className="space-y-6">
       <Alert title="Family-visible export guardrail" tone="info">
         Exports include family_visible communication summaries only; internal and restricted records
-        stay separate. Use Template & language to draft in English and translate before saving.
+        stay separate. Use Template & language to draft and translate, then Parent e-signature for
+        receipt signatures on behavior letters and other home communications.
       </Alert>
       <ContactAndCommunicationForms
         organizationId={data.organizationId ?? ""}
@@ -475,6 +467,7 @@ export function CommunicationsWorkspace({
         canEnterCommunication={data.permissions.canEnterCommunication}
         studentId={studentId}
       />
+      <CommunicationEsignPanel data={data} />
       <form action={submitAction(recordFamilyCommunicationExportAction)}>
         <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
         <input type="hidden" name="studentId" value={studentId ?? ""} />
@@ -484,80 +477,16 @@ export function CommunicationsWorkspace({
       </form>
       <TableShell
         caption="Communications"
-        headers={["Subject", "Language", "Visibility", "Ack requested", "Status", "Occurred"]}
+        headers={["Subject", "Language", "Visibility", "E-sign", "Status", "Occurred"]}
         rows={data.communications.map((log) => [
           log.subject,
           communicationLanguageLabel(log.language_code || "en"),
           log.visibility,
-          log.acknowledgement_requested ? "Yes" : "No",
+          log.esign_status || "none",
           log.status,
           new Date(log.occurred_at).toLocaleString(),
         ])}
       />
-      <Card>
-        <CardTitle>Parent / guardian acknowledgement</CardTitle>
-        <CardDescription>
-          Record a typed acknowledgement on progress updates, behavior notes, or other
-          family-visible communications. This is receipt acknowledgement only — not IDEA/IEP
-          consent.
-        </CardDescription>
-        {data.permissions.canEnterCommunication && firstAckCandidate ? (
-          <form
-            action={submitAction(recordCommunicationAcknowledgementAction)}
-            className="mt-4 space-y-3"
-          >
-            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-            <input type="hidden" name="communicationLogId" value={firstAckCandidate.id} />
-            <input type="hidden" name="studentId" value={firstAckCandidate.student_id} />
-            <p className="text-muted text-sm">
-              Recording for: <span className="text-foreground font-medium">{firstAckCandidate.subject}</span>
-            </p>
-            <FormField id="signerDisplayName" label="Parent / guardian name">
-              <Input id="signerDisplayName" name="signerDisplayName" required />
-            </FormField>
-            <FormField id="typedSignature" label="Typed signature">
-              <Input id="typedSignature" name="typedSignature" placeholder="Type full name" />
-            </FormField>
-            <FormField id="ackMethod" label="Method">
-              <Select id="ackMethod" name="method" defaultValue="typed">
-                <option value="typed">Typed acknowledgement</option>
-                <option value="staff_attested">Staff attested (in-person / phone)</option>
-              </Select>
-            </FormField>
-            <FormField id="ackStatus" label="Status">
-              <Select id="ackStatus" name="status" defaultValue="acknowledged">
-                <option value="acknowledged">Acknowledged</option>
-                <option value="reviewed">Reviewed</option>
-                <option value="requested_clarification">Requested clarification</option>
-              </Select>
-            </FormField>
-            <Button type="submit" variant="secondary">
-              Record acknowledgement
-            </Button>
-          </form>
-        ) : (
-          <div className="mt-4">
-            <Alert title="No family-visible communication yet" tone="info">
-              Save a family-visible progress or behavior communication first, then record the
-              acknowledgement here.
-            </Alert>
-          </div>
-        )}
-        {(data.acknowledgements ?? []).length > 0 ? (
-          <div className="mt-4">
-            <TableShell
-              caption="Recorded acknowledgements"
-              headers={["Signer", "Method", "Status", "Signed"]}
-              rows={(data.acknowledgements ?? []).map((ack) => [
-                ack.signer_display_name,
-                ack.method,
-                ack.status,
-                new Date(ack.signed_at).toLocaleString(),
-              ])}
-            />
-          </div>
-        ) : null}
-      </Card>
     </div>
   );
 }

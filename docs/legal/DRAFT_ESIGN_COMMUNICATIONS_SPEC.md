@@ -1,8 +1,9 @@
 # Draft Spec — Electronic Acknowledgment / E-Sign for Communications
 
-**Status:** DRAFT FOR LEGAL COUNSEL REVIEW + PRODUCT SPEC — NOT APPROVED FOR BUILD UNTIL COUNSEL SIGNS  
-**Version:** 2026-07-30  
+**Status:** IMPLEMENTED FOR RECEIPT ACKNOWLEDGMENT — counsel should still confirm legal effect for district use  
+**Version:** 2026-07-30 (build enabled by product owner request)  
 **Module:** Family Communication  
+**SQL / app:** `supabase/migrations/202607300014_communication_esign.sql`, `/sign/communication/[token]`
 
 ---
 

@@ -1463,6 +1463,12 @@ export type ContactPreference = {
 };
 
 export type CommunicationVisibility = "family_visible" | "internal" | "restricted_admin";
+export type CommunicationEsignStatus =
+  | "none"
+  | "pending"
+  | "signed"
+  | "clarification_requested";
+
 export type CommunicationLog = {
   id: Uuid;
   organization_id: Uuid;
@@ -1479,6 +1485,8 @@ export type CommunicationLog = {
   source_language_code: string;
   source_summary: Nullable<string>;
   acknowledgement_requested: boolean;
+  esign_status: CommunicationEsignStatus;
+  signed_content_hash: Nullable<string>;
   followup_needed: boolean;
   status: BehaviorObservationStatus;
   finalized_at: Nullable<Timestamp>;
@@ -1499,10 +1507,28 @@ export type CommunicationAcknowledgement = {
   method: "typed" | "drawn" | "staff_attested";
   status: "acknowledged" | "reviewed" | "requested_clarification";
   typed_signature: Nullable<string>;
-  content_hash: Nullable<string>;
+  signature_image_data: Nullable<string>;
+  content_hash: string;
+  user_agent: Nullable<string>;
   notes: Nullable<string>;
   signed_at: Timestamp;
   recorded_by: Nullable<Uuid>;
+  sign_link_id: Nullable<Uuid>;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
+export type CommunicationSignLink = {
+  id: Uuid;
+  organization_id: Uuid;
+  communication_log_id: Uuid;
+  student_id: Uuid;
+  token_hash: string;
+  expires_at: Timestamp;
+  revoked_at: Nullable<Timestamp>;
+  first_opened_at: Nullable<Timestamp>;
+  last_opened_at: Nullable<Timestamp>;
+  created_by: Nullable<Uuid>;
   created_at: Timestamp;
   updated_at: Timestamp;
 };
@@ -2342,6 +2368,11 @@ export type Database = {
         Partial<CommunicationAcknowledgement>,
         Partial<CommunicationAcknowledgement>
       >;
+      communication_sign_links: RowDefinition<
+        CommunicationSignLink,
+        Partial<CommunicationSignLink>,
+        Partial<CommunicationSignLink>
+      >;
       communication_participants: RowDefinition<
         CommunicationParticipant,
         Partial<CommunicationParticipant>,
@@ -2645,6 +2676,34 @@ export type Database = {
       can_finalize_communication: {
         Args: { p_org_id: Uuid; p_student_id: Uuid };
         Returns: boolean;
+      };
+      get_communication_sign_packet: {
+        Args: { p_token: string };
+        Returns: Array<{
+          link_id: Uuid;
+          communication_log_id: Uuid;
+          organization_name: string;
+          subject: string;
+          summary: string;
+          method: string;
+          occurred_at: Timestamp;
+          esign_status: string;
+          expires_at: Timestamp;
+          already_signed: boolean;
+        }>;
+      };
+      submit_communication_sign_packet: {
+        Args: {
+          p_token: string;
+          p_signer_display_name: string;
+          p_typed_signature: string;
+          p_signature_image_data?: string | null;
+          p_signer_email?: string | null;
+          p_method?: string | null;
+          p_user_agent?: string | null;
+          p_notes?: string | null;
+        };
+        Returns: Uuid;
       };
       can_read_meeting: {
         Args: { p_org_id: Uuid; p_student_id: Uuid };

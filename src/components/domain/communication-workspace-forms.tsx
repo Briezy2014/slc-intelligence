@@ -64,7 +64,7 @@ export function ContactAndCommunicationForms({
   const [visibility, setVisibility] = useState("family_visible");
   const [languageCode, setLanguageCode] = useState("en");
   const [method, setMethod] = useState("email");
-  const [acknowledgementRequested, setAcknowledgementRequested] = useState(false);
+  const [acknowledgementRequested, setAcknowledgementRequested] = useState(true);
   const [composeTab, setComposeTab] = useState<ComposeTab>("template_language");
   const [translateMessage, setTranslateMessage] = useState<string | null>(null);
   const [pending, startTransition] = useTransition();
@@ -92,6 +92,7 @@ export function ContactAndCommunicationForms({
     setSourceSummary(draft.summary);
     setVisibility(draft.visibility);
     setMethod(draft.method);
+    if (draft.visibility === "family_visible") setAcknowledgementRequested(true);
     setTranslateMessage(
       languageCode === "en"
         ? "English template inserted. Review before saving."
@@ -290,11 +291,6 @@ export function ContactAndCommunicationForms({
                   <input type="hidden" name="languageCode" value={languageCode} />
                   <input type="hidden" name="sourceLanguageCode" value="en" />
                   <input type="hidden" name="sourceSummary" value={sourceSummary} />
-                  <input
-                    type="hidden"
-                    name="acknowledgementRequested"
-                    value={acknowledgementRequested ? "true" : "false"}
-                  />
                   <FormField id="communicationStudentId" label="Student">
                     <Select
                       id="communicationStudentId"
@@ -366,25 +362,37 @@ export function ContactAndCommunicationForms({
                       id="visibility"
                       name="visibility"
                       value={visibility}
-                      onChange={(event) => setVisibility(event.target.value)}
+                      onChange={(event) => {
+                        setVisibility(event.target.value);
+                        if (event.target.value === "family_visible") {
+                          setAcknowledgementRequested(true);
+                        }
+                      }}
                     >
                       <option value="family_visible">Family visible</option>
                       <option value="internal">Internal</option>
                       <option value="restricted_admin">Restricted admin</option>
                     </Select>
                   </FormField>
-                  <FormField id="ackRequested" label="Request parent acknowledgement">
-                    <Select
-                      id="ackRequested"
-                      value={acknowledgementRequested ? "true" : "false"}
-                      onChange={(event) =>
-                        setAcknowledgementRequested(event.target.value === "true")
-                      }
-                    >
-                      <option value="false">No</option>
-                      <option value="true">Yes — progress / behavior / other family note</option>
-                    </Select>
-                  </FormField>
+                  {visibility === "family_visible" ? (
+                    <FormField id="ackRequested" label="Request parent e-signature">
+                      <Select
+                        id="ackRequested"
+                        name="acknowledgementRequested"
+                        value={acknowledgementRequested ? "true" : "false"}
+                        onChange={(event) =>
+                          setAcknowledgementRequested(event.target.value === "true")
+                        }
+                      >
+                        <option value="true">
+                          Yes — trap communication and collect receipt signature
+                        </option>
+                        <option value="false">Not for this log</option>
+                      </Select>
+                    </FormField>
+                  ) : (
+                    <input type="hidden" name="acknowledgementRequested" value="false" />
+                  )}
                   <input type="hidden" name="direction" value="outbound" />
                   <input type="hidden" name="status" value="draft" />
                   <FormField id="subject" label="Subject">
@@ -407,7 +415,8 @@ export function ContactAndCommunicationForms({
                   </FormField>
                   <p className="text-muted text-sm">
                     Current language: {communicationLanguageLabel(languageCode)}. Use the Template
-                    & language tab to translate English drafts.
+                    & language tab to translate English drafts. After saving a family-visible note,
+                    use Parent e-signature below to create a sign link or capture a signature.
                   </p>
                   {translateMessage ? (
                     <Alert title="Draft language status" tone="info">
