@@ -27,6 +27,7 @@ export default function robots(): MetadataRoute.Robots {
           "/executive-function",
           "/classroom-operations",
           "/administrative-intelligence",
+          "/ai-assist",
           "/organization",
           "/account",
           "/api",

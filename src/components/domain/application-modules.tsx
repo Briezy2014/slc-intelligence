@@ -13,7 +13,9 @@ import {
   saveAccommodationLibraryItemAction,
   saveStudentAccommodationAction,
 } from "@/lib/actions/accommodations";
-import { saveCommunicationLogAction, saveContactAction, recordFamilyCommunicationExportAction } from "@/lib/actions/communications";
+import { recordFamilyCommunicationExportAction } from "@/lib/actions/communications";
+import { ContactAndCommunicationForms } from "@/components/domain/communication-workspace-forms";
+import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import { saveMeetingAction, addMeetingParticipantAction, recordMeetingAcknowledgementAction } from "@/lib/actions/meetings";
 import {
   addServiceComponentAction,
@@ -83,6 +85,17 @@ export function AccommodationsWorkspace({ data, studentId }: { data: Accommodati
       <Alert title="Accommodation records are descriptive" tone="info">
         These records document planned and implemented supports. They do not determine legal compliance.
       </Alert>
+      {data.libraryItems.length === 0 ? (
+        <Alert title="Load starter accommodations" tone="warning">
+          The library dropdown is empty until you add items or load starter libraries under{" "}
+          <Link href="/organization/settings" className="font-semibold underline">Organization</Link>.
+        </Alert>
+      ) : null}
+      <AiAssistPanel
+        domain="accommodation"
+        title="AI Assist · Accommodations"
+        description="Suggest accommodation language and implementation notes for educator review."
+      />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardTitle>Accommodation library</CardTitle>
@@ -250,39 +263,17 @@ export function ServicesWorkspace({ data, studentId }: { data: ServicesData; stu
 }
 
 export function CommunicationsWorkspace({ data, studentId }: { data: CommunicationsData; studentId?: string }) {
-  const visibleStudents = studentId ? data.students.filter((student) => student.id === studentId) : data.students;
   return (
     <div className="space-y-6">
       <Alert title="Family-visible export guardrail" tone="info">Exports include family_visible communication summaries only; internal and restricted records stay separate.</Alert>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardTitle>Contact</CardTitle>
-          {data.permissions.canManageContacts ? (
-            <form action={submitAction(saveContactAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <FormField id="contactStudentId" label="Student"><Select id="contactStudentId" name="studentId" defaultValue={studentId ?? ""} required><option value="">Choose student</option>{visibleStudents.map((student) => <option key={student.id} value={student.id}>{studentName(student)}</option>)}</Select></FormField>
-              <div className="grid gap-3 sm:grid-cols-2"><FormField id="firstName" label="First name"><Input id="firstName" name="firstName" required /></FormField><FormField id="lastName" label="Last name"><Input id="lastName" name="lastName" required /></FormField></div>
-              <FormField id="relationship" label="Relationship"><Input id="relationship" name="relationship" required /></FormField>
-              <Button type="submit">Save contact</Button>
-            </form>
-          ) : <PermissionNote />}
-        </Card>
-        <Card>
-          <CardTitle>Communication log</CardTitle>
-          {data.permissions.canEnterCommunication ? (
-            <form action={submitAction(saveCommunicationLogAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <FormField id="communicationStudentId" label="Student"><Select id="communicationStudentId" name="studentId" defaultValue={studentId ?? ""} required><option value="">Choose student</option>{visibleStudents.map((student) => <option key={student.id} value={student.id}>{studentName(student)}</option>)}</Select></FormField>
-              <FormField id="contactId" label="Contact"><Select id="contactId" name="contactId"><option value="">No contact selected</option>{data.contacts.map((contact) => <option key={contact.id} value={contact.id}>{contact.last_name}, {contact.first_name}</option>)}</Select></FormField>
-              <FormField id="visibility" label="Visibility"><Select id="visibility" name="visibility" defaultValue="family_visible"><option value="family_visible">Family visible</option><option value="internal">Internal</option><option value="restricted_admin">Restricted admin</option></Select></FormField>
-              <input type="hidden" name="method" value="phone" /><input type="hidden" name="direction" value="outbound" /><input type="hidden" name="status" value="draft" />
-              <FormField id="subject" label="Subject"><Input id="subject" name="subject" required /></FormField>
-              <FormField id="summary" label="Summary"><Textarea id="summary" name="summary" required /></FormField>
-              <Button type="submit">Save communication</Button>
-            </form>
-          ) : <PermissionNote />}
-        </Card>
-      </div>
+      <ContactAndCommunicationForms
+        organizationId={data.organizationId ?? ""}
+        students={data.students}
+        contacts={data.contacts}
+        canManageContacts={data.permissions.canManageContacts}
+        canEnterCommunication={data.permissions.canEnterCommunication}
+        studentId={studentId}
+      />
       <form action={submitAction(recordFamilyCommunicationExportAction)}><input type="hidden" name="organizationId" value={data.organizationId ?? ""} /><input type="hidden" name="studentId" value={studentId ?? ""} /><Button type="submit" variant="secondary">Record family-visible export</Button></form>
       <TableShell caption="Communications" headers={["Subject", "Visibility", "Status", "Occurred"]} rows={data.communications.map((log) => [log.subject, log.visibility, log.status, new Date(log.occurred_at).toLocaleString()])} />
     </div>
@@ -331,10 +322,44 @@ export function ExecutiveFunctionWorkspace({ data, studentId }: { data: Executiv
   return (
     <div className="space-y-6">
       <Alert title="Executive function observations are descriptive" tone="info">Percentages describe observed support use and do not claim mastery.</Alert>
+      {data.skillAreas.length === 0 ? (
+        <Alert title="Load starter EF skill areas" tone="warning">
+          Skill area dropdowns populate after you load starter libraries under{" "}
+          <Link href="/organization/settings" className="font-semibold underline">Organization</Link>.
+        </Alert>
+      ) : null}
+      <AiAssistPanel
+        domain="executive_function"
+        title="AI Assist · Executive function"
+        description="Suggest EF skill focuses and plan titles based on the need you describe."
+      />
       <div className="grid gap-4 md:grid-cols-3"><Card><CardTitle>{data.plans.length}</CardTitle><CardDescription>EF plans</CardDescription></Card><Card><CardTitle>{independence.percent ?? "Unavailable"}%</CardTitle><CardDescription>Observed independence</CardDescription></Card><Card><CardTitle>{prompts.verbal}</CardTitle><CardDescription>Verbal prompts observed</CardDescription></Card></div>
       <Card>
         <CardTitle>Executive function plan</CardTitle>
-        {data.permissions.canManagePlans ? <form action={submitAction(saveExecutiveFunctionPlanAction)} className="mt-4 space-y-3"><input type="hidden" name="organizationId" value={data.organizationId ?? ""} /><FormField id="efStudentId" label="Student"><Select id="efStudentId" name="studentId" defaultValue={studentId ?? ""} required><option value="">Choose student</option>{visibleStudents.map((student) => <option key={student.id} value={student.id}>{studentName(student)}</option>)}</Select></FormField><FormField id="efTitle" label="Title"><Input id="efTitle" name="title" required /></FormField><input type="hidden" name="status" value="draft" /><Button type="submit">Save EF plan</Button></form> : <PermissionNote />}
+        {data.permissions.canManagePlans ? (
+          <form action={submitAction(saveExecutiveFunctionPlanAction)} className="mt-4 space-y-3">
+            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+            <FormField id="efStudentId" label="Student">
+              <Select id="efStudentId" name="studentId" defaultValue={studentId ?? ""} required>
+                <option value="">Choose student</option>
+                {visibleStudents.map((student) => (
+                  <option key={student.id} value={student.id}>{studentName(student)}</option>
+                ))}
+              </Select>
+            </FormField>
+            <FormField id="efSkillAreaId" label="Skill area">
+              <Select id="efSkillAreaId" name="skillAreaId" defaultValue="">
+                <option value="">Choose skill area (optional until starter libraries are loaded)</option>
+                {data.skillAreas.map((skill) => (
+                  <option key={skill.id} value={skill.id}>{skill.name}</option>
+                ))}
+              </Select>
+            </FormField>
+            <FormField id="efTitle" label="Title"><Input id="efTitle" name="title" required /></FormField>
+            <input type="hidden" name="status" value="draft" />
+            <Button type="submit">Save EF plan</Button>
+          </form>
+        ) : <PermissionNote />}
       </Card>
       {firstPlan ? <div className="grid gap-6 lg:grid-cols-2"><Card><CardTitle>Observation</CardTitle><form action={submitAction(saveExecutiveFunctionObservationAction)} className="mt-4 space-y-3"><input type="hidden" name="organizationId" value={data.organizationId ?? ""} /><input type="hidden" name="planId" value={firstPlan.id} /><input type="hidden" name="studentId" value={firstPlan.student_id} /><FormField id="observationDate" label="Date"><Input id="observationDate" name="observationDate" type="date" defaultValue={today} required /></FormField><FormField id="promptLevel" label="Prompt level"><Select id="promptLevel" name="promptLevel" defaultValue="visual"><option value="independent">Independent</option><option value="visual">Visual</option><option value="verbal">Verbal</option><option value="modeled">Modeled</option><option value="not_observed">Not observed</option></Select></FormField><Button type="submit" variant="secondary">Save observation</Button></form></Card>{firstChecklistItem ? <Card><CardTitle>Checklist response</CardTitle><form action={submitAction(saveChecklistResponseAction)} className="mt-4 space-y-3"><input type="hidden" name="organizationId" value={data.organizationId ?? ""} /><input type="hidden" name="checklistId" value={firstChecklistItem.checklist_id} /><input type="hidden" name="checklistItemId" value={firstChecklistItem.id} /><input type="hidden" name="studentId" value={firstChecklistItem.student_id} /><FormField id="responseDate" label="Date"><Input id="responseDate" name="responseDate" type="date" defaultValue={today} required /></FormField><FormField id="response" label="Response"><Select id="response" name="response" defaultValue="yes"><option value="yes">Yes</option><option value="partial">Partial</option><option value="no">No</option><option value="not_observed">Not observed</option></Select></FormField><Button type="submit" variant="secondary">Save response</Button></form></Card> : null}</div> : null}
       <TableShell caption="Executive function plans" headers={["Plan", "Student", "Status"]} rows={data.plans.map((plan) => { const student = data.students.find((entry) => entry.id === plan.student_id); return [plan.title, student ? studentName(student) : "Authorized student", plan.status]; })} />

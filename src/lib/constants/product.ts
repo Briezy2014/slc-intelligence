@@ -16,6 +16,7 @@ export const PUBLIC_NAV = [
 
 export const PLATFORM_NAV = [
   { href: "/command-center", label: "Command Center" },
+  { href: "/ai-assist", label: "AI Assist" },
   { href: "/students", label: "Students" },
   { href: "/schools", label: "Schools" },
   { href: "/programs", label: "Programs" },

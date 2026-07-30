@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -530,6 +531,16 @@ export function InterventionDashboard({ data }: { data: InterventionData }) {
   return (
     <div className="space-y-6">
       <DataReadinessPanel status={fidelity.sufficiency.status} reason={fidelity.sufficiency.reason} />
+      {data.libraryItems.length === 0 ? (
+        <Alert title="Load starter interventions" tone="warning">
+          Intervention library dropdowns stay empty until you add items or load starter libraries under Organization settings.
+        </Alert>
+      ) : null}
+      <AiAssistPanel
+        domain="intervention"
+        title="AI Assist · Interventions"
+        description="Suggest intervention plan approaches and library language for educator review."
+      />
       <div className="grid gap-4 md:grid-cols-3">
         <Card><CardTitle>{data.plans.length}</CardTitle><CardDescription>Intervention plans</CardDescription></Card>
         <Card><CardTitle>{fidelity.percent ?? "Not available"}%</CardTitle><CardDescription>Scored fidelity</CardDescription></Card>

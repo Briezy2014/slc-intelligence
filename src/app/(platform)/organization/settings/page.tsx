@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ConfigurationState } from "@/components/domain/page-states";
+import { StarterLibrariesCard } from "@/components/domain/starter-libraries-card";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { Alert } from "@/components/ui/alert";
@@ -64,6 +65,7 @@ export default async function OrganizationSettingsPage() {
             </div>
           </Card>
         ) : null}
+        {organization?.id ? <StarterLibrariesCard organizationId={organization.id} /> : null}
       </div>
     </main>
   );
