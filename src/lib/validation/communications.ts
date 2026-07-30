@@ -49,10 +49,35 @@ export const communicationAcknowledgementSchema = z.object({
   studentId: z.string().uuid(),
   signerDisplayName: z.string().trim().min(1, "Signer name is required.").max(180),
   signerEmail: z.string().trim().email().optional().or(z.literal("")),
-  method: z.enum(["typed", "drawn", "staff_attested"]).default("typed"),
+  method: z.enum(["typed", "drawn", "staff_attested"]).default("drawn"),
   status: z.enum(["acknowledged", "reviewed", "requested_clarification"]).default("acknowledged"),
-  typedSignature: z.string().trim().max(180).optional().or(z.literal("")),
+  typedSignature: z.string().trim().min(1, "Typed signature is required.").max(180),
+  signatureImageData: z.string().trim().max(600000).optional().or(z.literal("")),
   notes: z.string().trim().max(2000).optional().or(z.literal("")),
+  receiptConfirmed: z.preprocess(
+    (value) => value === true || value === "true" || value === "on",
+    z.boolean(),
+  ),
+});
+
+export const createCommunicationSignLinkSchema = z.object({
+  organizationId: z.string().uuid(),
+  communicationLogId: z.string().uuid(),
+  studentId: z.string().uuid(),
+  expiresInDays: z.coerce.number().int().min(1).max(60).default(14),
+});
+
+export const publicCommunicationSignSchema = z.object({
+  token: z.string().trim().min(20).max(200),
+  signerDisplayName: z.string().trim().min(1, "Your name is required.").max(180),
+  typedSignature: z.string().trim().min(1, "Typed signature is required.").max(180),
+  signerEmail: z.string().trim().email().optional().or(z.literal("")),
+  method: z.enum(["typed", "drawn"]).default("drawn"),
+  signatureImageData: z.string().trim().max(600000).optional().or(z.literal("")),
+  receiptConfirmed: z.preprocess(
+    (value) => value === true || value === "true" || value === "on",
+    z.boolean(),
+  ),
 });
 
 export const translateCommunicationSchema = z.object({
