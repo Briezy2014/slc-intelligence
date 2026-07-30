@@ -34,6 +34,16 @@ export default function PrivacyPage() {
           the product.
         </p>
         <p>
+          A counsel review package (draft privacy notice, data-processing terms, FERPA coded-ID
+          questions, and proposed electronic acknowledgment for family communications) is prepared
+          for attorney review. Until counsel approves replacement language, this page remains a
+          design notice only—not a final district privacy policy.
+        </p>
+        <p>
+          Proposed electronic acknowledgment / e-sign for family communications is not enabled until
+          counsel approves the communications e-sign specification.
+        </p>
+        <p>
           For account deletion instructions, see{" "}
           <a className="text-highlight underline-offset-4 hover:underline" href="/account-deletion">
             account deletion
