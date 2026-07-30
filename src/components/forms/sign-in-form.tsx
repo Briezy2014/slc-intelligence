@@ -163,6 +163,12 @@ export function SignInForm({
       <Button type="submit" className="w-full" disabled={pending || configurationNeeded}>
         {pending ? "Signing in..." : "Sign in"}
       </Button>
+      <p className="text-muted text-center text-sm">
+        Need an account?{" "}
+        <Link href="/request-access" className="text-accent font-semibold hover:underline">
+          Request access
+        </Link>
+      </p>
     </form>
   );
 }

@@ -10,6 +10,7 @@ export const PUBLIC_NAV = [
   { href: "/terms", label: "Terms" },
   { href: "/accessibility", label: "Accessibility" },
   { href: "/support", label: "Support" },
+  { href: "/request-access", label: "Request access" },
   { href: "/sign-in", label: "Sign in" },
 ] as const;
 
