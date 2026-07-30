@@ -16,7 +16,10 @@ import {
   hashSignToken,
 } from "@/lib/communications/esign";
 import { CANONICAL_PRODUCTION_URL } from "@/lib/constants/product";
+import { translateCommunicationDraft } from "@/lib/ai/translate";
 import { familyVisibleCommunicationExport } from "@/lib/data/communications";
+import { isServerSupabaseConfigured } from "@/lib/env";
+import { requireActiveMembership } from "@/lib/org/context";
 import {
   communicationAcknowledgementSchema,
   communicationLogSchema,
@@ -24,9 +27,9 @@ import {
   contactSchema,
   createCommunicationSignLinkSchema,
   publicCommunicationSignSchema,
+  translateCommunicationSchema,
 } from "@/lib/validation/communications";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { isServerSupabaseConfigured } from "@/lib/env";
 import { headers } from "next/headers";
 
 async function canCommunication(
@@ -142,6 +145,9 @@ export async function saveCommunicationLogAction(formData: FormData): Promise<Ac
       visibility: values.visibility,
       subject: values.subject,
       summary: values.summary,
+      language_code: values.languageCode,
+      source_language_code: values.sourceLanguageCode,
+      source_summary: values.sourceSummary || null,
       acknowledgement_requested: requestEsign,
       esign_status: requestEsign ? ("pending" as const) : ("none" as const),
       followup_needed: values.followupNeeded,
@@ -163,6 +169,9 @@ export async function saveCommunicationLogAction(formData: FormData): Promise<Ac
             visibility: payload.visibility,
             subject: payload.subject,
             summary: payload.summary,
+            language_code: payload.language_code,
+            source_language_code: payload.source_language_code,
+            source_summary: payload.source_summary,
             acknowledgement_requested: payload.acknowledgement_requested,
             followup_needed: payload.followup_needed,
             status: payload.status,
@@ -286,6 +295,42 @@ export async function recordFamilyCommunicationExportAction(
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
   }
+}
+
+
+export async function translateCommunicationDraftAction(input: {
+  subject: string;
+  summary: string;
+  targetLanguageCode: string;
+}) {
+  const parsed = translateCommunicationSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      ok: false as const,
+      mode: "disabled" as const,
+      subject: input.subject,
+      summary: input.summary,
+      languageCode: input.targetLanguageCode,
+      message: "Check subject, summary, and language before translating.",
+    };
+  }
+
+  if (isServerSupabaseConfigured()) {
+    try {
+      await requireActiveMembership();
+    } catch {
+      return {
+        ok: false as const,
+        mode: "disabled" as const,
+        subject: parsed.data.subject,
+        summary: parsed.data.summary,
+        languageCode: parsed.data.targetLanguageCode,
+        message: "Sign in with an active membership to translate drafts.",
+      };
+    }
+  }
+
+  return translateCommunicationDraft(parsed.data);
 }
 
 export async function recordCommunicationAcknowledgementAction(

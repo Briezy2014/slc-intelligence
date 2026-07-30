@@ -16,6 +16,7 @@ import {
 import { recordFamilyCommunicationExportAction } from "@/lib/actions/communications";
 import { ContactAndCommunicationForms } from "@/components/domain/communication-workspace-forms";
 import { CommunicationEsignPanel } from "@/components/domain/communication-esign-panel";
+import { communicationLanguageLabel } from "@/lib/catalogs/communication-languages";
 import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import {
   saveMeetingAction,
@@ -455,8 +456,8 @@ export function CommunicationsWorkspace({
     <div className="space-y-6">
       <Alert title="Family-visible export guardrail" tone="info">
         Exports include family_visible communication summaries only; internal and restricted records
-        stay separate. Parent receipt e-signatures are available below for behavior letters and
-        other home communications.
+        stay separate. Use Template & language to draft and translate, then Parent e-signature for
+        receipt signatures on behavior letters and other home communications.
       </Alert>
       <ContactAndCommunicationForms
         organizationId={data.organizationId ?? ""}
@@ -476,9 +477,10 @@ export function CommunicationsWorkspace({
       </form>
       <TableShell
         caption="Communications"
-        headers={["Subject", "Visibility", "E-sign", "Status", "Occurred"]}
+        headers={["Subject", "Language", "Visibility", "E-sign", "Status", "Occurred"]}
         rows={data.communications.map((log) => [
           log.subject,
+          communicationLanguageLabel(log.language_code || "en"),
           log.visibility,
           log.esign_status || "none",
           log.status,

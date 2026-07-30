@@ -30,6 +30,9 @@ export const communicationLogSchema = z.object({
   visibility: z.enum(["family_visible", "internal", "restricted_admin"]).default("family_visible"),
   subject: z.string().trim().min(1, "Subject is required.").max(180),
   summary: z.string().trim().min(1, "Summary is required.").max(4000),
+  languageCode: z.string().trim().min(2).max(16).default("en"),
+  sourceLanguageCode: z.string().trim().min(2).max(16).default("en"),
+  sourceSummary: z.string().trim().max(4000).optional().or(z.literal("")),
   acknowledgementRequested: z.preprocess(
     (value) => value === true || value === "true" || value === "on",
     z.boolean(),
@@ -75,6 +78,12 @@ export const publicCommunicationSignSchema = z.object({
     (value) => value === true || value === "true" || value === "on",
     z.boolean(),
   ),
+});
+
+export const translateCommunicationSchema = z.object({
+  subject: z.string().trim().min(1).max(180),
+  summary: z.string().trim().min(1).max(4000),
+  targetLanguageCode: z.string().trim().min(2).max(16),
 });
 
 export const communicationTemplateSchema = z.object({

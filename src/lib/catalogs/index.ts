@@ -11,6 +11,7 @@ export * from "@/lib/catalogs/intervention-templates";
 export * from "@/lib/catalogs/accommodation-templates";
 export * from "@/lib/catalogs/ef-skill-templates";
 export * from "@/lib/catalogs/communication-templates";
+export * from "@/lib/catalogs/communication-languages";
 export * from "@/lib/catalogs/learning-progressions";
 export * from "@/lib/catalogs/education-document-templates";
 export * from "@/lib/catalogs/behavior-templates";

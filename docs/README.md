@@ -93,6 +93,7 @@ When documents conflict, surface the conflict for product-owner resolution. Do n
 | `PRODUCTION_RELEASE_NOTES.md`        | Finished-product release notes                   |
 | `KNOWN_LIMITATIONS.md`               | Known limitations after launch                   |
 | `COMMUNICATION_ESIGN.md`             | Parent receipt e-sign for family communications  |
+| `COMMUNICATION_TRANSLATION_AND_PLANS.md` | Template/language translate, ack, 504/Gifted/EL |
 | `PILOT_DEIDENTIFIED_USE.md`          | Active pilot coded / de-identified use rules     |
 | `legal/COUNSEL_PRIVACY_PACKAGE.md`   | Counsel-ready privacy package index (draft)      |
 | `legal/COUNSEL_REVIEW_CHECKLIST.md`  | Counsel sign-off checklist                       |
@@ -101,6 +102,7 @@ When documents conflict, surface the conflict for product-owner resolution. Do n
 | `legal/DRAFT_FERPA_COUNSEL_MEMO.md`  | FERPA / coded student ID memo for counsel        |
 | `legal/COUNSEL_QUESTION_CODED_STUDENT_IDS.md` | Short coded-ID counsel question         |
 | `legal/DRAFT_ESIGN_COMMUNICATIONS_SPEC.md` | E-sign for family communications (pre-build) |
+
 
 Supporting documents refine these authorities and must remain consistent with them.
 

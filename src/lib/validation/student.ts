@@ -16,6 +16,12 @@ export const studentSchema = z.object({
   enrollmentStatus: z.enum(["active", "inactive", "archived"]).default("active"),
   startDate: z.string().date().optional(),
   endDate: z.string().date().optional(),
+  hasIep: z.enum(["true", "false"]).default("false"),
+  hasSection504: z.enum(["true", "false"]).default("false"),
+  hasGifted: z.enum(["true", "false"]).default("false"),
+  hasEnglishLearner: z.enum(["true", "false"]).default("false"),
+  homeLanguage: optionalText,
+  supportPlanNotes: optionalText,
 });
 
 export const studentEnrollmentSchema = z.object({

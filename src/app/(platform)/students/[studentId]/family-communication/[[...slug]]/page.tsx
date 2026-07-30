@@ -29,7 +29,7 @@ export default async function StudentFamilyCommunicationPage({
       />
       <PageHeader
         title="Student family communication"
-        description="Student contacts, family-visible communications, and internal/restricted separation."
+        description="Template & language drafting, contacts, acknowledgements, and family-visible exports."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -46,8 +46,8 @@ export default async function StudentFamilyCommunicationPage({
               },
               {
                 href: `/students/${studentId}/family-communication/communications`,
-                label: "Communications",
-                description: "Communication summaries.",
+                label: "Template & language",
+                description: "Choose template and translate into one of 20 languages.",
               },
               {
                 href: `/students/${studentId}/family-communication/exports`,

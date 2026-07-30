@@ -11,6 +11,7 @@ import {
 } from "@/lib/actions/shared";
 import { EDUCATION_DOCUMENT_DISCLAIMER } from "@/lib/catalogs/education-document-templates";
 import {
+  districtFormTemplateSchema,
   educationDocumentSchema,
   educationDocumentUploadSchema,
 } from "@/lib/validation/education-documents";
@@ -176,6 +177,75 @@ export async function recordEducationDocumentUploadAction(
       message: storagePath
         ? "Upload stored. Extracted text was used to populate draft fields for review."
         : "Upload recorded. Extracted text was used to populate draft fields for review.",
+    };
+  } catch {
+    return { status: "error", message: GENERIC_ACTION_MESSAGE };
+  }
+}
+
+export async function recordDistrictFormTemplateAction(formData: FormData): Promise<ActionState> {
+  const parsed = districtFormTemplateSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
+  if (!parsed.success) return validationError(parsed.error);
+  const values = parsed.data;
+  const context = await getActionContext(values.organizationId, "education_document.manage");
+  if (!("supabase" in context)) return context;
+
+  try {
+    const file = formData.get("file");
+    let storagePath: string | null = null;
+
+    if (file instanceof File && file.size > 0) {
+      const safeName = values.fileName.replace(/[^a-zA-Z0-9._-]+/g, "_");
+      const path = `${context.organizationId}/district-blanks/${values.documentType}/${Date.now()}-${safeName}`;
+      const upload = await context.supabase.storage.from("education-documents").upload(path, file, {
+        contentType: values.contentType || file.type || "application/octet-stream",
+        upsert: false,
+      });
+      if (!upload.error) storagePath = path;
+    }
+
+    const payload = {
+      organization_id: context.organizationId,
+      document_type: values.documentType,
+      name: values.name,
+      description: values.description || null,
+      file_name: values.fileName,
+      content_type: values.contentType || null,
+      byte_size: values.byteSize ?? null,
+      storage_path: storagePath,
+      extracted_text: values.extractedText || null,
+      is_blank_master: true,
+      active: true,
+      created_by: context.user.id,
+    };
+
+    const { data, error } = await context.supabase
+      .from("district_form_templates")
+      .insert(payload)
+      .select("id")
+      .single();
+    if (error || !data) return { status: "error", message: GENERIC_ACTION_MESSAGE };
+
+    await auditAndRevalidate({
+      organizationId: context.organizationId,
+      actorUserId: context.user.id,
+      actionType: "district_form_template.create",
+      resourceType: "district_form_template",
+      resourceId: data.id,
+      newState: {
+        document_type: values.documentType,
+        name: values.name,
+        storage_connected: Boolean(storagePath),
+      },
+      paths: ["/education-documents"],
+    });
+
+    return {
+      status: "success",
+      message:
+        "District blank template saved. Use Start blank with pre-populated fields or upload a completed form to fill a student draft.",
     };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
