@@ -15,6 +15,7 @@ import {
 } from "@/lib/actions/accommodations";
 import { recordFamilyCommunicationExportAction } from "@/lib/actions/communications";
 import { ContactAndCommunicationForms } from "@/components/domain/communication-workspace-forms";
+import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import { saveMeetingAction, addMeetingParticipantAction, recordMeetingAcknowledgementAction } from "@/lib/actions/meetings";
 import {
   addServiceComponentAction,
@@ -90,6 +91,11 @@ export function AccommodationsWorkspace({ data, studentId }: { data: Accommodati
           <Link href="/organization/settings" className="font-semibold underline">Organization</Link>.
         </Alert>
       ) : null}
+      <AiAssistPanel
+        domain="accommodation"
+        title="AI Assist · Accommodations"
+        description="Suggest accommodation language and implementation notes for educator review."
+      />
       <div className="grid gap-6 lg:grid-cols-2">
         <Card>
           <CardTitle>Accommodation library</CardTitle>
@@ -322,6 +328,11 @@ export function ExecutiveFunctionWorkspace({ data, studentId }: { data: Executiv
           <Link href="/organization/settings" className="font-semibold underline">Organization</Link>.
         </Alert>
       ) : null}
+      <AiAssistPanel
+        domain="executive_function"
+        title="AI Assist · Executive function"
+        description="Suggest EF skill focuses and plan titles based on the need you describe."
+      />
       <div className="grid gap-4 md:grid-cols-3"><Card><CardTitle>{data.plans.length}</CardTitle><CardDescription>EF plans</CardDescription></Card><Card><CardTitle>{independence.percent ?? "Unavailable"}%</CardTitle><CardDescription>Observed independence</CardDescription></Card><Card><CardTitle>{prompts.verbal}</CardTitle><CardDescription>Verbal prompts observed</CardDescription></Card></div>
       <Card>
         <CardTitle>Executive function plan</CardTitle>
