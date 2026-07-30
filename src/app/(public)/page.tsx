@@ -7,7 +7,10 @@ import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
 export default function HomePage() {
   return (
     <main id="main-content" className="relative overflow-hidden">
-      <div aria-hidden="true" className="brand-grid pointer-events-none absolute inset-0 opacity-40" />
+      <div
+        aria-hidden="true"
+        className="brand-grid pointer-events-none absolute inset-0 opacity-40"
+      />
       <section className="relative mx-auto flex min-h-[78vh] max-w-6xl flex-col justify-center px-4 py-16 sm:px-6">
         <div className="motion-safe-rise grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
           <div>
@@ -80,7 +83,9 @@ export default function HomePage() {
               style={{ animationDelay: `${index * 80}ms` }}
             >
               <item.icon className="text-highlight size-5" aria-hidden="true" />
-              <h2 className="text-foreground mt-3 font-serif text-xl font-semibold">{item.title}</h2>
+              <h2 className="text-foreground mt-3 font-serif text-xl font-semibold">
+                {item.title}
+              </h2>
               <p className="text-muted mt-2 text-sm">{item.body}</p>
             </article>
           ))}

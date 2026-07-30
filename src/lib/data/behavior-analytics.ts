@@ -75,10 +75,7 @@ export function summarizeBehaviorAnalytics(data: BehaviorData) {
 }
 
 export function compareBehaviorPhases(data: BehaviorData, phaseA: string, phaseB: string) {
-  return comparePhases(
-    toBehaviorObservationPoints(data),
-    phaseA,
-    phaseB,
-    (point) => calculateRate(point.count, point.observationDurationSeconds),
+  return comparePhases(toBehaviorObservationPoints(data), phaseA, phaseB, (point) =>
+    calculateRate(point.count, point.observationDurationSeconds),
   );
 }

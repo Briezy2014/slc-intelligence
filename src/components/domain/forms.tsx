@@ -43,7 +43,13 @@ function StatusOptions() {
   );
 }
 
-export function SchoolForm({ organizationId, school }: { organizationId: string; school?: School | null }) {
+export function SchoolForm({
+  organizationId,
+  school,
+}: {
+  organizationId: string;
+  school?: School | null;
+}) {
   return (
     <form action={submitAction(saveSchoolAction)} className="space-y-4">
       <input type="hidden" name="organizationId" value={organizationId} />
@@ -88,16 +94,26 @@ export function ProgramForm({
       <FormField id="name" label="Program name">
         <Input id="name" name="name" required defaultValue={program?.name ?? ""} />
       </FormField>
-      <FormField id="schoolId" label="School" description="Optional for organization-wide programs.">
+      <FormField
+        id="schoolId"
+        label="School"
+        description="Optional for organization-wide programs."
+      >
         <Select id="schoolId" name="schoolId" defaultValue={program?.school_id ?? ""}>
           <option value="">Organization-wide</option>
           {schools.map((school) => (
-            <option key={school.id} value={school.id}>{school.name}</option>
+            <option key={school.id} value={school.id}>
+              {school.name}
+            </option>
           ))}
         </Select>
       </FormField>
       <FormField id="programType" label="Program type">
-        <Select id="programType" name="programType" defaultValue={program?.program_type ?? "specialized_learning"}>
+        <Select
+          id="programType"
+          name="programType"
+          defaultValue={program?.program_type ?? "specialized_learning"}
+        >
           <option value="specialized_learning">Specialized learning</option>
           <option value="related_services">Related services</option>
           <option value="inclusion">Inclusion</option>
@@ -139,7 +155,9 @@ export function ClassroomForm({
         <Select id="schoolId" name="schoolId" required defaultValue={classroom?.school_id ?? ""}>
           <option value="">Choose a school</option>
           {schools.map((school) => (
-            <option key={school.id} value={school.id}>{school.name}</option>
+            <option key={school.id} value={school.id}>
+              {school.name}
+            </option>
           ))}
         </Select>
       </FormField>
@@ -147,12 +165,18 @@ export function ClassroomForm({
         <Select id="programId" name="programId" defaultValue={classroom?.program_id ?? ""}>
           <option value="">No program</option>
           {programs.map((program) => (
-            <option key={program.id} value={program.id}>{program.name}</option>
+            <option key={program.id} value={program.id}>
+              {program.name}
+            </option>
           ))}
         </Select>
       </FormField>
       <FormField id="academicYear" label="Academic year">
-        <Input id="academicYear" name="academicYear" defaultValue={classroom?.academic_year ?? ""} />
+        <Input
+          id="academicYear"
+          name="academicYear"
+          defaultValue={classroom?.academic_year ?? ""}
+        />
       </FormField>
       <FormField id="description" label="Description">
         <Textarea id="description" name="description" defaultValue={classroom?.description ?? ""} />
@@ -167,38 +191,67 @@ export function ClassroomForm({
   );
 }
 
-export function StudentForm({ organizationId, student }: { organizationId: string; student?: Student | null }) {
+export function StudentForm({
+  organizationId,
+  student,
+}: {
+  organizationId: string;
+  student?: Student | null;
+}) {
   return (
     <form action={submitAction(saveStudentAction)} className="space-y-4">
       <input type="hidden" name="organizationId" value={organizationId} />
       {student ? <input type="hidden" name="studentId" value={student.id} /> : null}
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="firstName" label="First name">
-          <Input id="firstName" name="firstName" required defaultValue={student?.first_name ?? ""} />
+          <Input
+            id="firstName"
+            name="firstName"
+            required
+            defaultValue={student?.first_name ?? ""}
+          />
         </FormField>
         <FormField id="lastName" label="Last name">
           <Input id="lastName" name="lastName" required defaultValue={student?.last_name ?? ""} />
         </FormField>
       </div>
       <FormField id="preferredName" label="Preferred name">
-        <Input id="preferredName" name="preferredName" defaultValue={student?.preferred_name ?? ""} />
+        <Input
+          id="preferredName"
+          name="preferredName"
+          defaultValue={student?.preferred_name ?? ""}
+        />
       </FormField>
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="localIdentifier" label="Local identifier">
-          <Input id="localIdentifier" name="localIdentifier" required defaultValue={student?.local_identifier ?? ""} />
+          <Input
+            id="localIdentifier"
+            name="localIdentifier"
+            required
+            defaultValue={student?.local_identifier ?? ""}
+          />
         </FormField>
         <FormField id="gradeLevel" label="Grade level">
           <Input id="gradeLevel" name="gradeLevel" defaultValue={student?.grade_level ?? ""} />
         </FormField>
       </div>
       <FormField id="enrollmentStatus" label="Enrollment status">
-        <Select id="enrollmentStatus" name="enrollmentStatus" defaultValue={student?.enrollment_status ?? "active"}>
+        <Select
+          id="enrollmentStatus"
+          name="enrollmentStatus"
+          defaultValue={student?.enrollment_status ?? "active"}
+        >
           <StatusOptions />
         </Select>
       </FormField>
       <div className="grid gap-4 sm:grid-cols-2">
         <FormField id="startDate" label="Start date">
-          <Input id="startDate" name="startDate" type="date" defaultValue={student?.start_date ?? ""} />
+          <Input
+            id="startDate"
+            name="startDate"
+            type="date"
+            defaultValue={student?.start_date ?? ""}
+          />
         </FormField>
         <FormField id="endDate" label="End date">
           <Input id="endDate" name="endDate" type="date" defaultValue={student?.end_date ?? ""} />
@@ -209,7 +262,13 @@ export function StudentForm({ organizationId, student }: { organizationId: strin
   );
 }
 
-export function IepCycleForm({ organizationId, studentId }: { organizationId: string; studentId: string }) {
+export function IepCycleForm({
+  organizationId,
+  studentId,
+}: {
+  organizationId: string;
+  studentId: string;
+}) {
   return (
     <form action={submitAction(saveIepCycleAction)} className="space-y-4">
       <input type="hidden" name="organizationId" value={organizationId} />
@@ -234,7 +293,13 @@ export function IepCycleForm({ organizationId, studentId }: { organizationId: st
   );
 }
 
-export function ObjectiveForm({ organizationId, goalId }: { organizationId: string; goalId: string }) {
+export function ObjectiveForm({
+  organizationId,
+  goalId,
+}: {
+  organizationId: string;
+  goalId: string;
+}) {
   return (
     <form action={submitAction(saveObjectiveAction)} className="space-y-4">
       <input type="hidden" name="organizationId" value={organizationId} />
@@ -261,7 +326,9 @@ export function MemberForm({ organizationId }: { organizationId: string }) {
       <FormField id="roleCode" label="Role">
         <Select id="roleCode" name="roleCode">
           {Object.entries(ROLE_LABELS).map(([code, label]) => (
-            <option key={code} value={code}>{label}</option>
+            <option key={code} value={code}>
+              {label}
+            </option>
           ))}
         </Select>
       </FormField>
@@ -276,12 +343,20 @@ export function InvitationForm({ organizationId }: { organizationId: string }) {
     <form action={submitAction(createInvitationAction)} className="space-y-4">
       <input type="hidden" name="organizationId" value={organizationId} />
       <FormField id="email" label="Email">
-        <Input id="email" name="email" type="email" required placeholder="fictional.user@example.test" />
+        <Input
+          id="email"
+          name="email"
+          type="email"
+          required
+          placeholder="fictional.user@example.test"
+        />
       </FormField>
       <FormField id="roleCode" label="Role">
         <Select id="roleCode" name="roleCode">
           {Object.entries(ROLE_LABELS).map(([code, label]) => (
-            <option key={code as RoleCode} value={code}>{label}</option>
+            <option key={code as RoleCode} value={code}>
+              {label}
+            </option>
           ))}
         </Select>
       </FormField>
@@ -316,7 +391,11 @@ export function AssignmentForms({
         <FormField id="schoolId" label="Add school enrollment">
           <Select id="schoolId" name="schoolId" required>
             <option value="">Choose school</option>
-            {schools.map((school) => <option key={school.id} value={school.id}>{school.name}</option>)}
+            {schools.map((school) => (
+              <option key={school.id} value={school.id}>
+                {school.name}
+              </option>
+            ))}
           </Select>
         </FormField>
         <Button type="submit">Add enrollment</Button>
@@ -329,7 +408,11 @@ export function AssignmentForms({
         <FormField id="programId" label="Add program assignment">
           <Select id="programId" name="programId" required>
             <option value="">Choose program</option>
-            {programs.map((program) => <option key={program.id} value={program.id}>{program.name}</option>)}
+            {programs.map((program) => (
+              <option key={program.id} value={program.id}>
+                {program.name}
+              </option>
+            ))}
           </Select>
         </FormField>
         <Button type="submit">Add program</Button>
@@ -342,7 +425,11 @@ export function AssignmentForms({
         <FormField id="classroomId" label="Add classroom assignment">
           <Select id="classroomId" name="classroomId" required>
             <option value="">Choose classroom</option>
-            {classrooms.map((classroom) => <option key={classroom.id} value={classroom.id}>{classroom.name}</option>)}
+            {classrooms.map((classroom) => (
+              <option key={classroom.id} value={classroom.id}>
+                {classroom.name}
+              </option>
+            ))}
           </Select>
         </FormField>
         <Button type="submit">Add classroom</Button>
@@ -356,7 +443,11 @@ export function AssignmentForms({
         <FormField id="userId" label="Add staff assignment">
           <Select id="userId" name="userId" required>
             <option value="">Choose staff</option>
-            {staff.map((profile) => <option key={profile.id} value={profile.id}>{profile.display_name}</option>)}
+            {staff.map((profile) => (
+              <option key={profile.id} value={profile.id}>
+                {profile.display_name}
+              </option>
+            ))}
           </Select>
         </FormField>
         <Button type="submit">Add staff</Button>

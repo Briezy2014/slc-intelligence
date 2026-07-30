@@ -9,11 +9,11 @@
 
 ## Environments
 
-| Environment | App URL | Database |
-| --- | --- | --- |
-| Local | `http://localhost:3000` | Local Postgres / local Supabase |
-| Vercel Preview | Preview URL | Non-production Supabase project |
-| Production | `https://slcintelligence.com` | Dedicated production Supabase project |
+| Environment    | App URL                       | Database                              |
+| -------------- | ----------------------------- | ------------------------------------- |
+| Local          | `http://localhost:3000`       | Local Postgres / local Supabase       |
+| Vercel Preview | Preview URL                   | Non-production Supabase project       |
+| Production     | `https://slcintelligence.com` | Dedicated production Supabase project |
 
 Do not point local or preview at production data unless the product owner explicitly approves and documents the exception.
 

@@ -57,7 +57,9 @@ const emptyMeetingsData: MeetingsData = {
   },
 };
 
-export async function listMeetings(options: { studentId?: string; meetingId?: string } = {}): Promise<DataState<MeetingsData>> {
+export async function listMeetings(
+  options: { studentId?: string; meetingId?: string } = {},
+): Promise<DataState<MeetingsData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyMeetingsData);
 
@@ -86,9 +88,17 @@ export async function listMeetings(options: { studentId?: string; meetingId?: st
     if (options.meetingId) meetingsQuery = meetingsQuery.eq("id", options.meetingId);
 
     const [studentsResult, contactsResult, typesResult, meetingsResult] = await Promise.all([
-      context.supabase.from("students").select("*").eq("organization_id", context.organizationId).order("last_name"),
+      context.supabase
+        .from("students")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("last_name"),
       contactsQuery,
-      context.supabase.from("meeting_types").select("*").eq("organization_id", context.organizationId).order("name"),
+      context.supabase
+        .from("meeting_types")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("name"),
       meetingsQuery,
     ]);
 
@@ -97,21 +107,37 @@ export async function listMeetings(options: { studentId?: string; meetingId?: st
     }
 
     const meetingIds = (meetingsResult.data ?? []).map((meeting) => meeting.id);
-    const [participantsResult, agendaResult, notesResult, actionsResult, acknowledgementResult] = meetingIds.length
-      ? await Promise.all([
-          context.supabase.from("meeting_participants").select("*").in("meeting_id", meetingIds),
-          context.supabase.from("meeting_agenda_items").select("*").in("meeting_id", meetingIds).order("sort_order"),
-          context.supabase.from("meeting_notes").select("*").in("meeting_id", meetingIds).order("created_at", { ascending: false }),
-          context.supabase.from("meeting_action_items").select("*").in("meeting_id", meetingIds).order("due_date"),
-          context.supabase.from("meeting_acknowledgements").select("*").in("meeting_id", meetingIds),
-        ])
-      : [
-          { data: [] as MeetingParticipant[], error: null },
-          { data: [] as MeetingAgendaItem[], error: null },
-          { data: [] as MeetingNote[], error: null },
-          { data: [] as MeetingActionItem[], error: null },
-          { data: [] as MeetingAcknowledgement[], error: null },
-        ];
+    const [participantsResult, agendaResult, notesResult, actionsResult, acknowledgementResult] =
+      meetingIds.length
+        ? await Promise.all([
+            context.supabase.from("meeting_participants").select("*").in("meeting_id", meetingIds),
+            context.supabase
+              .from("meeting_agenda_items")
+              .select("*")
+              .in("meeting_id", meetingIds)
+              .order("sort_order"),
+            context.supabase
+              .from("meeting_notes")
+              .select("*")
+              .in("meeting_id", meetingIds)
+              .order("created_at", { ascending: false }),
+            context.supabase
+              .from("meeting_action_items")
+              .select("*")
+              .in("meeting_id", meetingIds)
+              .order("due_date"),
+            context.supabase
+              .from("meeting_acknowledgements")
+              .select("*")
+              .in("meeting_id", meetingIds),
+          ])
+        : [
+            { data: [] as MeetingParticipant[], error: null },
+            { data: [] as MeetingAgendaItem[], error: null },
+            { data: [] as MeetingNote[], error: null },
+            { data: [] as MeetingActionItem[], error: null },
+            { data: [] as MeetingAcknowledgement[], error: null },
+          ];
 
     if (
       participantsResult.error ||

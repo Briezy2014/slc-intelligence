@@ -17,10 +17,10 @@ export function StarterLibrariesCard({ organizationId }: { organizationId: strin
     <Card>
       <CardTitle>Starter content libraries</CardTitle>
       <CardDescription>
-        Load pre-populated interventions ({counts.interventions}), accommodations ({counts.accommodations}),
-        executive function skills ({counts.executiveFunctionSkills}), and communication templates (
-        {counts.communicationTemplates}). Goal starter templates ({counts.goals}) are always available when
-        creating a student goal.
+        Load pre-populated interventions ({counts.interventions}), accommodations (
+        {counts.accommodations}), executive function skills ({counts.executiveFunctionSkills}), and
+        communication templates ({counts.communicationTemplates}). Goal starter templates (
+        {counts.goals}) are always available when creating a student goal.
       </CardDescription>
       <form
         className="mt-4 space-y-3"
@@ -39,7 +39,10 @@ export function StarterLibrariesCard({ organizationId }: { organizationId: strin
       </form>
       {message ? (
         <div className="mt-3">
-          <Alert title={status === "success" ? "Starter libraries updated" : "Unable to load libraries"} tone={status === "success" ? "success" : "danger"}>
+          <Alert
+            title={status === "success" ? "Starter libraries updated" : "Unable to load libraries"}
+            tone={status === "success" ? "success" : "danger"}
+          >
             {message}
           </Alert>
         </div>
@@ -48,7 +51,10 @@ export function StarterLibrariesCard({ organizationId }: { organizationId: strin
         <li>Load starter libraries here.</li>
         <li>Create a student under Students.</li>
         <li>Create an IEP cycle, then pick a starter goal template on the student Goals page.</li>
-        <li>Use Rapid Progress, Interventions, Accommodations, Family Communication, and Executive Function dropdowns.</li>
+        <li>
+          Use Rapid Progress, Interventions, Accommodations, Family Communication, and Executive
+          Function dropdowns.
+        </li>
       </ol>
     </Card>
   );

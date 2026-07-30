@@ -25,7 +25,10 @@ async function existingNames(
     | "executive_function_skill_areas"
     | "communication_templates",
 ) {
-  const { data, error } = await context.supabase.from(table).select("name").eq("organization_id", context.organizationId);
+  const { data, error } = await context.supabase
+    .from(table)
+    .select("name")
+    .eq("organization_id", context.organizationId);
   if (error || !data) return new Set<string>();
   return new Set(data.map((row) => row.name));
 }
@@ -56,7 +59,9 @@ export async function importStarterLibrariesAction(formData: FormData): Promise<
       existingNames(context, "communication_templates"),
     ]);
 
-    const interventions = INTERVENTION_TEMPLATES.filter((item) => !interventionNames.has(item.name)).map((item) => ({
+    const interventions = INTERVENTION_TEMPLATES.filter(
+      (item) => !interventionNames.has(item.name),
+    ).map((item) => ({
       organization_id: context.organizationId,
       name: item.name,
       category: item.category,
@@ -66,7 +71,9 @@ export async function importStarterLibrariesAction(formData: FormData): Promise<
       created_by: context.user.id,
     }));
 
-    const accommodations = ACCOMMODATION_TEMPLATES.filter((item) => !accommodationNames.has(item.name)).map((item) => ({
+    const accommodations = ACCOMMODATION_TEMPLATES.filter(
+      (item) => !accommodationNames.has(item.name),
+    ).map((item) => ({
       organization_id: context.organizationId,
       name: item.name,
       accommodation_area: item.accommodationArea,
@@ -84,7 +91,9 @@ export async function importStarterLibrariesAction(formData: FormData): Promise<
       created_by: context.user.id,
     }));
 
-    const communications = COMMUNICATION_TEMPLATES.filter((item) => !communicationNames.has(item.name)).map((item) => ({
+    const communications = COMMUNICATION_TEMPLATES.filter(
+      (item) => !communicationNames.has(item.name),
+    ).map((item) => ({
       organization_id: context.organizationId,
       name: item.name,
       default_visibility: item.defaultVisibility,
@@ -96,19 +105,27 @@ export async function importStarterLibrariesAction(formData: FormData): Promise<
     }));
 
     if (interventions.length) {
-      const { error } = await context.supabase.from("intervention_library_items").insert(interventions);
+      const { error } = await context.supabase
+        .from("intervention_library_items")
+        .insert(interventions);
       if (error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     }
     if (accommodations.length) {
-      const { error } = await context.supabase.from("accommodation_library_items").insert(accommodations);
+      const { error } = await context.supabase
+        .from("accommodation_library_items")
+        .insert(accommodations);
       if (error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     }
     if (efSkills.length) {
-      const { error } = await context.supabase.from("executive_function_skill_areas").insert(efSkills);
+      const { error } = await context.supabase
+        .from("executive_function_skill_areas")
+        .insert(efSkills);
       if (error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     }
     if (communications.length) {
-      const { error } = await context.supabase.from("communication_templates").insert(communications);
+      const { error } = await context.supabase
+        .from("communication_templates")
+        .insert(communications);
       if (error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     }
 

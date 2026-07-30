@@ -19,7 +19,11 @@ function SubmitButton() {
   );
 }
 
-export function ForgotPasswordForm({ configurationNeeded = false }: { configurationNeeded?: boolean }) {
+export function ForgotPasswordForm({
+  configurationNeeded = false,
+}: {
+  configurationNeeded?: boolean;
+}) {
   const [state, formAction] = useActionState(requestPasswordReset, initialState);
   const liveRegionId = useId();
   const emailError = state.fieldErrors?.email;

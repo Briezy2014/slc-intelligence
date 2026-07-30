@@ -18,7 +18,10 @@ run([
   "DROP SCHEMA IF EXISTS public CASCADE; DROP SCHEMA IF EXISTS auth CASCADE; CREATE SCHEMA public; GRANT ALL ON SCHEMA public TO slc; GRANT ALL ON SCHEMA public TO public;",
 ]);
 
-const migrate = spawnSync("node", ["scripts/db-migrate.mjs"], { stdio: "inherit", env: process.env });
+const migrate = spawnSync("node", ["scripts/db-migrate.mjs"], {
+  stdio: "inherit",
+  env: process.env,
+});
 if (migrate.status !== 0) process.exit(migrate.status ?? 1);
 
 const seedPaths = [

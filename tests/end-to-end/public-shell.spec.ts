@@ -26,7 +26,11 @@ test.describe("public shell", () => {
     await page.getByLabel("Password").fill("example-password");
     await page.getByRole("button", { name: "Sign in" }).click();
     await expect(
-      page.getByText(/Supabase authentication is not configured|Unable to sign in|Configuration needed/i).first(),
+      page
+        .getByText(
+          /Supabase authentication is not configured|Unable to sign in|Configuration needed/i,
+        )
+        .first(),
     ).toBeVisible();
   });
 

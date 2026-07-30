@@ -70,7 +70,10 @@ export function GoalForm({
           if (suggestion.fields?.measurementType) {
             setMeasurementType(suggestion.fields.measurementType as MeasurementTypeCode);
           }
-          if (suggestion.fields?.targetDirection === "increase" || suggestion.fields?.targetDirection === "decrease") {
+          if (
+            suggestion.fields?.targetDirection === "increase" ||
+            suggestion.fields?.targetDirection === "decrease"
+          ) {
             setTargetDirection(suggestion.fields.targetDirection);
           }
           if (suggestion.fields?.targetValue != null) {
@@ -78,119 +81,150 @@ export function GoalForm({
           }
         }}
       />
-    <form action={submitAction(saveGoalAction)} className="space-y-4">
-      <input type="hidden" name="organizationId" value={organizationId} />
-      <input type="hidden" name="studentId" value={studentId} />
-      {goal ? <input type="hidden" name="goalId" value={goal.id} /> : null}
-      <FormField id="goalTemplateId" label="Starter goal template">
-        <Select
-          id="goalTemplateId"
-          name="goalTemplateId"
-          value={templateId}
-          onChange={(event) => applyTemplate(event.target.value)}
-        >
-          <option value="">Custom goal (write your own)</option>
-          {Object.entries(grouped).map(([area, templates]) => (
-            <optgroup key={area} label={area}>
-              {templates.map((template) => (
-                <option key={template.id} value={template.id}>
-                  {template.statement.slice(0, 90)}
-                  {template.statement.length > 90 ? "…" : ""}
+      <form action={submitAction(saveGoalAction)} className="space-y-4">
+        <input type="hidden" name="organizationId" value={organizationId} />
+        <input type="hidden" name="studentId" value={studentId} />
+        {goal ? <input type="hidden" name="goalId" value={goal.id} /> : null}
+        <FormField id="goalTemplateId" label="Starter goal template">
+          <Select
+            id="goalTemplateId"
+            name="goalTemplateId"
+            value={templateId}
+            onChange={(event) => applyTemplate(event.target.value)}
+          >
+            <option value="">Custom goal (write your own)</option>
+            {Object.entries(grouped).map(([area, templates]) => (
+              <optgroup key={area} label={area}>
+                {templates.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.statement.slice(0, 90)}
+                    {template.statement.length > 90 ? "…" : ""}
+                  </option>
+                ))}
+              </optgroup>
+            ))}
+          </Select>
+        </FormField>
+        <p className="text-muted text-sm">
+          {GOAL_TEMPLATES.length} starter goals are available. Pick one to prefill, then customize
+          for the student.
+        </p>
+        <FormField id="iepCycleId" label="IEP cycle">
+          <Select
+            id="iepCycleId"
+            name="iepCycleId"
+            required
+            defaultValue={goal?.iep_cycle_id ?? ""}
+          >
+            <option value="">Choose an IEP cycle</option>
+            {cycles
+              .filter((cycle) => cycle.student_id === studentId)
+              .map((cycle) => (
+                <option key={cycle.id} value={cycle.id}>
+                  {cycle.label}
                 </option>
               ))}
-            </optgroup>
-          ))}
-        </Select>
-      </FormField>
-      <p className="text-muted text-sm">
-        {GOAL_TEMPLATES.length} starter goals are available. Pick one to prefill, then customize for the student.
-      </p>
-      <FormField id="iepCycleId" label="IEP cycle">
-        <Select id="iepCycleId" name="iepCycleId" required defaultValue={goal?.iep_cycle_id ?? ""}>
-          <option value="">Choose an IEP cycle</option>
-          {cycles
-            .filter((cycle) => cycle.student_id === studentId)
-            .map((cycle) => (
-              <option key={cycle.id} value={cycle.id}>
-                {cycle.label}
-              </option>
-            ))}
-        </Select>
-      </FormField>
-      <FormField id="goalArea" label="Goal area">
-        <Input id="goalArea" name="goalArea" required value={goalArea} onChange={(event) => setGoalArea(event.target.value)} />
-      </FormField>
-      <FormField id="goalStatement" label="Goal statement">
-        <Textarea
-          id="goalStatement"
-          name="goalStatement"
-          required
-          value={goalStatement}
-          onChange={(event) => setGoalStatement(event.target.value)}
-        />
-      </FormField>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="measurementType" label="Measurement type">
-          <Select
-            id="measurementType"
-            name="measurementType"
-            value={measurementType}
-            onChange={(event) => setMeasurementType(event.target.value as MeasurementTypeCode)}
-          >
-
-            <option value="percentage">Percentage</option>
-            <option value="frequency">Frequency</option>
-            <option value="rate">Rate</option>
-            <option value="duration">Duration</option>
-            <option value="latency">Latency</option>
-            <option value="rubric">Rubric</option>
-            <option value="prompt_level">Prompt level</option>
-            <option value="task_analysis">Task analysis</option>
-            <option value="reading_fluency">Reading fluency</option>
-            <option value="reading_accuracy">Reading accuracy</option>
-            <option value="independence">Independence</option>
-            <option value="custom_numeric">Custom numeric</option>
           </Select>
         </FormField>
-        <FormField id="targetDirection" label="Target direction">
-          <Select
-            id="targetDirection"
-            name="targetDirection"
-            value={targetDirection}
-            onChange={(event) => setTargetDirection(event.target.value as "increase" | "decrease")}
-          >
-            <option value="increase">Increase</option>
-            <option value="decrease">Decrease</option>
-          </Select>
-        </FormField>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <FormField id="targetValue" label="Target value">
+        <FormField id="goalArea" label="Goal area">
           <Input
-            id="targetValue"
-            name="targetValue"
-            type="number"
-            step="any"
-            value={targetValue}
-            onChange={(event) => setTargetValue(event.target.value)}
+            id="goalArea"
+            name="goalArea"
+            required
+            value={goalArea}
+            onChange={(event) => setGoalArea(event.target.value)}
           />
         </FormField>
-        <FormField id="startDate" label="Start date">
-          <Input id="startDate" name="startDate" type="date" defaultValue={goal?.start_date ?? ""} />
+        <FormField id="goalStatement" label="Goal statement">
+          <Textarea
+            id="goalStatement"
+            name="goalStatement"
+            required
+            value={goalStatement}
+            onChange={(event) => setGoalStatement(event.target.value)}
+          />
         </FormField>
-        <FormField id="targetDate" label="Target date">
-          <Input id="targetDate" name="targetDate" type="date" defaultValue={goal?.target_date ?? ""} />
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FormField id="measurementType" label="Measurement type">
+            <Select
+              id="measurementType"
+              name="measurementType"
+              value={measurementType}
+              onChange={(event) => setMeasurementType(event.target.value as MeasurementTypeCode)}
+            >
+              <option value="percentage">Percentage</option>
+              <option value="frequency">Frequency</option>
+              <option value="rate">Rate</option>
+              <option value="duration">Duration</option>
+              <option value="latency">Latency</option>
+              <option value="rubric">Rubric</option>
+              <option value="prompt_level">Prompt level</option>
+              <option value="task_analysis">Task analysis</option>
+              <option value="reading_fluency">Reading fluency</option>
+              <option value="reading_accuracy">Reading accuracy</option>
+              <option value="independence">Independence</option>
+              <option value="custom_numeric">Custom numeric</option>
+            </Select>
+          </FormField>
+          <FormField id="targetDirection" label="Target direction">
+            <Select
+              id="targetDirection"
+              name="targetDirection"
+              value={targetDirection}
+              onChange={(event) =>
+                setTargetDirection(event.target.value as "increase" | "decrease")
+              }
+            >
+              <option value="increase">Increase</option>
+              <option value="decrease">Decrease</option>
+            </Select>
+          </FormField>
+        </div>
+        <div className="grid gap-4 sm:grid-cols-3">
+          <FormField id="targetValue" label="Target value">
+            <Input
+              id="targetValue"
+              name="targetValue"
+              type="number"
+              step="any"
+              value={targetValue}
+              onChange={(event) => setTargetValue(event.target.value)}
+            />
+          </FormField>
+          <FormField id="startDate" label="Start date">
+            <Input
+              id="startDate"
+              name="startDate"
+              type="date"
+              defaultValue={goal?.start_date ?? ""}
+            />
+          </FormField>
+          <FormField id="targetDate" label="Target date">
+            <Input
+              id="targetDate"
+              name="targetDate"
+              type="date"
+              defaultValue={goal?.target_date ?? ""}
+            />
+          </FormField>
+        </div>
+        <FormField id="unitOfMeasurement" label="Unit of measurement">
+          <Input
+            id="unitOfMeasurement"
+            name="unitOfMeasurement"
+            defaultValue={goal?.unit_of_measurement ?? ""}
+          />
         </FormField>
-      </div>
-      <FormField id="unitOfMeasurement" label="Unit of measurement">
-        <Input id="unitOfMeasurement" name="unitOfMeasurement" defaultValue={goal?.unit_of_measurement ?? ""} />
-      </FormField>
-      <FormField id="evaluationFrequency" label="Evaluation frequency">
-        <Input id="evaluationFrequency" name="evaluationFrequency" defaultValue={goal?.evaluation_frequency ?? ""} />
-      </FormField>
-      <input type="hidden" name="status" value={goal?.status ?? "active"} />
-      <Button type="submit">{goal ? "Save goal" : "Create goal"}</Button>
-    </form>
+        <FormField id="evaluationFrequency" label="Evaluation frequency">
+          <Input
+            id="evaluationFrequency"
+            name="evaluationFrequency"
+            defaultValue={goal?.evaluation_frequency ?? ""}
+          />
+        </FormField>
+        <input type="hidden" name="status" value={goal?.status ?? "active"} />
+        <Button type="submit">{goal ? "Save goal" : "Create goal"}</Button>
+      </form>
     </div>
   );
 }

@@ -2,7 +2,8 @@ const GENERIC_AUTH_ERROR =
   "We could not complete that request. Check your information and try again.";
 
 export function mapAuthError(error: unknown): string {
-  const status = typeof error === "object" && error !== null && "status" in error ? error.status : null;
+  const status =
+    typeof error === "object" && error !== null && "status" in error ? error.status : null;
   const message =
     typeof error === "object" && error !== null && "message" in error
       ? String(error.message).toLowerCase()

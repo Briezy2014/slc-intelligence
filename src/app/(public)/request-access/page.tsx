@@ -35,8 +35,8 @@ export default async function RequestAccessPage() {
             description="Create your account, select the role(s) that fit your work, and wait for administrator approval."
           />
           <p className="text-muted mt-4 max-w-xl text-sm leading-relaxed">
-            This is not an open subscription. Access stays under administrator control so only authorized educators
-            enter student workflows.
+            This is not an open subscription. Access stays under administrator control so only
+            authorized educators enter student workflows.
           </p>
         </section>
         <Card className="motion-safe-rise p-6">

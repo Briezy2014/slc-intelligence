@@ -2,7 +2,11 @@ import { z } from "zod";
 
 const optionalUuid = z.string().uuid().optional().or(z.literal(""));
 const optionalDate = z.string().date().optional().or(z.literal(""));
-const optionalTime = z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/).optional().or(z.literal(""));
+const optionalTime = z
+  .string()
+  .regex(/^\d{2}:\d{2}(:\d{2})?$/)
+  .optional()
+  .or(z.literal(""));
 
 export const serviceDefinitionSchema = z.object({
   organizationId: z.string().uuid(),
@@ -10,7 +14,10 @@ export const serviceDefinitionSchema = z.object({
   name: z.string().trim().min(1, "Service name is required.").max(180),
   serviceArea: z.string().trim().min(1, "Service area is required.").max(120),
   description: z.string().trim().max(4000).optional(),
-  defaultDeliveryType: z.enum(["push_in", "pull_out", "consultation", "individual", "group", "other"]).optional().or(z.literal("")),
+  defaultDeliveryType: z
+    .enum(["push_in", "pull_out", "consultation", "individual", "group", "other"])
+    .optional()
+    .or(z.literal("")),
   status: z.enum(["active", "inactive", "archived"]).default("active"),
 });
 
@@ -23,7 +30,9 @@ export const servicePlanSchema = z
     serviceDefinitionId: optionalUuid,
     title: z.string().trim().min(1, "Service plan title is required.").max(180),
     description: z.string().trim().max(4000).optional(),
-    status: z.enum(["draft", "active", "under_review", "revised", "ended", "archived"]).default("draft"),
+    status: z
+      .enum(["draft", "active", "under_review", "revised", "ended", "archived"])
+      .default("draft"),
     startDate: optionalDate,
     endDate: optionalDate,
   })
@@ -39,7 +48,10 @@ export const serviceComponentSchema = z.object({
   serviceMinutes: z.coerce.number().int().positive().optional(),
   frequency: z.string().trim().max(180).optional(),
   setting: z.string().trim().max(180).optional(),
-  deliveryType: z.enum(["push_in", "pull_out", "consultation", "individual", "group", "other"]).optional().or(z.literal("")),
+  deliveryType: z
+    .enum(["push_in", "pull_out", "consultation", "individual", "group", "other"])
+    .optional()
+    .or(z.literal("")),
   notes: z.string().trim().max(2000).optional(),
   sortOrder: z.coerce.number().int().positive().default(1),
 });

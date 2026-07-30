@@ -71,7 +71,9 @@ const emptyExecutiveFunctionData: ExecutiveFunctionData = {
   },
 };
 
-export async function listExecutiveFunction(options: { studentId?: string; planId?: string } = {}): Promise<DataState<ExecutiveFunctionData>> {
+export async function listExecutiveFunction(
+  options: { studentId?: string; planId?: string } = {},
+): Promise<DataState<ExecutiveFunctionData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyExecutiveFunctionData);
 
@@ -113,16 +115,35 @@ export async function listExecutiveFunction(options: { studentId?: string; planI
     }
     if (options.planId) plansQuery = plansQuery.eq("id", options.planId);
 
-    const [studentsResult, skillAreasResult, plansResult, checklistsResult, schedulesResult, assignmentsResult, taskAnalysesResult] =
-      await Promise.all([
-        context.supabase.from("students").select("*").eq("organization_id", context.organizationId).order("last_name"),
-        context.supabase.from("executive_function_skill_areas").select("*").eq("organization_id", context.organizationId).order("name"),
-        plansQuery,
-        checklistsQuery,
-        schedulesQuery,
-        assignmentsQuery,
-        context.supabase.from("task_analyses").select("*").eq("organization_id", context.organizationId).order("name"),
-      ]);
+    const [
+      studentsResult,
+      skillAreasResult,
+      plansResult,
+      checklistsResult,
+      schedulesResult,
+      assignmentsResult,
+      taskAnalysesResult,
+    ] = await Promise.all([
+      context.supabase
+        .from("students")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("last_name"),
+      context.supabase
+        .from("executive_function_skill_areas")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("name"),
+      plansQuery,
+      checklistsQuery,
+      schedulesQuery,
+      assignmentsQuery,
+      context.supabase
+        .from("task_analyses")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("name"),
+    ]);
 
     if (
       studentsResult.error ||
@@ -141,39 +162,53 @@ export async function listExecutiveFunction(options: { studentId?: string; planI
     const scheduleIds = (schedulesResult.data ?? []).map((schedule) => schedule.id);
     const assignmentIds = (assignmentsResult.data ?? []).map((assignment) => assignment.id);
 
-    const [supportsResult, observationsResult, checklistItemsResult, checklistResponsesResult, scheduleBlocksResult, taskLogsResult] =
-      await Promise.all([
-        planIds.length
-          ? context.supabase.from("executive_function_supports").select("*").in("ef_plan_id", planIds)
-          : { data: [] as ExecutiveFunctionSupport[], error: null },
-        planIds.length
-          ? context.supabase
-              .from("executive_function_observations")
-              .select("*")
-              .in("ef_plan_id", planIds)
-              .order("observation_date", { ascending: false })
-          : { data: [] as ExecutiveFunctionObservation[], error: null },
-        checklistIds.length
-          ? context.supabase.from("student_checklist_items").select("*").in("checklist_id", checklistIds).order("sort_order")
-          : { data: [] as StudentChecklistItem[], error: null },
-        checklistIds.length
-          ? context.supabase
-              .from("student_checklist_responses")
-              .select("*")
-              .in("checklist_id", checklistIds)
-              .order("response_date", { ascending: false })
-          : { data: [] as StudentChecklistResponse[], error: null },
-        scheduleIds.length
-          ? context.supabase.from("student_schedule_blocks").select("*").in("student_schedule_id", scheduleIds).order("start_time")
-          : { data: [] as StudentScheduleBlock[], error: null },
-        assignmentIds.length
-          ? context.supabase
-              .from("task_completion_logs")
-              .select("*")
-              .in("task_assignment_id", assignmentIds)
-              .order("log_date", { ascending: false })
-          : { data: [] as TaskCompletionLog[], error: null },
-      ]);
+    const [
+      supportsResult,
+      observationsResult,
+      checklistItemsResult,
+      checklistResponsesResult,
+      scheduleBlocksResult,
+      taskLogsResult,
+    ] = await Promise.all([
+      planIds.length
+        ? context.supabase.from("executive_function_supports").select("*").in("ef_plan_id", planIds)
+        : { data: [] as ExecutiveFunctionSupport[], error: null },
+      planIds.length
+        ? context.supabase
+            .from("executive_function_observations")
+            .select("*")
+            .in("ef_plan_id", planIds)
+            .order("observation_date", { ascending: false })
+        : { data: [] as ExecutiveFunctionObservation[], error: null },
+      checklistIds.length
+        ? context.supabase
+            .from("student_checklist_items")
+            .select("*")
+            .in("checklist_id", checklistIds)
+            .order("sort_order")
+        : { data: [] as StudentChecklistItem[], error: null },
+      checklistIds.length
+        ? context.supabase
+            .from("student_checklist_responses")
+            .select("*")
+            .in("checklist_id", checklistIds)
+            .order("response_date", { ascending: false })
+        : { data: [] as StudentChecklistResponse[], error: null },
+      scheduleIds.length
+        ? context.supabase
+            .from("student_schedule_blocks")
+            .select("*")
+            .in("student_schedule_id", scheduleIds)
+            .order("start_time")
+        : { data: [] as StudentScheduleBlock[], error: null },
+      assignmentIds.length
+        ? context.supabase
+            .from("task_completion_logs")
+            .select("*")
+            .in("task_assignment_id", assignmentIds)
+            .order("log_date", { ascending: false })
+        : { data: [] as TaskCompletionLog[], error: null },
+    ]);
 
     if (
       supportsResult.error ||

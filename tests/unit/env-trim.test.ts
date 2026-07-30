@@ -19,7 +19,9 @@ describe("environment trimming", () => {
     const env = getPublicEnv();
     expect(env.NEXT_PUBLIC_APP_URL).toBe("https://slcintelligence.com");
     expect(env.NEXT_PUBLIC_SUPABASE_URL).toBe("https://hgjjjtsdarfjdkounvyk.supabase.co");
-    expect(env.NEXT_PUBLIC_SUPABASE_ANON_KEY).toBe("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.signature");
+    expect(env.NEXT_PUBLIC_SUPABASE_ANON_KEY).toBe(
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.test.signature",
+    );
   });
 
   it("trims server supabase config values", () => {

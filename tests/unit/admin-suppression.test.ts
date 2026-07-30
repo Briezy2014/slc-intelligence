@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { suppressCount, suppressRate, suppressionNotice } from "@/lib/analytics/small-group-suppression";
+import {
+  suppressCount,
+  suppressRate,
+  suppressionNotice,
+} from "@/lib/analytics/small-group-suppression";
 
 describe("small-group suppression", () => {
   it("suppresses positive counts below threshold", () => {

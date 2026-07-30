@@ -40,7 +40,11 @@ describe("executive function calculations", () => {
       { promptLevel: "not_observed" as const },
     ];
     expect(promptDistribution(observations).independent).toBe(1);
-    expect(independencePercent(observations)).toEqual({ percent: 33, scoredCount: 3, totalCount: 4 });
+    expect(independencePercent(observations)).toEqual({
+      percent: 33,
+      scoredCount: 3,
+      totalCount: 4,
+    });
   });
 
   it("calculates schedule duration and detects same-day overlaps", () => {

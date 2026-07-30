@@ -12,11 +12,14 @@ describe("admin metrics presentation", () => {
       5,
     );
     expect(metrics.every((metric) => metric.explanation.length > 0)).toBe(true);
-    expect(metrics.find((metric) => metric.key === "active_students")?.result.suppressed).toBe(true);
-    expect(metrics.find((metric) => metric.key === "active_goals")?.result.display).toBe("10");
-    expect(metrics.find((metric) => metric.key === "goals_without_recent_finalized_data")?.result.display).toBe(
-      "No finalized record found",
+    expect(metrics.find((metric) => metric.key === "active_students")?.result.suppressed).toBe(
+      true,
     );
+    expect(metrics.find((metric) => metric.key === "active_goals")?.result.display).toBe("10");
+    expect(
+      metrics.find((metric) => metric.key === "goals_without_recent_finalized_data")?.result
+        .display,
+    ).toBe("No finalized record found");
   });
 
   it("does not invent ranking language", () => {

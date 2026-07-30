@@ -77,7 +77,8 @@ export async function reviewAccessRequestAction(formData: FormData): Promise<Act
     if (!request.requester_user_id) {
       return {
         status: "error",
-        message: "This request has no linked account yet. Ask the requester to finish creating their account, then approve again.",
+        message:
+          "This request has no linked account yet. Ask the requester to finish creating their account, then approve again.",
       };
     }
 
@@ -122,8 +123,17 @@ export async function reviewAccessRequestAction(formData: FormData): Promise<Act
       resourceType: "organization_access_request",
       resourceId: request.id,
       previousState: request,
-      newState: { status: "approved", granted_role_code: grantedRole, membership_id: membership.id },
-      paths: ["/organization/access-requests", "/organization/members", "/staff", "/membership-pending"],
+      newState: {
+        status: "approved",
+        granted_role_code: grantedRole,
+        membership_id: membership.id,
+      },
+      paths: [
+        "/organization/access-requests",
+        "/organization/members",
+        "/staff",
+        "/membership-pending",
+      ],
     });
 
     return {

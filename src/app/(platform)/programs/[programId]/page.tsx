@@ -9,7 +9,11 @@ import { getProgram } from "@/lib/data/programs";
 
 export const metadata: Metadata = { title: "Program detail" };
 
-export default async function ProgramDetailPage({ params }: { params: Promise<{ programId: string }> }) {
+export default async function ProgramDetailPage({
+  params,
+}: {
+  params: Promise<{ programId: string }>;
+}) {
   const { programId } = await params;
   const state = await getProgram(programId);
   const program = state.data.program;
@@ -17,15 +21,32 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
 
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/programs", label: "Programs" }, { label: "Program detail" }]} />
+      <Breadcrumbs
+        items={[
+          { href: "/", label: "Home" },
+          { href: "/programs", label: "Programs" },
+          { label: "Program detail" },
+        ]}
+      />
       <PageHeader
         title={program?.name ?? "Program detail"}
         description="Program metadata and school scope."
-        actions={program && state.data.canManage ? (
-          <Link href={`/programs/${program.id}/edit`} className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold">Edit program</Link>
-        ) : null}
+        actions={
+          program && state.data.canManage ? (
+            <Link
+              href={`/programs/${program.id}/edit`}
+              className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold"
+            >
+              Edit program
+            </Link>
+          ) : null
+        }
       />
-      {!state.configured ? <ConfigurationState /> : state.error ? <SafeErrorState message={state.error} /> : program ? (
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error ? (
+        <SafeErrorState message={state.error} />
+      ) : program ? (
         <div className="space-y-6">
           <Card>
             <CardTitle>{program.name}</CardTitle>
@@ -42,7 +63,9 @@ export default async function ProgramDetailPage({ params }: { params: Promise<{ 
             ]}
           />
         </div>
-      ) : <SafeErrorState message="Program not found or unavailable to your role." />}
+      ) : (
+        <SafeErrorState message="Program not found or unavailable to your role." />
+      )}
     </main>
   );
 }

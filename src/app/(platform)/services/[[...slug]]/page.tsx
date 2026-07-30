@@ -9,18 +9,44 @@ export const metadata: Metadata = { title: "Services" };
 
 export default async function ServicesPage({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug = [] } = await params;
-  const state = await listServices({ servicePlanId: slug[0] && !["definitions", "logs", "reviews", "exports"].includes(slug[0]) ? slug[0] : undefined });
+  const state = await listServices({
+    servicePlanId:
+      slug[0] && !["definitions", "logs", "reviews", "exports"].includes(slug[0])
+        ? slug[0]
+        : undefined,
+  });
   return (
     <main id="main-content">
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Services" }]} />
-      <PageHeader title="Services" description="Service definitions, plans, provider workspace logs, reviews, and export records." />
-      {!state.configured ? <ConfigurationState /> : state.error ? <SafeErrorState message={state.error} /> : (
+      <PageHeader
+        title="Services"
+        description="Service definitions, plans, provider workspace logs, reviews, and export records."
+      />
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error ? (
+        <SafeErrorState message={state.error} />
+      ) : (
         <div className="space-y-6">
-          <ModuleLinkGrid links={[
-            { href: "/services", label: "Dashboard", description: "Review service plans and delivery records." },
-            { href: "/services/definitions", label: "Definitions", description: "Manage service definitions." },
-            { href: "/services/logs", label: "Provider workspace", description: "Record individual or group service delivery." },
-          ]} />
+          <ModuleLinkGrid
+            links={[
+              {
+                href: "/services",
+                label: "Dashboard",
+                description: "Review service plans and delivery records.",
+              },
+              {
+                href: "/services/definitions",
+                label: "Definitions",
+                description: "Manage service definitions.",
+              },
+              {
+                href: "/services/logs",
+                label: "Provider workspace",
+                description: "Record individual or group service delivery.",
+              },
+            ]}
+          />
           <ServicesWorkspace data={state.data} />
         </div>
       )}

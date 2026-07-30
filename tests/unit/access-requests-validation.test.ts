@@ -1,5 +1,8 @@
 import { describe, expect, it } from "vitest";
-import { accessRequestSignupSchema, reviewAccessRequestSchema } from "@/lib/validation/access-requests";
+import {
+  accessRequestSignupSchema,
+  reviewAccessRequestSchema,
+} from "@/lib/validation/access-requests";
 
 describe("access request validation", () => {
   it("requires role checkboxes and matching passwords", () => {

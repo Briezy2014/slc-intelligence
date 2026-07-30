@@ -23,7 +23,9 @@ type SelectOrganizationPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
 };
 
-export default async function SelectOrganizationPage({ searchParams }: SelectOrganizationPageProps) {
+export default async function SelectOrganizationPage({
+  searchParams,
+}: SelectOrganizationPageProps) {
   const params = await searchParams;
   const next = Array.isArray(params?.next) ? params.next[0] : params?.next;
 
@@ -63,10 +65,7 @@ export default async function SelectOrganizationPage({ searchParams }: SelectOrg
           <form action={setSelectedOrganizationIdAction} className="mt-6 space-y-4">
             <input type="hidden" name="next" value={next ?? "/command-center"} />
             <div>
-              <label
-                htmlFor="organizationId"
-                className="text-foreground text-sm font-semibold"
-              >
+              <label htmlFor="organizationId" className="text-foreground text-sm font-semibold">
                 Organization
               </label>
               <Select

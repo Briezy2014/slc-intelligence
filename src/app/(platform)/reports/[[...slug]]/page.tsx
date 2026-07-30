@@ -17,7 +17,9 @@ export const metadata: Metadata = { title: "Progress reports" };
 
 export default async function ReportsPage({ params }: { params: Promise<{ slug?: string[] }> }) {
   const { slug = [] } = await params;
-  const state = await listReporting({ reportId: slug[0] && slug[0] !== "periods" ? slug[0] : undefined });
+  const state = await listReporting({
+    reportId: slug[0] && slug[0] !== "periods" ? slug[0] : undefined,
+  });
   const segment = slug[0] ?? "index";
   const reportId = segment !== "periods" && segment !== "index" ? segment : null;
   const isNewPeriod = segment === "periods" && slug[1] === "new";
@@ -42,15 +44,29 @@ export default async function ReportsPage({ params }: { params: Promise<{ slug?:
         <div className="space-y-6">
           <ModuleLinkGrid
             links={[
-              { href: "/reports/periods", label: "Reporting periods", description: "Review active, inactive, and archived reporting windows." },
-              { href: "/reports/periods/new", label: "New period", description: "Create a reporting period when authorized." },
-              { href: "/reports", label: "Report dashboard", description: "View draft, review-ready, finalized, and corrected reports." },
+              {
+                href: "/reports/periods",
+                label: "Reporting periods",
+                description: "Review active, inactive, and archived reporting windows.",
+              },
+              {
+                href: "/reports/periods/new",
+                label: "New period",
+                description: "Create a reporting period when authorized.",
+              },
+              {
+                href: "/reports",
+                label: "Report dashboard",
+                description: "View draft, review-ready, finalized, and corrected reports.",
+              },
             ]}
           />
           {isNewPeriod ? (
             <Card>
               <CardTitle>Create reporting period</CardTitle>
-              <CardDescription>Dates are validated before saving and scoped to the active organization.</CardDescription>
+              <CardDescription>
+                Dates are validated before saving and scoped to the active organization.
+              </CardDescription>
               <div className="mt-4">
                 <ReportingPeriodForm organizationId={state.data.organizationId ?? ""} />
               </div>
@@ -58,7 +74,9 @@ export default async function ReportsPage({ params }: { params: Promise<{ slug?:
           ) : (
             <Card>
               <CardTitle>Create report draft</CardTitle>
-              <CardDescription>Goal sections are seeded from active goals in the selected IEP cycle.</CardDescription>
+              <CardDescription>
+                Goal sections are seeded from active goals in the selected IEP cycle.
+              </CardDescription>
               <div className="mt-4">
                 <ReportCreateForm data={state.data} />
               </div>

@@ -100,7 +100,7 @@ AI outputs must be clearly labeled as drafts.
 
 ## Change History
 
-| Date       | Change                                                                 | Author       |
-| ---------- | ---------------------------------------------------------------------- | ------------ |
-| 2026-07-28 | Initial Phase 0 draft; AI deferred                                     | Cursor Agent |
+| Date       | Change                                                                | Author       |
+| ---------- | --------------------------------------------------------------------- | ------------ |
+| 2026-07-28 | Initial Phase 0 draft; AI deferred                                    | Cursor Agent |
 | 2026-07-30 | Product-owner authorized assistive drafting across core workflow tabs | Cursor Agent |

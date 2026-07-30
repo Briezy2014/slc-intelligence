@@ -61,14 +61,21 @@ export function valueFromDataPoint(point: ProgressDataPoint | null): number | nu
   );
 }
 
-export async function listProgress(options: { studentId?: string; goalId?: string } = {}): Promise<DataState<ProgressData>> {
+export async function listProgress(
+  options: { studentId?: string; goalId?: string } = {},
+): Promise<DataState<ProgressData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyProgress);
 
   try {
     if (options.studentId) {
-      const canRead = await canAccessStudent(context.supabase, context.organizationId, options.studentId);
-      if (!canRead) return safeDataError(emptyProgress, "You are not authorized to view this progress.");
+      const canRead = await canAccessStudent(
+        context.supabase,
+        context.organizationId,
+        options.studentId,
+      );
+      if (!canRead)
+        return safeDataError(emptyProgress, "You are not authorized to view this progress.");
     }
 
     const permissions = await getPermissionFlags(context, ["progress.enter", "progress.finalize"]);
@@ -142,7 +149,9 @@ export type ProgressSessionData = ProgressData & {
   session: ProgressSessionWithValue | null;
 };
 
-export async function getProgressSession(sessionId: string): Promise<DataState<ProgressSessionData>> {
+export async function getProgressSession(
+  sessionId: string,
+): Promise<DataState<ProgressSessionData>> {
   const progress = await listProgress();
   if (!progress.configured || progress.error) {
     return { ...progress, data: { ...progress.data, session: null } };

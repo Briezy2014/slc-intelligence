@@ -48,11 +48,13 @@ const emptyAccommodationsData: AccommodationsData = {
   },
 };
 
-export async function listAccommodations(options: {
-  studentId?: string;
-  accommodationId?: string;
-  libraryItemId?: string;
-} = {}): Promise<DataState<AccommodationsData>> {
+export async function listAccommodations(
+  options: {
+    studentId?: string;
+    accommodationId?: string;
+    libraryItemId?: string;
+  } = {},
+): Promise<DataState<AccommodationsData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyAccommodationsData);
 
@@ -75,22 +77,39 @@ export async function listAccommodations(options: {
       .eq("organization_id", context.organizationId)
       .order("name");
 
-    if (options.studentId) accommodationsQuery = accommodationsQuery.eq("student_id", options.studentId);
-    if (options.accommodationId) accommodationsQuery = accommodationsQuery.eq("id", options.accommodationId);
+    if (options.studentId)
+      accommodationsQuery = accommodationsQuery.eq("student_id", options.studentId);
+    if (options.accommodationId)
+      accommodationsQuery = accommodationsQuery.eq("id", options.accommodationId);
     if (options.libraryItemId) libraryQuery = libraryQuery.eq("id", options.libraryItemId);
 
     const [studentsResult, cyclesResult, libraryResult, accommodationsResult] = await Promise.all([
-      context.supabase.from("students").select("*").eq("organization_id", context.organizationId).order("last_name"),
-      context.supabase.from("iep_cycles").select("*").eq("organization_id", context.organizationId).order("start_date", { ascending: false }),
+      context.supabase
+        .from("students")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("last_name"),
+      context.supabase
+        .from("iep_cycles")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("start_date", { ascending: false }),
       libraryQuery,
       accommodationsQuery,
     ]);
 
-    if (studentsResult.error || cyclesResult.error || libraryResult.error || accommodationsResult.error) {
+    if (
+      studentsResult.error ||
+      cyclesResult.error ||
+      libraryResult.error ||
+      accommodationsResult.error
+    ) {
       return safeDataError(emptyAccommodationsData);
     }
 
-    const accommodationIds = (accommodationsResult.data ?? []).map((accommodation) => accommodation.id);
+    const accommodationIds = (accommodationsResult.data ?? []).map(
+      (accommodation) => accommodation.id,
+    );
     const [logsResult, reviewsResult] = accommodationIds.length
       ? await Promise.all([
           context.supabase

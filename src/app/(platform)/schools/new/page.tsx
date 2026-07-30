@@ -13,7 +13,13 @@ export default async function NewSchoolPage() {
 
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/schools", label: "Schools" }, { label: "New" }]} />
+      <Breadcrumbs
+        items={[
+          { href: "/", label: "Home" },
+          { href: "/schools", label: "Schools" },
+          { label: "New" },
+        ]}
+      />
       <PageHeader title="New school" description="Create a school in the selected organization." />
       {!state.configured ? (
         <ConfigurationState />

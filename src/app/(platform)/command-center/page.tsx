@@ -184,7 +184,8 @@ export default async function CommandCenterPage() {
                   Administrative Intelligence
                 </CardTitle>
                 <CardDescription>
-                  Authorized workflow summaries with privacy-aware suppression. Not a staff or student ranking.
+                  Authorized workflow summaries with privacy-aware suppression. Not a staff or
+                  student ranking.
                 </CardDescription>
               </div>
               <Badge tone="success">Authorized</Badge>
@@ -200,9 +201,16 @@ export default async function CommandCenterPage() {
                   ].includes(metric.key),
                 )
                 .map((metric) => (
-                  <div key={metric.key} className="border-border rounded-[var(--radius-md)] border p-3">
-                    <p className="text-muted text-xs font-semibold tracking-[0.1em] uppercase">{metric.label}</p>
-                    <p className="mt-2 text-xl font-semibold tabular-nums">{metric.result.display}</p>
+                  <div
+                    key={metric.key}
+                    className="border-border rounded-[var(--radius-md)] border p-3"
+                  >
+                    <p className="text-muted text-xs font-semibold tracking-[0.1em] uppercase">
+                      {metric.label}
+                    </p>
+                    <p className="mt-2 text-xl font-semibold tabular-nums">
+                      {metric.result.display}
+                    </p>
                   </div>
                 ))}
             </div>

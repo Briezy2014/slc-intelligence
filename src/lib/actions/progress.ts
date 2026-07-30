@@ -29,7 +29,11 @@ export async function saveProgressSessionAction(formData: FormData): Promise<Act
   if (!("supabase" in context)) return context;
 
   try {
-    const allowed = await canEnterProgress(context.supabase, context.organizationId, values.studentId);
+    const allowed = await canEnterProgress(
+      context.supabase,
+      context.organizationId,
+      values.studentId,
+    );
     if (!allowed) return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
 
     if (values.status === "finalized") {
@@ -66,7 +70,11 @@ export async function saveProgressSessionAction(formData: FormData): Promise<Act
 
     if (sessionResult.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
 
-    const pointPayload = buildDataPointPayload(context.organizationId, sessionResult.data.id, values);
+    const pointPayload = buildDataPointPayload(
+      context.organizationId,
+      sessionResult.data.id,
+      values,
+    );
     const pointResult = await context.supabase.from("progress_data_points").insert(pointPayload);
     if (pointResult.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
 
@@ -114,7 +122,8 @@ export async function finalizeProgressSessionAction(formData: FormData): Promise
       "can_finalize_progress",
       { p_org_id: context.organizationId, p_student_id: values.studentId },
     );
-    if (finalizeError || !canFinalize) return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
+    if (finalizeError || !canFinalize)
+      return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
 
     const { error } = await context.supabase
       .from("progress_monitoring_sessions")
@@ -172,7 +181,10 @@ function buildDataPointPayload(
         ...base,
         correct_count: values.correctCount,
         total_opportunities: values.totalOpportunities,
-        accuracy_percentage: calculateReadingAccuracy(values.correctCount, values.totalOpportunities),
+        accuracy_percentage: calculateReadingAccuracy(
+          values.correctCount,
+          values.totalOpportunities,
+        ),
       };
     case "rate":
       return {

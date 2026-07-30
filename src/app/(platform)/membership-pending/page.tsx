@@ -29,7 +29,8 @@ export default async function MembershipPendingPage({
 
   await requireUser("/membership-pending");
   const params = await searchParams;
-  const requested = (Array.isArray(params?.requested) ? params?.requested[0] : params?.requested) === "1";
+  const requested =
+    (Array.isArray(params?.requested) ? params?.requested[0] : params?.requested) === "1";
 
   return (
     <main id="main-content">
@@ -41,8 +42,8 @@ export default async function MembershipPendingPage({
       {requested ? (
         <div className="mb-6">
           <Alert title="Access request submitted" tone="success">
-            An organization administrator has been notified in their Access requests queue. You will be able to use
-            the platform after they approve your request.
+            An organization administrator has been notified in their Access requests queue. You will
+            be able to use the platform after they approve your request.
           </Alert>
         </div>
       ) : null}

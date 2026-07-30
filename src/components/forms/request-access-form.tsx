@@ -36,7 +36,11 @@ function mapSignupError(error: { message?: string; status?: number } | null): st
   return "We could not complete that request. Check your information and try again.";
 }
 
-export function RequestAccessForm({ defaultOrganizationSlug = "" }: { defaultOrganizationSlug?: string }) {
+export function RequestAccessForm({
+  defaultOrganizationSlug = "",
+}: {
+  defaultOrganizationSlug?: string;
+}) {
   const router = useRouter();
   const [pending, startTransition] = useTransition();
   const [showPassword, setShowPassword] = useState(false);
@@ -66,10 +70,14 @@ export function RequestAccessForm({ defaultOrganizationSlug = "" }: { defaultOrg
         setMessage(null);
         const formData = new FormData(event.currentTarget);
         const fullName = String(formData.get("fullName") ?? "").trim();
-        const email = String(formData.get("email") ?? "").trim().toLowerCase();
+        const email = String(formData.get("email") ?? "")
+          .trim()
+          .toLowerCase();
         const password = String(formData.get("password") ?? "");
         const confirmPassword = String(formData.get("confirmPassword") ?? "");
-        const organizationSlug = String(formData.get("organizationSlug") ?? "").trim().toLowerCase();
+        const organizationSlug = String(formData.get("organizationSlug") ?? "")
+          .trim()
+          .toLowerCase();
         const note = String(formData.get("message") ?? "").trim();
 
         if (selectedRoles.length === 0) {
@@ -103,7 +111,9 @@ export function RequestAccessForm({ defaultOrganizationSlug = "" }: { defaultOrg
 
             const userId = signUpData.user?.id;
             if (!userId) {
-              setMessage("Check your email to confirm the account, then sign in. If confirmation is disabled, try again.");
+              setMessage(
+                "Check your email to confirm the account, then sign in. If confirmation is disabled, try again.",
+              );
               return;
             }
 
@@ -116,17 +126,22 @@ export function RequestAccessForm({ defaultOrganizationSlug = "" }: { defaultOrg
             });
 
             if (profileError) {
-              setMessage("Account was created, but profile setup failed. Sign in and contact your administrator.");
+              setMessage(
+                "Account was created, but profile setup failed. Sign in and contact your administrator.",
+              );
               return;
             }
 
-            const { error: requestError } = await supabase.rpc("submit_organization_access_request", {
-              p_org_slug: organizationSlug,
-              p_full_name: fullName,
-              p_email: email,
-              p_requested_role_codes: selectedRoles,
-              p_message: note || null,
-            });
+            const { error: requestError } = await supabase.rpc(
+              "submit_organization_access_request",
+              {
+                p_org_slug: organizationSlug,
+                p_full_name: fullName,
+                p_email: email,
+                p_requested_role_codes: selectedRoles,
+                p_message: note || null,
+              },
+            );
 
             if (requestError) {
               setMessage(mapSignupError(requestError));
@@ -160,7 +175,8 @@ export function RequestAccessForm({ defaultOrganizationSlug = "" }: { defaultOrg
           autoComplete="organization"
         />
         <p className="text-muted text-xs">
-          Your administrator shares this code (organization slug). Example format: `groveport-madison-slc`.
+          Your administrator shares this code (organization slug). Example format:
+          `groveport-madison-slc`.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">
@@ -200,7 +216,8 @@ export function RequestAccessForm({ defaultOrganizationSlug = "" }: { defaultOrg
       <fieldset className="space-y-3">
         <legend className="text-sm font-semibold">Requested role(s)</legend>
         <p className="text-muted text-xs">
-          Check the roles that describe your work. Your administrator chooses the final approved role.
+          Check the roles that describe your work. Your administrator chooses the final approved
+          role.
         </p>
         <div className="grid gap-2 sm:grid-cols-2">
           {roleOptions.map((role) => {
@@ -208,7 +225,7 @@ export function RequestAccessForm({ defaultOrganizationSlug = "" }: { defaultOrg
             return (
               <label
                 key={role.code}
-                className="border-border bg-[rgb(18_6_45/0.45)] flex cursor-pointer items-start gap-3 rounded-[var(--radius-md)] border px-3 py-3 text-sm"
+                className="border-border flex cursor-pointer items-start gap-3 rounded-[var(--radius-md)] border bg-[rgb(18_6_45/0.45)] px-3 py-3 text-sm"
               >
                 <input
                   type="checkbox"
@@ -225,7 +242,11 @@ export function RequestAccessForm({ defaultOrganizationSlug = "" }: { defaultOrg
 
       <div className="space-y-2">
         <Label htmlFor="message">Note to administrator (optional)</Label>
-        <Textarea id="message" name="message" placeholder="School, classroom, or supervisor context" />
+        <Textarea
+          id="message"
+          name="message"
+          placeholder="School, classroom, or supervisor context"
+        />
       </div>
 
       {message ? (
@@ -235,8 +256,8 @@ export function RequestAccessForm({ defaultOrganizationSlug = "" }: { defaultOrg
       ) : null}
 
       <Alert title="Approval required" tone="info">
-        Creating an account does not grant access immediately. An organization administrator must approve your
-        request.
+        Creating an account does not grant access immediately. An organization administrator must
+        approve your request.
       </Alert>
 
       <Button type="submit" disabled={pending} className="w-full">

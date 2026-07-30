@@ -9,28 +9,49 @@ import { getSchool } from "@/lib/data/schools";
 
 export const metadata: Metadata = { title: "School detail" };
 
-export default async function SchoolDetailPage({ params }: { params: Promise<{ schoolId: string }> }) {
+export default async function SchoolDetailPage({
+  params,
+}: {
+  params: Promise<{ schoolId: string }>;
+}) {
   const { schoolId } = await params;
   const state = await getSchool(schoolId);
   const school = state.data.school;
 
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/schools", label: "Schools" }, { label: "School detail" }]} />
+      <Breadcrumbs
+        items={[
+          { href: "/", label: "Home" },
+          { href: "/schools", label: "Schools" },
+          { label: "School detail" },
+        ]}
+      />
       <PageHeader
         title={school?.name ?? "School detail"}
         description="School details and operational status."
-        actions={school && state.data.canManage ? (
-          <Link href={`/schools/${school.id}/edit`} className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold">
-            Edit school
-          </Link>
-        ) : null}
+        actions={
+          school && state.data.canManage ? (
+            <Link
+              href={`/schools/${school.id}/edit`}
+              className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold"
+            >
+              Edit school
+            </Link>
+          ) : null
+        }
       />
-      {!state.configured ? <ConfigurationState /> : state.error ? <SafeErrorState message={state.error} /> : school ? (
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error ? (
+        <SafeErrorState message={state.error} />
+      ) : school ? (
         <div className="space-y-6">
           <Card>
             <CardTitle>{school.name}</CardTitle>
-            <CardDescription>School code: {school.school_code ?? "Not set"}. Status: {school.status}.</CardDescription>
+            <CardDescription>
+              School code: {school.school_code ?? "Not set"}. Status: {school.status}.
+            </CardDescription>
           </Card>
           <TableShell
             caption="School metadata"
@@ -43,7 +64,9 @@ export default async function SchoolDetailPage({ params }: { params: Promise<{ s
             ]}
           />
         </div>
-      ) : <SafeErrorState message="School not found or unavailable to your role." />}
+      ) : (
+        <SafeErrorState message="School not found or unavailable to your role." />
+      )}
     </main>
   );
 }

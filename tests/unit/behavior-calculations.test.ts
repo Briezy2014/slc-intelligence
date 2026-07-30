@@ -90,7 +90,11 @@ describe("behavior calculations", () => {
     expect(summarizeLatency(observations)).toEqual({
       averageSeconds: 20,
       medianSeconds: 20,
-      sufficiency: { status: "sufficient", reason: "3 usable latency observations available.", usableCount: 3 },
+      sufficiency: {
+        status: "sufficient",
+        reason: "3 usable latency observations available.",
+        usableCount: 3,
+      },
     });
     expect(intensityDistribution(observations)).toEqual({ "1": 1, "2": 2 });
     expect(groupByTimeOfDay(observations)).toEqual({ morning: 1, midday: 1, afternoon: 1 });
@@ -99,8 +103,14 @@ describe("behavior calculations", () => {
   });
 
   it("counts ABC categories and replacement behavior rate", () => {
-    expect(abcCategoryCounts(observations, "antecedentCategory")).toEqual({ task: 2, transition: 1 });
-    expect(abcCategoryCounts(observations, "consequenceCategory")).toEqual({ attention: 2, escape: 1 });
+    expect(abcCategoryCounts(observations, "antecedentCategory")).toEqual({
+      task: 2,
+      transition: 1,
+    });
+    expect(abcCategoryCounts(observations, "consequenceCategory")).toEqual({
+      attention: 2,
+      escape: 1,
+    });
     expect(replacementRate(observations)).toEqual({
       percentage: 66.6667,
       observed: 2,

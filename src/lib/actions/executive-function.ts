@@ -30,7 +30,9 @@ async function canEf(
 }
 
 export async function saveExecutiveFunctionPlanAction(formData: FormData): Promise<ActionState> {
-  const parsed = executiveFunctionPlanSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+  const parsed = executiveFunctionPlanSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId);
@@ -58,7 +60,11 @@ export async function saveExecutiveFunctionPlanAction(formData: FormData): Promi
           .eq("id", values.planId)
           .select("id")
           .single()
-      : await context.supabase.from("student_executive_function_plans").insert(payload).select("id").single();
+      : await context.supabase
+          .from("student_executive_function_plans")
+          .insert(payload)
+          .select("id")
+          .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -75,8 +81,12 @@ export async function saveExecutiveFunctionPlanAction(formData: FormData): Promi
   }
 }
 
-export async function saveExecutiveFunctionObservationAction(formData: FormData): Promise<ActionState> {
-  const parsed = executiveFunctionObservationSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+export async function saveExecutiveFunctionObservationAction(
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = executiveFunctionObservationSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId);
@@ -98,7 +108,11 @@ export async function saveExecutiveFunctionObservationAction(formData: FormData)
       finalized_at: values.status === "finalized" ? new Date().toISOString() : null,
       finalized_by: values.status === "finalized" ? context.user.id : null,
     };
-    const result = await context.supabase.from("executive_function_observations").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("executive_function_observations")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -135,7 +149,11 @@ export async function saveChecklistResponseAction(formData: FormData): Promise<A
       note: values.note ?? null,
       responded_by: context.user.id,
     };
-    const result = await context.supabase.from("student_checklist_responses").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("student_checklist_responses")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,

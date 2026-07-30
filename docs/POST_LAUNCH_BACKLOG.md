@@ -17,15 +17,15 @@ Categories:
 
 ## Seeded nonblocking items
 
-| Category | Item |
-| --- | --- |
-| Accessibility improvement | Full manual screen-reader pass on every module form |
-| Performance improvement | Materialized administrative summary tables for large orgs |
-| Functional improvement | Stronger draft autosave recovery across long forms |
-| Reporting improvement | Additional print/PDF layouts |
-| Administrative improvement | Optional dashboard personalization |
-| User-experience improvement | Richer onboarding guidance for first organization setup |
-| Future AI feature | Expand AI Assist with org-level disable controls and evidence-grounded report drafting |
-| High-priority defect | Track Next.js transitive postcss/sharp advisories for upgrade |
+| Category                    | Item                                                                                   |
+| --------------------------- | -------------------------------------------------------------------------------------- |
+| Accessibility improvement   | Full manual screen-reader pass on every module form                                    |
+| Performance improvement     | Materialized administrative summary tables for large orgs                              |
+| Functional improvement      | Stronger draft autosave recovery across long forms                                     |
+| Reporting improvement       | Additional print/PDF layouts                                                           |
+| Administrative improvement  | Optional dashboard personalization                                                     |
+| User-experience improvement | Richer onboarding guidance for first organization setup                                |
+| Future AI feature           | Expand AI Assist with org-level disable controls and evidence-grounded report drafting |
+| High-priority defect        | Track Next.js transitive postcss/sharp advisories for upgrade                          |
 
 Never include real student information in backlog tickets or screenshots.

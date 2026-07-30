@@ -16,8 +16,15 @@ export default async function OrganizationMembersPage() {
   return (
     <main id="main-content">
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Organization members" }]} />
-      <PageHeader title="Organization members" description="Manage organization memberships and roles." />
-      {!state.configured ? <ConfigurationState /> : state.error ? <SafeErrorState message={state.error} /> : (
+      <PageHeader
+        title="Organization members"
+        description="Manage organization memberships and roles."
+      />
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error ? (
+        <SafeErrorState message={state.error} />
+      ) : (
         <div className="space-y-6">
           <TableShell
             caption="Members"
@@ -33,13 +40,21 @@ export default async function OrganizationMembersPage() {
             <div className="grid gap-6 lg:grid-cols-2">
               <Card>
                 <CardTitle>Update member role</CardTitle>
-                <CardDescription>Use only fictional development users in non-production environments.</CardDescription>
-                <div className="mt-4"><MemberForm organizationId={state.data.organizationId} /></div>
+                <CardDescription>
+                  Use only fictional development users in non-production environments.
+                </CardDescription>
+                <div className="mt-4">
+                  <MemberForm organizationId={state.data.organizationId} />
+                </div>
               </Card>
               <Card>
                 <CardTitle>Record invitation</CardTitle>
-                <CardDescription>Invitation emails are not sent automatically by this action.</CardDescription>
-                <div className="mt-4"><InvitationForm organizationId={state.data.organizationId} /></div>
+                <CardDescription>
+                  Invitation emails are not sent automatically by this action.
+                </CardDescription>
+                <div className="mt-4">
+                  <InvitationForm organizationId={state.data.organizationId} />
+                </div>
               </Card>
             </div>
           ) : null}
