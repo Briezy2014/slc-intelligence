@@ -6,7 +6,8 @@ export type AiAssistDomain =
   | "executive_function"
   | "progress"
   | "education_document"
-  | "behavior";
+  | "behavior"
+  | "lesson_plan";
 
 export type AiSuggestion = {
   id: string;

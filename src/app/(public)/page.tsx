@@ -1,8 +1,9 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, LineChart, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, Clock3, FileCheck2, Sparkles } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
+import { ACTIVE_CAPABILITIES, BENEFIT_POINTS } from "@/lib/content/capabilities";
 
 export default function HomePage() {
   return (
@@ -22,8 +23,9 @@ export default function HomePage() {
               {APP_TAGLINE}
             </h1>
             <p className="text-muted mt-5 max-w-2xl text-base sm:text-lg">
-              A premium intelligence platform for Specialized Learning Classroom teams—designed for
-              calm decision support, clear progress data, and professional collaboration.
+              Built for special education teams—intervention specialists, teachers, and service
+              providers—to collect daily data, monitor goals, document behavior, plan instruction,
+              and communicate with families in one professional workspace.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Link
@@ -34,10 +36,10 @@ export default function HomePage() {
                 <ArrowRight className="size-4" aria-hidden="true" />
               </Link>
               <Link
-                href="/about"
+                href="/capabilities"
                 className="border-border bg-background-elevated/80 text-foreground hover:border-highlight/40 inline-flex min-h-11 items-center justify-center rounded-[var(--radius-md)] border px-5 py-2 text-sm font-semibold transition-colors"
               >
-                Learn about the vision
+                View capabilities
               </Link>
             </div>
           </div>
@@ -58,22 +60,23 @@ export default function HomePage() {
           </div>
         </div>
       </section>
-      <section className="relative mx-auto max-w-6xl space-y-6 px-4 pb-16 sm:px-6">
+
+      <section className="relative mx-auto max-w-6xl space-y-6 px-4 pb-10 sm:px-6">
         <div className="grid gap-4 md:grid-cols-3">
           {[
             {
-              title: "Progress intelligence",
-              body: "Measurement-aware monitoring with transparent analytics—never automated educational decisions.",
-              icon: LineChart,
+              title: "Time savings",
+              body: "One-entry classroom workflows reduce duplicate documentation across goals, behavior, and family updates.",
+              icon: Clock3,
             },
             {
-              title: "Secure by design",
-              body: "Organization tenancy, scoped assignments, and audit-ready workflows for professional teams.",
-              icon: ShieldCheck,
+              title: "Better documentation",
+              body: "Structured special education records support clearer progress evidence and team review.",
+              icon: FileCheck2,
             },
             {
-              title: "Command Center",
-              body: "A calm SaaS dashboard that surfaces only what the signed-in educator is authorized to view.",
+              title: "AI assistance",
+              body: "Draft lesson plans, IEP goal language, and parent communications—always educator-reviewed.",
               icon: Sparkles,
             },
           ].map((item, index) => (
@@ -86,6 +89,43 @@ export default function HomePage() {
               <h2 className="text-foreground mt-3 font-serif text-xl font-semibold">
                 {item.title}
               </h2>
+              <p className="text-muted mt-2 text-sm">{item.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="relative mx-auto max-w-6xl space-y-4 px-4 pb-10 sm:px-6">
+        <h2 className="text-foreground font-serif text-2xl font-semibold">
+          Special education capabilities
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {ACTIVE_CAPABILITIES.slice(0, 9).map((item) => (
+            <article
+              key={item.title}
+              className="border-border bg-background-elevated/80 rounded-[var(--radius-lg)] border p-4"
+            >
+              <h3 className="text-foreground text-sm font-semibold">{item.title}</h3>
+              <p className="text-muted mt-2 text-sm">{item.body}</p>
+            </article>
+          ))}
+        </div>
+        <Link href="/capabilities" className="text-highlight text-sm font-semibold underline">
+          See full capabilities, benefits, and future roadmap
+        </Link>
+      </section>
+
+      <section className="relative mx-auto max-w-6xl space-y-4 px-4 pb-16 sm:px-6">
+        <h2 className="text-foreground font-serif text-2xl font-semibold">
+          Benefits for intervention specialists and teams
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {BENEFIT_POINTS.map((item) => (
+            <article
+              key={item.title}
+              className="border-border bg-background-elevated/80 rounded-[var(--radius-lg)] border p-4"
+            >
+              <h3 className="text-foreground text-sm font-semibold">{item.title}</h3>
               <p className="text-muted mt-2 text-sm">{item.body}</p>
             </article>
           ))}

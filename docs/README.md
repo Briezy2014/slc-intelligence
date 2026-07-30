@@ -92,6 +92,7 @@ When documents conflict, surface the conflict for product-owner resolution. Do n
 | `ISSUE_TEMPLATE.md`                  | Post-launch issue template                       |
 | `PRODUCTION_RELEASE_NOTES.md`        | Finished-product release notes                   |
 | `KNOWN_LIMITATIONS.md`               | Known limitations after launch                   |
+| `CAPABILITY_ROADMAP.md`              | Active vs future gated special education capabilities |
 | `PILOT_DEIDENTIFIED_USE.md`          | Active pilot coded / de-identified use rules     |
 | `legal/COUNSEL_PRIVACY_PACKAGE.md`   | Counsel-ready privacy package index (draft)      |
 | `legal/COUNSEL_REVIEW_CHECKLIST.md`  | Counsel sign-off checklist                       |
