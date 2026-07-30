@@ -1,0 +1,175 @@
+import type { EducationDocumentType } from "@/lib/supabase/types";
+
+export type DocumentFieldDef = {
+  key: string;
+  label: string;
+  kind: "text" | "textarea" | "select" | "date";
+  options?: string[];
+  prefillFrom?: "studentName" | "gradeLevel" | "schoolYear" | "localId";
+};
+
+export type EducationDocumentTemplate = {
+  key: string;
+  documentType: EducationDocumentType;
+  title: string;
+  description: string;
+  sections: Array<{
+    id: string;
+    title: string;
+    fields: DocumentFieldDef[];
+  }>;
+};
+
+export const EDUCATION_DOCUMENT_DISCLAIMER =
+  "Draft for educator/IEP team review only. This tool assists documentation; it does not independently create a legally controlling IEP, ETR, or progress report. District procedures and authorized signatures remain required.";
+
+export const IEP_BLANK_TEMPLATE: EducationDocumentTemplate = {
+  key: "iep_blank_v1",
+  documentType: "iep",
+  title: "Blank IEP draft",
+  description: "Structured IEP draft with dropdown-ready sections. Prefills student identity fields when available.",
+  sections: [
+    {
+      id: "cover",
+      title: "Student / meeting information",
+      fields: [
+        { key: "studentName", label: "Student name", kind: "text", prefillFrom: "studentName" },
+        { key: "localId", label: "Student ID", kind: "text", prefillFrom: "localId" },
+        { key: "gradeLevel", label: "Grade level", kind: "select", options: ["PreK", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Transition"], prefillFrom: "gradeLevel" },
+        { key: "schoolYear", label: "School year", kind: "text", prefillFrom: "schoolYear" },
+        { key: "meetingType", label: "Meeting type", kind: "select", options: ["Initial", "Annual review", "Amendment", "Manifestation", "Other"] },
+        { key: "meetingDate", label: "Meeting date", kind: "date" },
+      ],
+    },
+    {
+      id: "plaafp",
+      title: "Present levels (PLAAFP)",
+      fields: [
+        { key: "strengths", label: "Strengths", kind: "textarea" },
+        { key: "needs", label: "Needs", kind: "textarea" },
+        { key: "parentInput", label: "Parent/guardian input", kind: "textarea" },
+        { key: "howDisabilityAffects", label: "How disability affects involvement/progress", kind: "textarea" },
+      ],
+    },
+    {
+      id: "goals",
+      title: "Goals / objectives summary",
+      fields: [
+        { key: "goalSummary", label: "Annual goals summary", kind: "textarea" },
+        { key: "progressMonitoringPlan", label: "Progress monitoring plan", kind: "textarea" },
+      ],
+    },
+    {
+      id: "services",
+      title: "Services / least restrictive environment",
+      fields: [
+        { key: "speciallyDesignedInstruction", label: "Specially designed instruction", kind: "textarea" },
+        { key: "relatedServices", label: "Related services", kind: "textarea" },
+        { key: "accommodations", label: "Accommodations / modifications", kind: "textarea" },
+        { key: "placement", label: "Placement / LRE description", kind: "textarea" },
+      ],
+    },
+  ],
+};
+
+export const ETR_BLANK_TEMPLATE: EducationDocumentTemplate = {
+  key: "etr_blank_v1",
+  documentType: "etr",
+  title: "Blank ETR draft",
+  description: "Evaluation Team Report style draft sections with dropdown fields for team planning.",
+  sections: [
+    {
+      id: "referral",
+      title: "Referral / background",
+      fields: [
+        { key: "studentName", label: "Student name", kind: "text", prefillFrom: "studentName" },
+        { key: "gradeLevel", label: "Grade level", kind: "select", options: ["PreK", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Transition"], prefillFrom: "gradeLevel" },
+        { key: "referralReason", label: "Reason for referral", kind: "textarea" },
+        { key: "evaluationType", label: "Evaluation type", kind: "select", options: ["Initial", "Reevaluation", "Other"] },
+      ],
+    },
+    {
+      id: "assessments",
+      title: "Assessment summary",
+      fields: [
+        { key: "assessmentTools", label: "Assessment tools / data sources", kind: "textarea" },
+        { key: "academicFindings", label: "Academic findings", kind: "textarea" },
+        { key: "functionalFindings", label: "Functional / adaptive findings", kind: "textarea" },
+        { key: "communicationFindings", label: "Communication findings (include ASL modality notes when applicable)", kind: "textarea" },
+      ],
+    },
+    {
+      id: "eligibility",
+      title: "Team considerations",
+      fields: [
+        { key: "teamSummary", label: "Team summary of educational needs", kind: "textarea" },
+        { key: "nextSteps", label: "Recommended next steps for team discussion", kind: "textarea" },
+        {
+          key: "eligibilityStatus",
+          label: "Eligibility status (team decision only)",
+          kind: "select",
+          options: ["Not determined in this draft", "Team to convene", "Documented outside this draft"],
+        },
+      ],
+    },
+  ],
+};
+
+export const PROGRESS_REPORT_TEMPLATE: EducationDocumentTemplate = {
+  key: "progress_report_packet_v1",
+  documentType: "progress_report",
+  title: "Progress report packet draft",
+  description: "Structured progress report language for team review. Not a final legal determination.",
+  sections: [
+    {
+      id: "header",
+      title: "Report header",
+      fields: [
+        { key: "studentName", label: "Student name", kind: "text", prefillFrom: "studentName" },
+        { key: "gradeLevel", label: "Grade level", kind: "select", options: ["PreK", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Transition"], prefillFrom: "gradeLevel" },
+        { key: "reportingPeriod", label: "Reporting period", kind: "text" },
+        { key: "reportDate", label: "Report date", kind: "date" },
+      ],
+    },
+    {
+      id: "progress",
+      title: "Progress narrative",
+      fields: [
+        { key: "goalProgressSummary", label: "Goal progress summary", kind: "textarea" },
+        { key: "supportsUsed", label: "Supports / interventions used", kind: "textarea" },
+        { key: "nextInstructionalFocus", label: "Next instructional focus / learning progression", kind: "textarea" },
+        {
+          key: "overallDescriptor",
+          label: "Overall descriptor",
+          kind: "select",
+          options: ["Exceeding", "Met", "Progressing", "Limited progress", "Not introduced", "Insufficient data"],
+        },
+      ],
+    },
+  ],
+};
+
+export function getEducationDocumentTemplate(documentType: EducationDocumentType): EducationDocumentTemplate {
+  if (documentType === "etr") return ETR_BLANK_TEMPLATE;
+  if (documentType === "progress_report") return PROGRESS_REPORT_TEMPLATE;
+  return IEP_BLANK_TEMPLATE;
+}
+
+export function buildPrefillFields(args: {
+  template: EducationDocumentTemplate;
+  studentName?: string;
+  gradeLevel?: string | null;
+  localId?: string | null;
+  schoolYear?: string;
+}): Record<string, string> {
+  const values: Record<string, string> = {};
+  for (const section of args.template.sections) {
+    for (const field of section.fields) {
+      if (field.prefillFrom === "studentName" && args.studentName) values[field.key] = args.studentName;
+      if (field.prefillFrom === "gradeLevel" && args.gradeLevel) values[field.key] = args.gradeLevel;
+      if (field.prefillFrom === "localId" && args.localId) values[field.key] = args.localId;
+      if (field.prefillFrom === "schoolYear") values[field.key] = args.schoolYear ?? `${new Date().getFullYear()}-${new Date().getFullYear() + 1}`;
+    }
+  }
+  return values;
+}

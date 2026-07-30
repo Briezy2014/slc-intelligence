@@ -27,7 +27,14 @@ export default async function StudentGoalsPage({ params }: { params: Promise<{ s
             <Card>
               <CardTitle>Create goal</CardTitle>
               <CardDescription>Create goals only for authorized fictional/development records.</CardDescription>
-              <div className="mt-4"><GoalForm organizationId={goalsState.data.organizationId} studentId={studentId} cycles={goalsState.data.cycles} /></div>
+              <div className="mt-4">
+                <GoalForm
+                  organizationId={goalsState.data.organizationId}
+                  studentId={studentId}
+                  cycles={goalsState.data.cycles}
+                  defaultGradeLevel={studentState.data.student.grade_level}
+                />
+              </div>
             </Card>
           ) : null}
         </div>

@@ -6,12 +6,29 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Alert } from "@/components/ui/alert";
 import { saveGoalAction } from "@/lib/actions/goals";
-import { GOAL_TEMPLATES, getGoalTemplate, type MeasurementTypeCode } from "@/lib/catalogs";
+import {
+  GRADE_LEVELS,
+  PROGRESSION_SUBJECTS,
+  PROGRESSION_SUBJECT_LABELS,
+  getProgression,
+  listProgressionsForGrade,
+  suggestNextAfterMastery,
+  type GradeLevel,
+  type MeasurementTypeCode,
+  type ProgressionSubject,
+} from "@/lib/catalogs";
 import type { IepCycle, IepGoal } from "@/lib/supabase/types";
 
 function submitAction(action: (formData: FormData) => Promise<unknown>) {
   return action as unknown as (formData: FormData) => void;
+}
+
+function normalizeGrade(value: string | null | undefined): GradeLevel | "" {
+  if (!value) return "";
+  const match = GRADE_LEVELS.find((grade) => grade.toLowerCase() === value.trim().toLowerCase());
+  return match ?? "";
 }
 
 export function GoalForm({
@@ -19,13 +36,17 @@ export function GoalForm({
   studentId,
   cycles,
   goal,
+  defaultGradeLevel,
 }: {
   organizationId: string;
   studentId: string;
   cycles: IepCycle[];
   goal?: IepGoal | null;
+  defaultGradeLevel?: string | null;
 }) {
-  const [templateId, setTemplateId] = useState("");
+  const [gradeLevel, setGradeLevel] = useState<GradeLevel | "">(normalizeGrade(defaultGradeLevel));
+  const [subject, setSubject] = useState<ProgressionSubject | "">("");
+  const [progressionId, setProgressionId] = useState("");
   const [goalArea, setGoalArea] = useState(goal?.goal_area ?? "");
   const [goalStatement, setGoalStatement] = useState(goal?.goal_statement ?? "");
   const [measurementType, setMeasurementType] = useState<MeasurementTypeCode>(
@@ -35,25 +56,36 @@ export function GoalForm({
     goal?.target_direction ?? "increase",
   );
   const [targetValue, setTargetValue] = useState(goal?.target_value?.toString() ?? "");
+  const [status, setStatus] = useState<"active" | "inactive" | "archived" | "mastered_review">(
+    goal?.status ?? "active",
+  );
 
-  const grouped = useMemo(() => {
-    return GOAL_TEMPLATES.reduce<Record<string, typeof GOAL_TEMPLATES>>((groups, template) => {
-      groups[template.area] = groups[template.area] ?? [];
-      groups[template.area].push(template);
-      return groups;
-    }, {});
-  }, []);
+  const gradeGoals = useMemo(
+    () => (gradeLevel ? listProgressionsForGrade(gradeLevel, subject || undefined) : []),
+    [gradeLevel, subject],
+  );
 
-  function applyTemplate(nextId: string) {
-    setTemplateId(nextId);
-    if (!nextId) return;
-    const template = getGoalTemplate(nextId);
-    if (!template) return;
-    setGoalArea(template.area);
-    setGoalStatement(template.statement);
-    setMeasurementType(template.measurementType);
-    setTargetDirection(template.targetDirection);
-    setTargetValue(template.targetValue == null ? "" : String(template.targetValue));
+  const nextProgressions = useMemo(
+    () =>
+      suggestNextAfterMastery({
+        gradeLevel,
+        subject,
+        currentProgressionId: progressionId || undefined,
+      }),
+    [gradeLevel, subject, progressionId],
+  );
+
+  function applyProgression(id: string) {
+    setProgressionId(id);
+    const progression = getProgression(id);
+    if (!progression) return;
+    setGradeLevel(progression.gradeLevel);
+    setSubject(progression.subject);
+    setGoalArea(progression.goalArea);
+    setGoalStatement(progression.goalStatement);
+    setMeasurementType(progression.measurementType);
+    setTargetDirection(progression.targetDirection);
+    setTargetValue(progression.targetValue == null ? "" : String(progression.targetValue));
   }
 
   return (
@@ -61,29 +93,93 @@ export function GoalForm({
       <input type="hidden" name="organizationId" value={organizationId} />
       <input type="hidden" name="studentId" value={studentId} />
       {goal ? <input type="hidden" name="goalId" value={goal.id} /> : null}
-      <FormField id="goalTemplateId" label="Starter goal template">
+
+      <Alert title="Learning progressions" tone="info">
+        Choose a grade level and course subject to load progression goals (including functional math and ASL
+        communication). After mastery, generate the next progression step.
+      </Alert>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <FormField id="gradeLevel" label="Grade level">
+          <Select
+            id="gradeLevel"
+            value={gradeLevel}
+            onChange={(event) => {
+              setGradeLevel((event.target.value || "") as GradeLevel | "");
+              setProgressionId("");
+            }}
+          >
+            <option value="">Choose grade level</option>
+            {GRADE_LEVELS.map((grade) => (
+              <option key={grade} value={grade}>
+                {grade}
+              </option>
+            ))}
+          </Select>
+        </FormField>
+        <FormField id="subject" label="Course subject">
+          <Select
+            id="subject"
+            value={subject}
+            onChange={(event) => {
+              setSubject((event.target.value || "") as ProgressionSubject | "");
+              setProgressionId("");
+            }}
+          >
+            <option value="">All subjects for grade</option>
+            {PROGRESSION_SUBJECTS.map((code) => (
+              <option key={code} value={code}>
+                {PROGRESSION_SUBJECT_LABELS[code]}
+              </option>
+            ))}
+          </Select>
+        </FormField>
+      </div>
+
+      <FormField id="progressionId" label="Learning progression goal">
         <Select
-          id="goalTemplateId"
-          name="goalTemplateId"
-          value={templateId}
-          onChange={(event) => applyTemplate(event.target.value)}
+          id="progressionId"
+          value={progressionId}
+          onChange={(event) => applyProgression(event.target.value)}
+          disabled={!gradeLevel}
         >
-          <option value="">Custom goal (write your own)</option>
-          {Object.entries(grouped).map(([area, templates]) => (
-            <optgroup key={area} label={area}>
-              {templates.map((template) => (
-                <option key={template.id} value={template.id}>
-                  {template.statement.slice(0, 90)}
-                  {template.statement.length > 90 ? "…" : ""}
-                </option>
-              ))}
-            </optgroup>
+          <option value="">
+            {!gradeLevel
+              ? "Choose a grade level first"
+              : gradeGoals.length === 0
+                ? "No progressions for this filter"
+                : "Choose a progression goal"}
+          </option>
+          {gradeGoals.map((entry) => (
+            <option key={entry.id} value={entry.id}>
+              {entry.title}
+            </option>
           ))}
         </Select>
       </FormField>
       <p className="text-muted text-sm">
-        {GOAL_TEMPLATES.length} starter goals are available. Pick one to prefill, then customize for the student.
+        {gradeLevel
+          ? `${gradeGoals.length} progression goals available for grade ${gradeLevel}${subject ? ` · ${PROGRESSION_SUBJECT_LABELS[subject]}` : ""}.`
+          : "Select a grade level to generate the goal set."}
       </p>
+
+      {status === "mastered_review" || progressionId ? (
+        <div className="border-border space-y-3 rounded-[var(--radius-md)] border p-3">
+          <p className="text-sm font-semibold">Next learning progression after mastery</p>
+          {nextProgressions.length === 0 ? (
+            <p className="text-muted text-sm">No next step mapped yet for this selection.</p>
+          ) : (
+            <div className="flex flex-wrap gap-2">
+              {nextProgressions.map((entry) => (
+                <Button key={entry.id} type="button" variant="secondary" onClick={() => applyProgression(entry.id)}>
+                  Use next: {entry.title}
+                </Button>
+              ))}
+            </div>
+          )}
+        </div>
+      ) : null}
+
       <FormField id="iepCycleId" label="IEP cycle">
         <Select id="iepCycleId" name="iepCycleId" required defaultValue={goal?.iep_cycle_id ?? ""}>
           <option value="">Choose an IEP cycle</option>
@@ -116,7 +212,6 @@ export function GoalForm({
             value={measurementType}
             onChange={(event) => setMeasurementType(event.target.value as MeasurementTypeCode)}
           >
-
             <option value="percentage">Percentage</option>
             <option value="frequency">Frequency</option>
             <option value="rate">Rate</option>
@@ -167,7 +262,21 @@ export function GoalForm({
       <FormField id="evaluationFrequency" label="Evaluation frequency">
         <Input id="evaluationFrequency" name="evaluationFrequency" defaultValue={goal?.evaluation_frequency ?? ""} />
       </FormField>
-      <input type="hidden" name="status" value={goal?.status ?? "active"} />
+      <FormField id="status" label="Goal status">
+        <Select
+          id="status"
+          name="status"
+          value={status}
+          onChange={(event) =>
+            setStatus(event.target.value as "active" | "inactive" | "archived" | "mastered_review")
+          }
+        >
+          <option value="active">Active</option>
+          <option value="mastered_review">Mastered · ready for next progression</option>
+          <option value="inactive">Inactive</option>
+          <option value="archived">Archived</option>
+        </Select>
+      </FormField>
       <Button type="submit">{goal ? "Save goal" : "Create goal"}</Button>
     </form>
   );

@@ -33,6 +33,8 @@ export default async function StudentOverviewPage({ params }: { params: Promise<
         actions={student ? (
           <div className="flex flex-wrap gap-2">
             <Link href={`/students/${student.id}/iep`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">IEP</Link>
+            <Link href={`/students/${student.id}/etr`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">ETR</Link>
+            <Link href={`/students/${student.id}/goals`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">Goals</Link>
             <Link href={`/students/${student.id}/progress`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">Progress</Link>
             <Link href={`/students/${student.id}/analytics`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">Analytics</Link>
             <Link href={`/students/${student.id}/reports`} className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold">Reports</Link>

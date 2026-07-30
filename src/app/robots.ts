@@ -17,6 +17,7 @@ export default function robots(): MetadataRoute.Robots {
           "/staff",
           "/goals",
           "/progress",
+          "/education-documents",
           "/reports",
           "/behavior-detective",
           "/interventions",

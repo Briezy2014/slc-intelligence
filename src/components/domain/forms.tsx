@@ -188,7 +188,12 @@ export function StudentForm({ organizationId, student }: { organizationId: strin
           <Input id="localIdentifier" name="localIdentifier" required defaultValue={student?.local_identifier ?? ""} />
         </FormField>
         <FormField id="gradeLevel" label="Grade level">
-          <Input id="gradeLevel" name="gradeLevel" defaultValue={student?.grade_level ?? ""} />
+          <Select id="gradeLevel" name="gradeLevel" defaultValue={student?.grade_level ?? ""}>
+            <option value="">Choose grade level</option>
+            {["PreK", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Transition"].map((grade) => (
+              <option key={grade} value={grade}>{grade}</option>
+            ))}
+          </Select>
         </FormField>
       </div>
       <FormField id="enrollmentStatus" label="Enrollment status">

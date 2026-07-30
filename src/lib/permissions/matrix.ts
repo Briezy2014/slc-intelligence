@@ -95,6 +95,8 @@ export const PERMISSION_CODES = [
   "admin.intelligence.read",
   "admin.export",
   "admin.audit.read",
+  "education_document.manage",
+  "education_document.read",
 ] as const satisfies readonly PermissionCode[];
 
 export const ROLE_LABELS: Record<RoleCode, string> = {
@@ -192,6 +194,8 @@ export const PERMISSION_LABELS: Record<PermissionCode, string> = {
   "admin.intelligence.read": "Read administrative intelligence",
   "admin.export": "Export administrative summaries",
   "admin.audit.read": "Read administrative audit activity",
+  "education_document.manage": "Manage IEP/ETR/progress document drafts",
+  "education_document.read": "Read IEP/ETR/progress document drafts",
 };
 
 const PHASE_13_ADMIN_PERMISSIONS = [

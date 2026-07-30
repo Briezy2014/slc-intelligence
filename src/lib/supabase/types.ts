@@ -125,7 +125,9 @@ export type PermissionCode =
   | "announcement.manage"
   | "admin.intelligence.read"
   | "admin.export"
-  | "admin.audit.read";
+  | "admin.audit.read"
+  | "education_document.manage"
+  | "education_document.read";
 
 export type Organization = {
   id: Uuid;
@@ -315,6 +317,46 @@ export type OrganizationInvitation = {
   expires_at: Timestamp;
   accepted_by: Nullable<Uuid>;
   accepted_at: Nullable<Timestamp>;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
+export type EducationDocumentType = "iep" | "etr" | "progress_report";
+export type EducationDocumentStatus = "draft" | "in_review" | "finalized" | "archived";
+
+export type EducationDocument = {
+  id: Uuid;
+  organization_id: Uuid;
+  student_id: Uuid;
+  document_type: EducationDocumentType;
+  title: string;
+  status: EducationDocumentStatus;
+  school_year: Nullable<string>;
+  grade_level: Nullable<string>;
+  template_key: Nullable<string>;
+  fields: Json;
+  section_notes: Json;
+  legal_disclaimer: string;
+  created_by: Nullable<Uuid>;
+  updated_by: Nullable<Uuid>;
+  finalized_at: Nullable<Timestamp>;
+  finalized_by: Nullable<Uuid>;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
+export type EducationDocumentUpload = {
+  id: Uuid;
+  organization_id: Uuid;
+  student_id: Uuid;
+  education_document_id: Nullable<Uuid>;
+  document_type: EducationDocumentType | "other";
+  file_name: string;
+  content_type: Nullable<string>;
+  byte_size: Nullable<number>;
+  storage_path: Nullable<string>;
+  notes: Nullable<string>;
+  uploaded_by: Nullable<Uuid>;
   created_at: Timestamp;
   updated_at: Timestamp;
 };
@@ -1819,6 +1861,16 @@ export type Database = {
         OrganizationInvitation,
         Partial<OrganizationInvitation>,
         Partial<OrganizationInvitation>
+      >;
+      education_documents: RowDefinition<
+        EducationDocument,
+        Partial<EducationDocument>,
+        Partial<EducationDocument>
+      >;
+      education_document_uploads: RowDefinition<
+        EducationDocumentUpload,
+        Partial<EducationDocumentUpload>,
+        Partial<EducationDocumentUpload>
       >;
       schools: RowDefinition<School, Partial<School>, Partial<School>>;
       programs: RowDefinition<Program, Partial<Program>, Partial<Program>>;
