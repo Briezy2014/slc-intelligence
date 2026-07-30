@@ -33,7 +33,17 @@ Capabilities:
 1. Blank templates with dropdown and text sections
 2. Prefill student name / grade / local ID
 3. Save draft records for team review
-4. Record upload metadata for existing IEP/ETR files
+4. **Upload PDF/image/text → automatic text extraction / OCR → populate draft fields**
+5. Optional paste assist if a section is missed
+6. Optional Supabase Storage bucket for binary retention (`202607300012_education_document_storage.sql`)
+
+Upload flow:
+
+1. Choose student and file (PDF, PNG/JPG, or `.txt`)
+2. App extracts embedded PDF text when available
+3. If the PDF/image is scan-only, OCR runs (first 8 pages)
+4. Local + optional model assist maps extracted text into IEP/ETR fields
+5. A draft document is created for educator/team review
 
 ## Legal / compliance boundary
 

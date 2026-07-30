@@ -6,8 +6,8 @@ import {
   INTERVENTION_TEMPLATES,
   applyCommunicationTemplate,
 } from "@/lib/catalogs";
-import { getEducationDocumentTemplate } from "@/lib/catalogs/education-document-templates";
 import { BEHAVIOR_DEFINITION_TEMPLATES } from "@/lib/catalogs/behavior-templates";
+import { mapDocumentTextToFields } from "@/lib/documents/map-document-text";
 import type { AiAssistDomain, AiSuggestInput, AiSuggestion } from "@/lib/ai/types";
 import type { EducationDocumentType } from "@/lib/supabase/types";
 
@@ -37,53 +37,6 @@ function topScored<T>(
 
 function contextBlob(input: AiSuggestInput): string {
   return [input.focusArea, input.studentContext, input.extraNotes].filter(Boolean).join(" ");
-}
-
-function extractFieldFromText(text: string, labels: string[]): string {
-  const lower = text.toLowerCase();
-  for (const label of labels) {
-    const idx = lower.indexOf(label.toLowerCase());
-    if (idx < 0) continue;
-    const slice = text.slice(idx + label.length).replace(/^[\s:.\-–—]+/, "");
-    const line = slice.split(/\n+/)[0]?.trim() ?? "";
-    if (line.length > 3) return line.slice(0, 1200);
-  }
-  return "";
-}
-
-function buildEducationDocumentFields(
-  documentType: EducationDocumentType,
-  sourceText: string,
-): Record<string, string> {
-  const template = getEducationDocumentTemplate(documentType);
-  const fields: Record<string, string> = {};
-  for (const section of template.sections) {
-    for (const field of section.fields) {
-      const extracted = extractFieldFromText(sourceText, [field.label, field.key]);
-      if (extracted) fields[field.key] = extracted;
-    }
-  }
-  if (!fields.strengths) {
-    fields.strengths = extractFieldFromText(sourceText, ["strengths", "student strengths"]);
-  }
-  if (!fields.needs) {
-    fields.needs = extractFieldFromText(sourceText, ["needs", "areas of need", "present levels"]);
-  }
-  if (!fields.goalSummary) {
-    fields.goalSummary = extractFieldFromText(sourceText, [
-      "annual goals",
-      "goals",
-      "measurable annual goals",
-    ]);
-  }
-  if (!fields.howDisabilityAffects) {
-    fields.howDisabilityAffects = extractFieldFromText(sourceText, [
-      "how the disability affects",
-      "effect of the disability",
-      "impact on involvement",
-    ]);
-  }
-  return Object.fromEntries(Object.entries(fields).filter(([, value]) => value.length > 0));
 }
 
 export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
@@ -251,7 +204,7 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
             ? "progress_report"
             : "iep";
       const sourceText = input.extraNotes || input.studentContext || "";
-      const fields = buildEducationDocumentFields(documentType, sourceText);
+      const fields = mapDocumentTextToFields(documentType, sourceText);
       const filled = Object.keys(fields).length;
       return [
         {
