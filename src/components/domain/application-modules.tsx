@@ -16,6 +16,7 @@ import {
 import { recordFamilyCommunicationExportAction } from "@/lib/actions/communications";
 import { ContactAndCommunicationForms } from "@/components/domain/communication-workspace-forms";
 import { CommunicationEsignPanel } from "@/components/domain/communication-esign-panel";
+import { StaffNotificationsPanel } from "@/components/domain/staff-notifications-panel";
 import { communicationLanguageLabel } from "@/lib/catalogs/communication-languages";
 import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import {
@@ -457,8 +458,13 @@ export function CommunicationsWorkspace({
       <Alert title="Family-visible export guardrail" tone="info">
         Exports include family_visible communication summaries only; internal and restricted records
         stay separate. Use Template & language to draft and translate, then Parent e-signature for
-        receipt signatures on behavior letters and other home communications.
+        receipt signatures on behavior letters and other home communications. Parents can check “I
+        have read this,” type their name, and send — staff get an in-app notification.
       </Alert>
+      <StaffNotificationsPanel
+        organizationId={data.organizationId}
+        notifications={data.staffNotifications ?? []}
+      />
       <ContactAndCommunicationForms
         organizationId={data.organizationId ?? ""}
         students={data.students}

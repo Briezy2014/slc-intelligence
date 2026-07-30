@@ -70,14 +70,19 @@ export const createCommunicationSignLinkSchema = z.object({
 export const publicCommunicationSignSchema = z.object({
   token: z.string().trim().min(20).max(200),
   signerDisplayName: z.string().trim().min(1, "Your name is required.").max(180),
-  typedSignature: z.string().trim().min(1, "Typed signature is required.").max(180),
+  typedSignature: z.string().trim().max(180).optional().or(z.literal("")),
   signerEmail: z.string().trim().email().optional().or(z.literal("")),
-  method: z.enum(["typed", "drawn"]).default("drawn"),
+  method: z.enum(["typed", "drawn"]).default("typed"),
   signatureImageData: z.string().trim().max(600000).optional().or(z.literal("")),
   receiptConfirmed: z.preprocess(
     (value) => value === true || value === "true" || value === "on",
     z.boolean(),
   ),
+});
+
+export const markStaffNotificationReadSchema = z.object({
+  organizationId: z.string().uuid(),
+  notificationId: z.string().uuid(),
 });
 
 export const translateCommunicationSchema = z.object({

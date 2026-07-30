@@ -220,7 +220,8 @@ export function ContactAndCommunicationForms({
               {composeTab === "template_language" ? (
                 <div className="space-y-3">
                   <Alert title="Choose template and language" tone="info">
-                    Select a communication template and a family language (20 options). Insert the
+                    Select a communication template (expanded school letter library) and a family
+                    language (20 options). Insert the
                     English draft, then translate before saving.
                   </Alert>
                   <FormField id="draftTemplateId" label="Communication template">

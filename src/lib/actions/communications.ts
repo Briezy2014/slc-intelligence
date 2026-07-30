@@ -26,6 +26,7 @@ import {
   communicationTemplateSchema,
   contactSchema,
   createCommunicationSignLinkSchema,
+  markStaffNotificationReadSchema,
   publicCommunicationSignSchema,
   translateCommunicationSchema,
 } from "@/lib/validation/communications";
@@ -405,6 +406,17 @@ export async function recordCommunicationAcknowledgementAction(
       .eq("id", values.communicationLogId)
       .eq("organization_id", context.organizationId);
 
+    if (values.status !== "requested_clarification") {
+      await context.supabase.rpc("notify_staff_parent_communication_ack", {
+        p_organization_id: context.organizationId,
+        p_communication_log_id: values.communicationLogId,
+        p_student_id: values.studentId,
+        p_acknowledgement_id: data.id,
+        p_signer_display_name: values.signerDisplayName,
+        p_method: values.method,
+      });
+    }
+
     await auditAndRevalidate({
       organizationId: context.organizationId,
       actorUserId: context.user.id,
@@ -531,7 +543,10 @@ export async function submitPublicCommunicationSignAction(
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   if (!values.receiptConfirmed) {
-    return { status: "error", message: "Confirm that you received this communication." };
+    return {
+      status: "error",
+      message: "Check the box that says you have read this communication before sending.",
+    };
   }
   if (!isServerSupabaseConfigured()) {
     return { status: "error", message: "Signing is unavailable in this environment." };
@@ -540,10 +555,11 @@ export async function submitPublicCommunicationSignAction(
   try {
     const supabase = await createServerSupabaseClient();
     const requestHeaders = await headers();
+    const typedSignature = values.typedSignature?.trim() || values.signerDisplayName;
     const { data, error } = await supabase.rpc("submit_communication_sign_packet", {
       p_token: values.token,
       p_signer_display_name: values.signerDisplayName,
-      p_typed_signature: values.typedSignature,
+      p_typed_signature: typedSignature,
       p_signature_image_data: values.signatureImageData || null,
       p_signer_email: values.signerEmail || null,
       p_method: values.method,
@@ -553,14 +569,49 @@ export async function submitPublicCommunicationSignAction(
     if (error || !data) {
       return {
         status: "error",
-        message: "Could not save your signature. The link may be expired or already invalid.",
+        message: "Could not save your acknowledgment. The link may be expired or already used.",
       };
     }
     return {
       status: "success",
-      message: "Thank you. Your receipt acknowledgment and signature were recorded.",
+      message:
+        "Thank you. School staff have been notified that you read and acknowledged this communication.",
     };
   } catch {
-    return { status: "error", message: "Could not save your signature. Try again later." };
+    return { status: "error", message: "Could not save your acknowledgment. Try again later." };
+  }
+}
+
+export async function markStaffNotificationReadAction(formData: FormData): Promise<ActionState> {
+  const parsed = markStaffNotificationReadSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
+  if (!parsed.success) return validationError(parsed.error);
+  const values = parsed.data;
+  const context = await getActionContext(values.organizationId);
+  if (!("supabase" in context)) return context;
+
+  try {
+    const { error } = await context.supabase
+      .from("staff_notifications")
+      .update({ read_at: new Date().toISOString() })
+      .eq("organization_id", context.organizationId)
+      .eq("id", values.notificationId)
+      .is("read_at", null);
+    if (error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
+
+    await auditAndRevalidate({
+      organizationId: context.organizationId,
+      actorUserId: context.user.id,
+      actionType: "communication.notification_read",
+      resourceType: "staff_notification",
+      resourceId: values.notificationId,
+      newState: { read: true },
+      paths: ["/family-communication"],
+    });
+
+    return { status: "success", message: "Notification marked as read." };
+  } catch {
+    return { status: "error", message: GENERIC_ACTION_MESSAGE };
   }
 }

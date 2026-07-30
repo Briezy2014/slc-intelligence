@@ -5,7 +5,6 @@ import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { FormField } from "@/components/forms/form-field";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
 import { SignaturePad } from "@/components/domain/signature-pad";
 import { submitPublicCommunicationSignAction } from "@/lib/actions/communications";
 import { ESIGN_RECEIPT_DISCLAIMER } from "@/lib/communications/esign";
@@ -23,7 +22,8 @@ export function PublicCommunicationSignForm({
   organizationName: string;
   alreadySigned: boolean;
 }) {
-  const [method, setMethod] = useState<"drawn" | "typed">("drawn");
+  const [name, setName] = useState("");
+  const [showDrawn, setShowDrawn] = useState(false);
   const [signatureImage, setSignatureImage] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [done, setDone] = useState(alreadySigned);
@@ -32,7 +32,7 @@ export function PublicCommunicationSignForm({
   if (done) {
     return (
       <Alert title="Acknowledgment recorded" tone="info">
-        Thank you. Receipt of this communication has been recorded
+        Thank you. School staff have been notified that you read this communication
         {alreadySigned && !message ? " previously" : ""}.
       </Alert>
     );
@@ -52,6 +52,9 @@ export function PublicCommunicationSignForm({
         className="space-y-3"
         action={(formData) => {
           startTransition(async () => {
+            formData.set("signerDisplayName", name);
+            formData.set("typedSignature", name);
+            formData.set("method", showDrawn && signatureImage ? "drawn" : "typed");
             if (signatureImage) formData.set("signatureImageData", signatureImage);
             const result = await submitPublicCommunicationSignAction(formData);
             setMessage(result.message ?? null);
@@ -60,41 +63,51 @@ export function PublicCommunicationSignForm({
         }}
       >
         <input type="hidden" name="token" value={token} />
-        <FormField id="signerDisplayName" label="Your name">
-          <Input id="signerDisplayName" name="signerDisplayName" required />
-        </FormField>
-        <FormField id="typedSignature" label="Type your full name as signature">
-          <Input id="typedSignature" name="typedSignature" required />
+        <label className="border-border flex items-start gap-3 rounded-[var(--radius-md)] border p-3 text-sm">
+          <input
+            type="checkbox"
+            name="receiptConfirmed"
+            value="true"
+            required
+            className="mt-1"
+          />
+          <span>
+            <strong>I have read this</strong> school communication and acknowledge receipt.
+          </span>
+        </label>
+        <FormField id="signerDisplayName" label="Type your name">
+          <Input
+            id="signerDisplayNameVisible"
+            required
+            value={name}
+            onChange={(event) => setName(event.target.value)}
+            placeholder="Parent / guardian full name"
+            autoComplete="name"
+          />
         </FormField>
         <FormField id="signerEmail" label="Email (optional)">
           <Input id="signerEmail" name="signerEmail" type="email" />
         </FormField>
-        <FormField id="method" label="Signature style">
-          <Select
-            id="method"
-            name="method"
-            value={method}
-            onChange={(event) => setMethod(event.target.value as "drawn" | "typed")}
+        <div className="space-y-2">
+          <button
+            type="button"
+            className="text-sm underline"
+            onClick={() => setShowDrawn((value) => !value)}
           >
-            <option value="drawn">Draw signature</option>
-            <option value="typed">Typed name only</option>
-          </Select>
-        </FormField>
-        {method === "drawn" ? (
-          <FormField id="drawn" label="Draw your signature">
-            <SignaturePad onChange={setSignatureImage} disabled={pending} />
-          </FormField>
-        ) : null}
-        <label className="flex items-start gap-2 text-sm">
-          <input type="checkbox" name="receiptConfirmed" value="true" required className="mt-1" />
-          <span>I acknowledge that I received this communication.</span>
-        </label>
-        <Button type="submit" disabled={pending}>
-          {pending ? "Saving…" : "Sign and acknowledge receipt"}
+            {showDrawn ? "Hide optional drawn signature" : "Optional: add a drawn signature"}
+          </button>
+          {showDrawn ? (
+            <FormField id="drawn" label="Draw your signature (optional)">
+              <SignaturePad onChange={setSignatureImage} disabled={pending} />
+            </FormField>
+          ) : null}
+        </div>
+        <Button type="submit" disabled={pending || !name.trim()}>
+          {pending ? "Sending…" : "Send acknowledgment to school"}
         </Button>
       </form>
       {message ? (
-        <Alert title="Signing status" tone="info">
+        <Alert title="Status" tone="info">
           {message}
         </Alert>
       ) : null}

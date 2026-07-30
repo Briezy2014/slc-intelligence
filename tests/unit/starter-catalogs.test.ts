@@ -16,7 +16,7 @@ describe("starter catalogs", () => {
     expect(counts.interventions).toBeGreaterThanOrEqual(40);
     expect(counts.accommodations).toBeGreaterThanOrEqual(30);
     expect(counts.executiveFunctionSkills).toBeGreaterThanOrEqual(20);
-    expect(counts.communicationTemplates).toBeGreaterThanOrEqual(10);
+    expect(counts.communicationTemplates).toBeGreaterThanOrEqual(40);
     expect(GOAL_TEMPLATES.every((item) => item.area && item.statement)).toBe(true);
     expect(INTERVENTION_TEMPLATES.every((item) => item.name && item.description)).toBe(true);
     expect(ACCOMMODATION_TEMPLATES.every((item) => item.name && item.description)).toBe(true);
