@@ -24,7 +24,7 @@ export default async function FamilyCommunicationPage({
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Family Communication" }]} />
       <PageHeader
         title="Family Communication"
-        description="Contacts, template-and-language drafting (20 languages), parent sign links, receipt e-signatures, and family-visible exports."
+        description="Contacts, expanded letter templates, 20-language drafting, parent “I have read this” acknowledgment with staff notifications, and family-visible exports."
       />
       {!state.configured ? (
         <ConfigurationState />
