@@ -13,8 +13,9 @@ export function DemoStudentCard({ organizationId }: { organizationId: string }) 
     <Card>
       <CardTitle>Create demo student</CardTitle>
       <CardDescription>
-        Adds a fictional test student (grade 3) with an active IEP cycle so you can try goals,
-        progressions, Behavior Detective, and IEP/ETR docs immediately.
+        Adds a fictional coded practice student (grade 3) with an active practice IEP cycle so you
+        can try goals, progressions, and Behavior Detective. Do not replace this with real student
+        names or real IEP/ETR uploads during the pilot.
       </CardDescription>
       <form action={submitAction(createDemoStudentAction)} className="mt-4">
         <input type="hidden" name="organizationId" value={organizationId} />
