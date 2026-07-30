@@ -7,9 +7,11 @@ export type ReportingObservationStats = {
   dateRange?: { start: string | null; end: string | null };
   mean?: number | null;
   median?: number | null;
-  trendDirection?: "improving" | "declining" | "stable" | "increasing" | "decreasing" | "unavailable";
+  trendDirection?:
+    "improving" | "declining" | "stable" | "increasing" | "decreasing" | "unavailable";
   trendValue?: number | null;
-  sufficiency?: DataSufficiency | { status: "sufficient" | "limited" | "insufficient"; reason: string };
+  sufficiency?:
+    DataSufficiency | { status: "sufficient" | "limited" | "insufficient"; reason: string };
   measurementLabel?: string;
   latestValue?: number | null;
   promptSummary?: string | null;
@@ -28,7 +30,9 @@ function formatMetric(label: string, value: number | null | undefined): string |
   return `${label} ${value}`;
 }
 
-function sufficiencyStatus(stats: ReportingObservationStats): DraftProgressSummary["dataSufficiencyStatus"] {
+function sufficiencyStatus(
+  stats: ReportingObservationStats,
+): DraftProgressSummary["dataSufficiencyStatus"] {
   if (stats.count <= 0) return "insufficient";
   if (stats.sufficiency?.status === "unavailable" || stats.sufficiency?.status === "insufficient") {
     return "insufficient";
@@ -37,13 +41,19 @@ function sufficiencyStatus(stats: ReportingObservationStats): DraftProgressSumma
   return "sufficient";
 }
 
-function trendPhrase(direction: ReportingObservationStats["trendDirection"], value: number | null | undefined): string | null {
-  if (!direction || direction === "unavailable" || value === null || value === undefined) return null;
+function trendPhrase(
+  direction: ReportingObservationStats["trendDirection"],
+  value: number | null | undefined,
+): string | null {
+  if (!direction || direction === "unavailable" || value === null || value === undefined)
+    return null;
   if (direction === "stable") return "The calculated trend is stable across the available data.";
   return `The calculated trend is ${direction} with a slope of ${value}.`;
 }
 
-export function buildProgressReportDraftSummary(stats: ReportingObservationStats): DraftProgressSummary {
+export function buildProgressReportDraftSummary(
+  stats: ReportingObservationStats,
+): DraftProgressSummary {
   const status = sufficiencyStatus(stats);
   if (status === "insufficient") {
     return {
@@ -73,7 +83,9 @@ export function buildProgressReportDraftSummary(stats: ReportingObservationStats
     stats.promptSummary,
     stats.generalizationSummary,
     stats.maintenanceSummary,
-    status === "limited" ? "Data sufficiency is limited; educator review is required before use." : null,
+    status === "limited"
+      ? "Data sufficiency is limited; educator review is required before use."
+      : null,
   ].filter((part): part is string => Boolean(part));
 
   return {

@@ -77,7 +77,9 @@ export function familyVisibleCommunicationExport(logs: CommunicationLog[]) {
     }));
 }
 
-export async function listCommunications(options: { studentId?: string; communicationId?: string } = {}): Promise<DataState<CommunicationsData>> {
+export async function listCommunications(
+  options: { studentId?: string; communicationId?: string } = {},
+): Promise<DataState<CommunicationsData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyCommunicationsData);
 
@@ -107,14 +109,33 @@ export async function listCommunications(options: { studentId?: string; communic
       contactsQuery = contactsQuery.eq("student_id", options.studentId);
       communicationsQuery = communicationsQuery.eq("student_id", options.studentId);
     }
-    if (options.communicationId) communicationsQuery = communicationsQuery.eq("id", options.communicationId);
+    if (options.communicationId)
+      communicationsQuery = communicationsQuery.eq("id", options.communicationId);
 
-    const [studentsResult, contactsResult, categoriesResult, communicationsResult, templatesResult] = await Promise.all([
-      context.supabase.from("students").select("*").eq("organization_id", context.organizationId).order("last_name"),
+    const [
+      studentsResult,
+      contactsResult,
+      categoriesResult,
+      communicationsResult,
+      templatesResult,
+    ] = await Promise.all([
+      context.supabase
+        .from("students")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("last_name"),
       contactsQuery,
-      context.supabase.from("communication_categories").select("*").eq("organization_id", context.organizationId).order("name"),
+      context.supabase
+        .from("communication_categories")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("name"),
       communicationsQuery,
-      context.supabase.from("communication_templates").select("*").eq("organization_id", context.organizationId).order("name"),
+      context.supabase
+        .from("communication_templates")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("name"),
     ]);
 
     if (
@@ -128,16 +149,24 @@ export async function listCommunications(options: { studentId?: string; communic
     }
 
     const contactIds = (contactsResult.data ?? []).map((contact) => contact.id);
-    const communicationIds = (communicationsResult.data ?? []).map((communication) => communication.id);
+    const communicationIds = (communicationsResult.data ?? []).map(
+      (communication) => communication.id,
+    );
     const [preferencesResult, participantsResult, followupsResult] = await Promise.all([
       contactIds.length
         ? context.supabase.from("contact_preferences").select("*").in("contact_id", contactIds)
         : { data: [] as ContactPreference[], error: null },
       communicationIds.length
-        ? context.supabase.from("communication_participants").select("*").in("communication_log_id", communicationIds)
+        ? context.supabase
+            .from("communication_participants")
+            .select("*")
+            .in("communication_log_id", communicationIds)
         : { data: [] as CommunicationParticipant[], error: null },
       communicationIds.length
-        ? context.supabase.from("communication_followups").select("*").in("communication_log_id", communicationIds)
+        ? context.supabase
+            .from("communication_followups")
+            .select("*")
+            .in("communication_log_id", communicationIds)
         : { data: [] as CommunicationFollowup[], error: null },
     ]);
 
@@ -157,7 +186,9 @@ export async function listCommunications(options: { studentId?: string; communic
         preferences: preferencesResult.data ?? [],
         categories: categoriesResult.data ?? [],
         communications,
-        familyVisibleCommunications: communications.filter((communication) => communication.visibility === "family_visible"),
+        familyVisibleCommunications: communications.filter(
+          (communication) => communication.visibility === "family_visible",
+        ),
         participants: participantsResult.data ?? [],
         followups: followupsResult.data ?? [],
         templates: templatesResult.data ?? [],

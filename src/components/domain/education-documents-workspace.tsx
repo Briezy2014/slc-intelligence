@@ -54,7 +54,9 @@ export function EducationDocumentsWorkspace({
   const template = useMemo(() => getEducationDocumentTemplate(tab), [tab]);
   const selectedStudent = data.students.find((student) => student.id === studentId);
   const documents = data.documents.filter(
-    (document) => document.document_type === tab && (!lockedStudentId || document.student_id === lockedStudentId),
+    (document) =>
+      document.document_type === tab &&
+      (!lockedStudentId || document.student_id === lockedStudentId),
   );
   const uploads = data.uploads.filter(
     (upload) =>
@@ -75,7 +77,9 @@ export function EducationDocumentsWorkspace({
         localId: selectedStudent.local_identifier,
       }),
     );
-    setMessage("Blank template fields pre-populated from the student profile. Review every section before final use.");
+    setMessage(
+      "Blank template fields pre-populated from the student profile. Review every section before final use.",
+    );
   }
 
   return (
@@ -160,16 +164,28 @@ export function EducationDocumentsWorkspace({
                 <Input id="schoolYear" name="schoolYear" placeholder="2026-2027" />
               </FormField>
               <FormField id="gradeLevel" label="Grade level">
-                <Input id="gradeLevel" name="gradeLevel" defaultValue={selectedStudent?.grade_level ?? ""} />
+                <Input
+                  id="gradeLevel"
+                  name="gradeLevel"
+                  defaultValue={selectedStudent?.grade_level ?? ""}
+                />
               </FormField>
             </div>
 
-            <Button type="button" variant="secondary" onClick={prefillBlank} disabled={!studentId && !lockedStudentId}>
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={prefillBlank}
+              disabled={!studentId && !lockedStudentId}
+            >
               Start blank {tab.toUpperCase()} with pre-populated fields
             </Button>
 
             {template.sections.map((section) => (
-              <div key={section.id} className="border-border space-y-3 rounded-[var(--radius-md)] border p-4">
+              <div
+                key={section.id}
+                className="border-border space-y-3 rounded-[var(--radius-md)] border p-4"
+              >
                 <h3 className="font-semibold">{section.title}</h3>
                 {section.fields.map((field) => (
                   <FormField key={field.key} id={`${tab}-${field.key}`} label={field.label}>
@@ -221,11 +237,14 @@ export function EducationDocumentsWorkspace({
       <Card>
         <CardTitle>Upload existing {tab.toUpperCase()} / related file</CardTitle>
         <CardDescription>
-          Records file metadata in the workspace. Binary cloud storage can be connected next; use this to track uploaded
-          IEPs/ETRs now.
+          Records file metadata in the workspace. Binary cloud storage can be connected next; use
+          this to track uploaded IEPs/ETRs now.
         </CardDescription>
         {data.permissions.canManage ? (
-          <form action={submitAction(recordEducationDocumentUploadAction)} className="mt-4 space-y-3">
+          <form
+            action={submitAction(recordEducationDocumentUploadAction)}
+            className="mt-4 space-y-3"
+          >
             <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
             <input type="hidden" name="documentType" value={tab} />
             {lockedStudentId ? (
@@ -249,7 +268,9 @@ export function EducationDocumentsWorkspace({
                 required
                 placeholder="StudentLast_IEP_2026.pdf"
                 onChange={(event) => {
-                  const fileInput = document.getElementById("sourceFile") as HTMLInputElement | null;
+                  const fileInput = document.getElementById(
+                    "sourceFile",
+                  ) as HTMLInputElement | null;
                   if (fileInput?.files?.[0] && !event.target.value) {
                     event.target.value = fileInput.files[0].name;
                   }
@@ -264,7 +285,9 @@ export function EducationDocumentsWorkspace({
                   const file = event.target.files?.[0];
                   if (!file) return;
                   const nameInput = document.getElementById("fileName") as HTMLInputElement | null;
-                  const typeInput = document.getElementById("contentType") as HTMLInputElement | null;
+                  const typeInput = document.getElementById(
+                    "contentType",
+                  ) as HTMLInputElement | null;
                   const sizeInput = document.getElementById("byteSize") as HTMLInputElement | null;
                   if (nameInput) nameInput.value = file.name;
                   if (typeInput) typeInput.value = file.type;
@@ -275,7 +298,11 @@ export function EducationDocumentsWorkspace({
             <input type="hidden" id="contentType" name="contentType" />
             <input type="hidden" id="byteSize" name="byteSize" />
             <FormField id="uploadNotes" label="Notes">
-              <Textarea id="uploadNotes" name="notes" placeholder="Source, meeting date, version notes" />
+              <Textarea
+                id="uploadNotes"
+                name="notes"
+                placeholder="Source, meeting date, version notes"
+              />
             </FormField>
             <Button type="submit">Record upload</Button>
           </form>

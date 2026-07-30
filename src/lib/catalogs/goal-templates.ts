@@ -142,15 +142,7 @@ function percentGoals(
   stem: (skill: string) => string,
 ): GoalTemplate[] {
   return skills.map((skill, index) =>
-    goal(
-      `${prefix}-${index + 1}`,
-      area,
-      stem(skill),
-      "percentage",
-      "increase",
-      80,
-      tags,
-    ),
+    goal(`${prefix}-${index + 1}`, area, stem(skill), "percentage", "increase", 80, tags),
   );
 }
 

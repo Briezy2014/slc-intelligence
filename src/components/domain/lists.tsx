@@ -26,7 +26,11 @@ function LinkedTable({
         <thead className="bg-background-elevated">
           <tr>
             {headers.map((header) => (
-              <th key={header} scope="col" className="border-border border-b px-4 py-3 font-semibold">
+              <th
+                key={header}
+                scope="col"
+                className="border-border border-b px-4 py-3 font-semibold"
+              >
                 {header}
               </th>
             ))}
@@ -50,7 +54,12 @@ function LinkedTable({
 
 export function SchoolList({ schools }: { schools: School[] }) {
   if (schools.length === 0) {
-    return <EmptyState title="No schools found" description="Create a school to organize programs, classrooms, and students." />;
+    return (
+      <EmptyState
+        title="No schools found"
+        description="Create a school to organize programs, classrooms, and students."
+      />
+    );
   }
 
   return (
@@ -58,7 +67,11 @@ export function SchoolList({ schools }: { schools: School[] }) {
       caption="Schools"
       headers={["Name", "Code", "Type", "Status", "Updated"]}
       rows={schools.map((school) => [
-        <Link key={school.id} href={`/schools/${school.id}`} className="text-accent font-semibold hover:underline">
+        <Link
+          key={school.id}
+          href={`/schools/${school.id}`}
+          className="text-accent font-semibold hover:underline"
+        >
           {school.name}
         </Link>,
         school.school_code ?? "Not set",
@@ -72,7 +85,12 @@ export function SchoolList({ schools }: { schools: School[] }) {
 
 export function ProgramList({ programs, schools }: { programs: Program[]; schools: School[] }) {
   if (programs.length === 0) {
-    return <EmptyState title="No programs found" description="Create programs to group specialized learning and service models." />;
+    return (
+      <EmptyState
+        title="No programs found"
+        description="Create programs to group specialized learning and service models."
+      />
+    );
   }
 
   return (
@@ -80,7 +98,11 @@ export function ProgramList({ programs, schools }: { programs: Program[]; school
       caption="Programs"
       headers={["Name", "School", "Type", "Status"]}
       rows={programs.map((program) => [
-        <Link key={program.id} href={`/programs/${program.id}`} className="text-accent font-semibold hover:underline">
+        <Link
+          key={program.id}
+          href={`/programs/${program.id}`}
+          className="text-accent font-semibold hover:underline"
+        >
           {program.name}
         </Link>,
         schools.find((school) => school.id === program.school_id)?.name ?? "Organization-wide",
@@ -101,7 +123,12 @@ export function ClassroomList({
   programs: Program[];
 }) {
   if (classrooms.length === 0) {
-    return <EmptyState title="No classrooms found" description="Create classrooms to scope staff and student assignments." />;
+    return (
+      <EmptyState
+        title="No classrooms found"
+        description="Create classrooms to scope staff and student assignments."
+      />
+    );
   }
 
   return (
@@ -109,7 +136,11 @@ export function ClassroomList({
       caption="Classrooms"
       headers={["Name", "School", "Program", "Academic year", "Status"]}
       rows={classrooms.map((classroom) => [
-        <Link key={classroom.id} href={`/classrooms/${classroom.id}`} className="text-accent font-semibold hover:underline">
+        <Link
+          key={classroom.id}
+          href={`/classrooms/${classroom.id}`}
+          className="text-accent font-semibold hover:underline"
+        >
           {classroom.name}
         </Link>,
         schools.find((school) => school.id === classroom.school_id)?.name ?? "Unknown school",
@@ -123,7 +154,12 @@ export function ClassroomList({
 
 export function StudentList({ students }: { students: Student[] }) {
   if (students.length === 0) {
-    return <EmptyState title="No students found" description="No authorized student records match the current filters." />;
+    return (
+      <EmptyState
+        title="No students found"
+        description="No authorized student records match the current filters."
+      />
+    );
   }
 
   return (
@@ -131,7 +167,11 @@ export function StudentList({ students }: { students: Student[] }) {
       caption="Students"
       headers={["Student", "Local ID", "Grade", "Status", "Start date"]}
       rows={students.map((student) => [
-        <Link key={student.id} href={`/students/${student.id}`} className="text-accent font-semibold hover:underline">
+        <Link
+          key={student.id}
+          href={`/students/${student.id}`}
+          className="text-accent font-semibold hover:underline"
+        >
           {student.last_name}, {student.preferred_name || student.first_name}
         </Link>,
         student.local_identifier,
@@ -145,7 +185,12 @@ export function StudentList({ students }: { students: Student[] }) {
 
 export function GoalList({ goals, students }: { goals: IepGoal[]; students: Student[] }) {
   if (goals.length === 0) {
-    return <EmptyState title="No goals found" description="Create IEP goals before entering progress monitoring data." />;
+    return (
+      <EmptyState
+        title="No goals found"
+        description="Create IEP goals before entering progress monitoring data."
+      />
+    );
   }
 
   return (
@@ -155,12 +200,20 @@ export function GoalList({ goals, students }: { goals: IepGoal[]; students: Stud
       rows={goals.map((goal) => {
         const student = students.find((entry) => entry.id === goal.student_id);
         return [
-          <Link key={goal.id} href={`/goals/${goal.id}`} className="text-accent font-semibold hover:underline">
+          <Link
+            key={goal.id}
+            href={`/goals/${goal.id}`}
+            className="text-accent font-semibold hover:underline"
+          >
             {goal.goal_area}
           </Link>,
-          student ? `${student.last_name}, ${student.preferred_name || student.first_name}` : "Authorized student",
+          student
+            ? `${student.last_name}, ${student.preferred_name || student.first_name}`
+            : "Authorized student",
           goal.measurement_type.replaceAll("_", " "),
-          goal.target_value === null ? "Not set" : `${goal.target_value} (${goal.target_direction})`,
+          goal.target_value === null
+            ? "Not set"
+            : `${goal.target_value} (${goal.target_direction})`,
           <StatusBadge key={`${goal.id}-status`} status={goal.status} />,
         ];
       })}

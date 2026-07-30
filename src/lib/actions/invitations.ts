@@ -29,8 +29,7 @@ export async function createInvitationAction(formData: FormData): Promise<Action
   try {
     const tokenHash = createHash("sha256").update(randomUUID()).digest("hex");
     const expiresAt =
-      values.expiresAt ??
-      new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString();
+      values.expiresAt ?? new Date(Date.now() + 1000 * 60 * 60 * 24 * 14).toISOString();
     const payload = {
       organization_id: context.organizationId,
       email: values.email.toLowerCase(),

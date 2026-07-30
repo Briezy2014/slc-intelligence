@@ -14,13 +14,13 @@ Owner: Product Owner
 
 ## Layout
 
-| Path | Use |
-| --- | --- |
-| `brand/slc-logo.png` | Official logo (source of truth raster) |
-| `brand/slc-logo.svg` | Official logo vector companion |
-| `brand/slc-logo-512.png` | High-resolution mark |
-| `icons/` | Favicon and PWA icons |
-| `site.webmanifest` | Web app manifest using brand colors |
+| Path                     | Use                                    |
+| ------------------------ | -------------------------------------- |
+| `brand/slc-logo.png`     | Official logo (source of truth raster) |
+| `brand/slc-logo.svg`     | Official logo vector companion         |
+| `brand/slc-logo-512.png` | High-resolution mark                   |
+| `icons/`                 | Favicon and PWA icons                  |
+| `site.webmanifest`       | Web app manifest using brand colors    |
 
 ## Rules
 

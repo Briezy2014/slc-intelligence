@@ -321,6 +321,26 @@ export type OrganizationInvitation = {
   updated_at: Timestamp;
 };
 
+export type AccessRequestStatus = "pending" | "approved" | "denied" | "cancelled";
+
+export type OrganizationAccessRequest = {
+  id: Uuid;
+  organization_id: Uuid;
+  requester_user_id: Nullable<Uuid>;
+  email: string;
+  full_name: string;
+  requested_role_codes: RoleCode[];
+  message: Nullable<string>;
+  status: AccessRequestStatus;
+  granted_role_code: Nullable<RoleCode>;
+  reviewed_by: Nullable<Uuid>;
+  reviewed_at: Nullable<Timestamp>;
+  review_note: Nullable<string>;
+  resulting_membership_id: Nullable<Uuid>;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
 export type EducationDocumentType = "iep" | "etr" | "progress_report";
 export type EducationDocumentStatus = "draft" | "in_review" | "finalized" | "archived";
 
@@ -596,12 +616,7 @@ export type ProgressReportStatus =
   | "archived";
 export type BehaviorObservationStatus = "draft" | "finalized" | "corrected" | "archived";
 export type BehaviorMeasurementMethod =
-  | "abc"
-  | "frequency"
-  | "duration"
-  | "latency"
-  | "interval"
-  | "intensity";
+  "abc" | "frequency" | "duration" | "latency" | "interval" | "intensity";
 export type InterventionPlanStatus =
   | "draft"
   | "ready_for_review"
@@ -1136,7 +1151,8 @@ export type InterventionReviewRecord = {
 export type InterventionOutcomeLink = {
   id: Uuid;
   plan_id: Uuid;
-  evidence_type: "goal" | "progress_session" | "behavior_session" | "fba_workspace" | "report_section";
+  evidence_type:
+    "goal" | "progress_session" | "behavior_session" | "fba_workspace" | "report_section";
   evidence_id: Nullable<Uuid>;
   label: string;
   created_at: Timestamp;
@@ -1251,8 +1267,10 @@ export type ServiceDefinition = {
   updated_at: Timestamp;
 };
 
-export type ServiceDeliveryType = "push_in" | "pull_out" | "consultation" | "individual" | "group" | "other";
-export type ServicePlanStatus = "draft" | "active" | "under_review" | "revised" | "ended" | "archived";
+export type ServiceDeliveryType =
+  "push_in" | "pull_out" | "consultation" | "individual" | "group" | "other";
+export type ServicePlanStatus =
+  "draft" | "active" | "under_review" | "revised" | "ended" | "archived";
 export type ServiceDeliveryStatus =
   | "delivered"
   | "partially_delivered"
@@ -1403,7 +1421,9 @@ export type ContactPreference = {
   organization_id: Uuid;
   contact_id: Uuid;
   student_id: Uuid;
-  preferred_method: Nullable<"phone" | "email" | "text" | "letter" | "in_person" | "portal" | "other">;
+  preferred_method: Nullable<
+    "phone" | "email" | "text" | "letter" | "in_person" | "portal" | "other"
+  >;
   preferred_language: Nullable<string>;
   interpreter_needed: boolean;
   best_times: Nullable<string>;
@@ -1575,7 +1595,14 @@ export type MeetingAcknowledgement = {
   meeting_id: Uuid;
   contact_id: Nullable<Uuid>;
   acknowledged_by_name: Nullable<string>;
-  status: "received" | "reviewed" | "acknowledged" | "declined" | "requested_clarification" | "no_response" | "other";
+  status:
+    | "received"
+    | "reviewed"
+    | "acknowledged"
+    | "declined"
+    | "requested_clarification"
+    | "no_response"
+    | "other";
   note: Nullable<string>;
   recorded_by: Nullable<Uuid>;
   recorded_at: Timestamp;
@@ -1862,6 +1889,11 @@ export type Database = {
         Partial<OrganizationInvitation>,
         Partial<OrganizationInvitation>
       >;
+      organization_access_requests: RowDefinition<
+        OrganizationAccessRequest,
+        Partial<OrganizationAccessRequest>,
+        Partial<OrganizationAccessRequest>
+      >;
       education_documents: RowDefinition<
         EducationDocument,
         Partial<EducationDocument>,
@@ -1951,8 +1983,16 @@ export type Database = {
         Partial<ProgressDescriptorOption>,
         Partial<ProgressDescriptorOption>
       >;
-      reporting_periods: RowDefinition<ReportingPeriod, Partial<ReportingPeriod>, Partial<ReportingPeriod>>;
-      progress_reports: RowDefinition<ProgressReport, Partial<ProgressReport>, Partial<ProgressReport>>;
+      reporting_periods: RowDefinition<
+        ReportingPeriod,
+        Partial<ReportingPeriod>,
+        Partial<ReportingPeriod>
+      >;
+      progress_reports: RowDefinition<
+        ProgressReport,
+        Partial<ProgressReport>,
+        Partial<ProgressReport>
+      >;
       progress_report_goal_sections: RowDefinition<
         ProgressReportGoalSection,
         Partial<ProgressReportGoalSection>,
@@ -2009,7 +2049,11 @@ export type Database = {
         Partial<BehaviorObservationSession>,
         Partial<BehaviorObservationSession>
       >;
-      abc_observations: RowDefinition<AbcObservation, Partial<AbcObservation>, Partial<AbcObservation>>;
+      abc_observations: RowDefinition<
+        AbcObservation,
+        Partial<AbcObservation>,
+        Partial<AbcObservation>
+      >;
       frequency_observations: RowDefinition<
         FrequencyObservation,
         Partial<FrequencyObservation>,
@@ -2030,7 +2074,11 @@ export type Database = {
         Partial<IntervalObservation>,
         Partial<IntervalObservation>
       >;
-      intensity_ratings: RowDefinition<IntensityRating, Partial<IntensityRating>, Partial<IntensityRating>>;
+      intensity_ratings: RowDefinition<
+        IntensityRating,
+        Partial<IntensityRating>,
+        Partial<IntensityRating>
+      >;
       behavior_entry_status_history: RowDefinition<
         BehaviorEntryStatusHistory,
         Partial<BehaviorEntryStatusHistory>,
@@ -2061,7 +2109,11 @@ export type Database = {
         Partial<FbaEvidenceWorkspace>,
         Partial<FbaEvidenceWorkspace>
       >;
-      fba_evidence_links: RowDefinition<FbaEvidenceLink, Partial<FbaEvidenceLink>, Partial<FbaEvidenceLink>>;
+      fba_evidence_links: RowDefinition<
+        FbaEvidenceLink,
+        Partial<FbaEvidenceLink>,
+        Partial<FbaEvidenceLink>
+      >;
       fba_workspace_status_history: RowDefinition<
         FbaWorkspaceStatusHistory,
         Partial<FbaWorkspaceStatusHistory>,
@@ -2107,7 +2159,11 @@ export type Database = {
         Partial<InterventionSchedule>,
         Partial<InterventionSchedule>
       >;
-      fidelity_checklists: RowDefinition<FidelityChecklist, Partial<FidelityChecklist>, Partial<FidelityChecklist>>;
+      fidelity_checklists: RowDefinition<
+        FidelityChecklist,
+        Partial<FidelityChecklist>,
+        Partial<FidelityChecklist>
+      >;
       fidelity_checklist_items: RowDefinition<
         FidelityChecklistItem,
         Partial<FidelityChecklistItem>,
@@ -2168,7 +2224,11 @@ export type Database = {
         Partial<AccommodationReviewRecord>,
         Partial<AccommodationReviewRecord>
       >;
-      service_definitions: RowDefinition<ServiceDefinition, Partial<ServiceDefinition>, Partial<ServiceDefinition>>;
+      service_definitions: RowDefinition<
+        ServiceDefinition,
+        Partial<ServiceDefinition>,
+        Partial<ServiceDefinition>
+      >;
       student_service_plans: RowDefinition<
         StudentServicePlan,
         Partial<StudentServicePlan>,
@@ -2179,7 +2239,11 @@ export type Database = {
         Partial<ServicePlanComponent>,
         Partial<ServicePlanComponent>
       >;
-      service_schedules: RowDefinition<ServiceSchedule, Partial<ServiceSchedule>, Partial<ServiceSchedule>>;
+      service_schedules: RowDefinition<
+        ServiceSchedule,
+        Partial<ServiceSchedule>,
+        Partial<ServiceSchedule>
+      >;
       service_delivery_logs: RowDefinition<
         ServiceDeliveryLog,
         Partial<ServiceDeliveryLog>,
@@ -2190,16 +2254,32 @@ export type Database = {
         Partial<ServiceDeliveryParticipant>,
         Partial<ServiceDeliveryParticipant>
       >;
-      service_review_records: RowDefinition<ServiceReviewRecord, Partial<ServiceReviewRecord>, Partial<ServiceReviewRecord>>;
+      service_review_records: RowDefinition<
+        ServiceReviewRecord,
+        Partial<ServiceReviewRecord>,
+        Partial<ServiceReviewRecord>
+      >;
       service_exports: RowDefinition<ServiceExport, Partial<ServiceExport>, Partial<ServiceExport>>;
-      student_contacts: RowDefinition<StudentContact, Partial<StudentContact>, Partial<StudentContact>>;
-      contact_preferences: RowDefinition<ContactPreference, Partial<ContactPreference>, Partial<ContactPreference>>;
+      student_contacts: RowDefinition<
+        StudentContact,
+        Partial<StudentContact>,
+        Partial<StudentContact>
+      >;
+      contact_preferences: RowDefinition<
+        ContactPreference,
+        Partial<ContactPreference>,
+        Partial<ContactPreference>
+      >;
       communication_categories: RowDefinition<
         CommunicationCategory,
         Partial<CommunicationCategory>,
         Partial<CommunicationCategory>
       >;
-      communication_logs: RowDefinition<CommunicationLog, Partial<CommunicationLog>, Partial<CommunicationLog>>;
+      communication_logs: RowDefinition<
+        CommunicationLog,
+        Partial<CommunicationLog>,
+        Partial<CommunicationLog>
+      >;
       communication_participants: RowDefinition<
         CommunicationParticipant,
         Partial<CommunicationParticipant>,
@@ -2217,35 +2297,63 @@ export type Database = {
       >;
       meeting_types: RowDefinition<MeetingType, Partial<MeetingType>, Partial<MeetingType>>;
       meetings: RowDefinition<Meeting, Partial<Meeting>, Partial<Meeting>>;
-      meeting_participants: RowDefinition<MeetingParticipant, Partial<MeetingParticipant>, Partial<MeetingParticipant>>;
-      meeting_agenda_items: RowDefinition<MeetingAgendaItem, Partial<MeetingAgendaItem>, Partial<MeetingAgendaItem>>;
+      meeting_participants: RowDefinition<
+        MeetingParticipant,
+        Partial<MeetingParticipant>,
+        Partial<MeetingParticipant>
+      >;
+      meeting_agenda_items: RowDefinition<
+        MeetingAgendaItem,
+        Partial<MeetingAgendaItem>,
+        Partial<MeetingAgendaItem>
+      >;
       meeting_notes: RowDefinition<MeetingNote, Partial<MeetingNote>, Partial<MeetingNote>>;
-      meeting_action_items: RowDefinition<MeetingActionItem, Partial<MeetingActionItem>, Partial<MeetingActionItem>>;
+      meeting_action_items: RowDefinition<
+        MeetingActionItem,
+        Partial<MeetingActionItem>,
+        Partial<MeetingActionItem>
+      >;
       meeting_acknowledgements: RowDefinition<
         MeetingAcknowledgement,
         Partial<MeetingAcknowledgement>,
         Partial<MeetingAcknowledgement>
       >;
-      classroom_schedules: RowDefinition<ClassroomSchedule, Partial<ClassroomSchedule>, Partial<ClassroomSchedule>>;
+      classroom_schedules: RowDefinition<
+        ClassroomSchedule,
+        Partial<ClassroomSchedule>,
+        Partial<ClassroomSchedule>
+      >;
       classroom_schedule_blocks: RowDefinition<
         ClassroomScheduleBlock,
         Partial<ClassroomScheduleBlock>,
         Partial<ClassroomScheduleBlock>
       >;
-      student_schedules: RowDefinition<StudentSchedule, Partial<StudentSchedule>, Partial<StudentSchedule>>;
+      student_schedules: RowDefinition<
+        StudentSchedule,
+        Partial<StudentSchedule>,
+        Partial<StudentSchedule>
+      >;
       student_schedule_blocks: RowDefinition<
         StudentScheduleBlock,
         Partial<StudentScheduleBlock>,
         Partial<StudentScheduleBlock>
       >;
-      classroom_routines: RowDefinition<ClassroomRoutine, Partial<ClassroomRoutine>, Partial<ClassroomRoutine>>;
+      classroom_routines: RowDefinition<
+        ClassroomRoutine,
+        Partial<ClassroomRoutine>,
+        Partial<ClassroomRoutine>
+      >;
       task_analyses: RowDefinition<TaskAnalysis, Partial<TaskAnalysis>, Partial<TaskAnalysis>>;
       student_task_assignments: RowDefinition<
         StudentTaskAssignment,
         Partial<StudentTaskAssignment>,
         Partial<StudentTaskAssignment>
       >;
-      task_completion_logs: RowDefinition<TaskCompletionLog, Partial<TaskCompletionLog>, Partial<TaskCompletionLog>>;
+      task_completion_logs: RowDefinition<
+        TaskCompletionLog,
+        Partial<TaskCompletionLog>,
+        Partial<TaskCompletionLog>
+      >;
       executive_function_skill_areas: RowDefinition<
         ExecutiveFunctionSkillArea,
         Partial<ExecutiveFunctionSkillArea>,
@@ -2266,7 +2374,11 @@ export type Database = {
         Partial<ExecutiveFunctionObservation>,
         Partial<ExecutiveFunctionObservation>
       >;
-      student_checklists: RowDefinition<StudentChecklist, Partial<StudentChecklist>, Partial<StudentChecklist>>;
+      student_checklists: RowDefinition<
+        StudentChecklist,
+        Partial<StudentChecklist>,
+        Partial<StudentChecklist>
+      >;
       student_checklist_items: RowDefinition<
         StudentChecklistItem,
         Partial<StudentChecklistItem>,
@@ -2277,13 +2389,21 @@ export type Database = {
         Partial<StudentChecklistResponse>,
         Partial<StudentChecklistResponse>
       >;
-      daily_student_notes: RowDefinition<DailyStudentNote, Partial<DailyStudentNote>, Partial<DailyStudentNote>>;
+      daily_student_notes: RowDefinition<
+        DailyStudentNote,
+        Partial<DailyStudentNote>,
+        Partial<DailyStudentNote>
+      >;
       classroom_announcements: RowDefinition<
         ClassroomAnnouncement,
         Partial<ClassroomAnnouncement>,
         Partial<ClassroomAnnouncement>
       >;
-      reinforcement_systems: RowDefinition<ReinforcementSystem, Partial<ReinforcementSystem>, Partial<ReinforcementSystem>>;
+      reinforcement_systems: RowDefinition<
+        ReinforcementSystem,
+        Partial<ReinforcementSystem>,
+        Partial<ReinforcementSystem>
+      >;
       audit_events: RowDefinition<
         AuditEvent,
         Omit<Partial<AuditEvent>, "id" | "created_at">,
@@ -2515,6 +2635,20 @@ export type Database = {
       can_finalize_daily_note: {
         Args: { p_org_id: Uuid; p_student_id: Uuid };
         Returns: boolean;
+      };
+      resolve_organization_id_by_slug: {
+        Args: { p_slug: string };
+        Returns: Uuid;
+      };
+      submit_organization_access_request: {
+        Args: {
+          p_org_slug: string;
+          p_full_name: string;
+          p_email: string;
+          p_requested_role_codes: string[];
+          p_message?: string | null;
+        };
+        Returns: Uuid;
       };
     };
     Enums: Record<string, never>;

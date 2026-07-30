@@ -14,18 +14,33 @@ export default async function ProgressEntryPage() {
   return (
     <main id="main-content">
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Rapid progress entry" }]} />
-      <PageHeader title="Rapid progress entry" description="Enter draft or finalized progress-monitoring sessions." />
-      {!state.configured ? <ConfigurationState /> : state.error || !state.data.organizationId ? (
+      <PageHeader
+        title="Rapid progress entry"
+        description="Enter draft or finalized progress-monitoring sessions."
+      />
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error || !state.data.organizationId ? (
         <SafeErrorState message={state.error ?? "Progress entry is unavailable."} />
       ) : state.data.canEnter ? (
         <div className="space-y-6">
           <Card>
             <CardTitle>Progress session</CardTitle>
-            <CardDescription>Choose the measurement type and complete the fields relevant to that type.</CardDescription>
-            <div className="mt-4"><ProgressEntryForm organizationId={state.data.organizationId} students={state.data.students} goals={state.data.goals} /></div>
+            <CardDescription>
+              Choose the measurement type and complete the fields relevant to that type.
+            </CardDescription>
+            <div className="mt-4">
+              <ProgressEntryForm
+                organizationId={state.data.organizationId}
+                students={state.data.students}
+                goals={state.data.goals}
+              />
+            </div>
           </Card>
         </div>
-      ) : <SafeErrorState message="You are not authorized to enter progress data." />}
+      ) : (
+        <SafeErrorState message="You are not authorized to enter progress data." />
+      )}
     </main>
   );
 }

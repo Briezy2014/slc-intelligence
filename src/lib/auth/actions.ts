@@ -216,7 +216,6 @@ export async function acceptInvitationPlaceholder(
 
   return {
     status: "success",
-    message:
-      "Invitation acceptance will be completed in a later workflow. No account was created.",
+    message: "Invitation acceptance will be completed in a later workflow. No account was created.",
   };
 }

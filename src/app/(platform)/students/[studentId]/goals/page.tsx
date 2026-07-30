@@ -10,15 +10,33 @@ import { getStudent } from "@/lib/data/students";
 
 export const metadata: Metadata = { title: "Student goals" };
 
-export default async function StudentGoalsPage({ params }: { params: Promise<{ studentId: string }> }) {
+export default async function StudentGoalsPage({
+  params,
+}: {
+  params: Promise<{ studentId: string }>;
+}) {
   const { studentId } = await params;
-  const [studentState, goalsState] = await Promise.all([getStudent(studentId), listGoals(studentId)]);
+  const [studentState, goalsState] = await Promise.all([
+    getStudent(studentId),
+    listGoals(studentId),
+  ]);
 
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/students", label: "Students" }, { label: "Goals" }]} />
-      <PageHeader title="Student goals" description="IEP goals for the selected authorized student." />
-      {!studentState.configured || !goalsState.configured ? <ConfigurationState /> : studentState.error || goalsState.error ? (
+      <Breadcrumbs
+        items={[
+          { href: "/", label: "Home" },
+          { href: "/students", label: "Students" },
+          { label: "Goals" },
+        ]}
+      />
+      <PageHeader
+        title="Student goals"
+        description="IEP goals for the selected authorized student."
+      />
+      {!studentState.configured || !goalsState.configured ? (
+        <ConfigurationState />
+      ) : studentState.error || goalsState.error ? (
         <SafeErrorState message={studentState.error ?? goalsState.error} />
       ) : studentState.data.student && goalsState.data.organizationId ? (
         <div className="space-y-6">
@@ -26,7 +44,9 @@ export default async function StudentGoalsPage({ params }: { params: Promise<{ s
           {goalsState.data.canManage ? (
             <Card>
               <CardTitle>Create goal</CardTitle>
-              <CardDescription>Create goals only for authorized fictional/development records.</CardDescription>
+              <CardDescription>
+                Create goals only for authorized fictional/development records.
+              </CardDescription>
               <div className="mt-4">
                 <GoalForm
                   organizationId={goalsState.data.organizationId}
@@ -38,7 +58,9 @@ export default async function StudentGoalsPage({ params }: { params: Promise<{ s
             </Card>
           ) : null}
         </div>
-      ) : <SafeErrorState message="Student not found or unavailable to your role." />}
+      ) : (
+        <SafeErrorState message="Student not found or unavailable to your role." />
+      )}
     </main>
   );
 }

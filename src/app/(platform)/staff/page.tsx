@@ -17,8 +17,15 @@ export default async function StaffPage() {
   return (
     <main id="main-content">
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Staff" }]} />
-      <PageHeader title="Staff" description="Organization members and staff assignment entry points." />
-      {!state.configured ? <ConfigurationState /> : state.error ? <SafeErrorState message={state.error} /> : (
+      <PageHeader
+        title="Staff"
+        description="Organization members and staff assignment entry points."
+      />
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error ? (
+        <SafeErrorState message={state.error} />
+      ) : (
         <TableShell
           caption="Staff members"
           headers={["Name", "Role", "Status", "Start date"]}
@@ -33,7 +40,11 @@ export default async function StaffPage() {
       {state.configured && !state.error ? (
         <div className="mt-4 text-sm">
           {state.data.rows.map((member) => (
-            <Link key={member.user_id} href={`/staff/${member.user_id}`} className="text-accent mr-4 font-semibold hover:underline">
+            <Link
+              key={member.user_id}
+              href={`/staff/${member.user_id}`}
+              className="text-accent mr-4 font-semibold hover:underline"
+            >
               View {member.profile?.display_name ?? member.user_id}
             </Link>
           ))}

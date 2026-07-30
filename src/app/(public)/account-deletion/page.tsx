@@ -18,19 +18,22 @@ export default function AccountDeletionPage() {
       <div className="text-muted space-y-4">
         <ol className="list-decimal space-y-2 pl-5">
           <li>Sign in if you still have access and confirm your organization memberships.</li>
-          <li>Contact your organization administrator to deactivate memberships first when appropriate.</li>
           <li>
-            Contact the product owner through the support channel and request account deletion. Include only your
-            account email and organization name — no student records.
+            Contact your organization administrator to deactivate memberships first when
+            appropriate.
           </li>
           <li>
-            After verification, administrators can deactivate memberships and archive assignments. Authentication
-            identity removal follows the configured Supabase Auth process.
+            Contact the product owner through the support channel and request account deletion.
+            Include only your account email and organization name — no student records.
+          </li>
+          <li>
+            After verification, administrators can deactivate memberships and archive assignments.
+            Authentication identity removal follows the configured Supabase Auth process.
           </li>
         </ol>
         <p>
-          Deactivated memberships are rejected by authorization helpers. Archived assignments do not grant
-          continued student access.
+          Deactivated memberships are rejected by authorization helpers. Archived assignments do not
+          grant continued student access.
         </p>
       </div>
     </main>

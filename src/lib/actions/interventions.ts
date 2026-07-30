@@ -75,16 +75,26 @@ export async function saveInterventionLibraryItemAction(formData: FormData): Pro
           .eq("id", values.libraryItemId)
           .select("id")
           .single()
-      : await context.supabase.from("intervention_library_items").insert(payload).select("id").single();
+      : await context.supabase
+          .from("intervention_library_items")
+          .insert(payload)
+          .select("id")
+          .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
       actorUserId: context.user.id,
-      actionType: values.libraryItemId ? "intervention_library.update" : "intervention_library.create",
+      actionType: values.libraryItemId
+        ? "intervention_library.update"
+        : "intervention_library.create",
       resourceType: "intervention_library_item",
       resourceId: result.data.id,
       newState: payload,
-      paths: ["/interventions", "/interventions/library", `/interventions/library/${result.data.id}`],
+      paths: [
+        "/interventions",
+        "/interventions/library",
+        `/interventions/library/${result.data.id}`,
+      ],
     });
     return { status: "success", message: "Intervention library item saved." };
   } catch {
@@ -102,7 +112,9 @@ export async function saveInterventionPlanAction(formData: FormData): Promise<Ac
   try {
     const existing = values.planId ? await planById(context, values.planId) : null;
     const studentId = existing?.student_id ?? values.studentId;
-    const needsActivation = ["active", "paused", "completed", "discontinued", "archived"].includes(values.status);
+    const needsActivation = ["active", "paused", "completed", "discontinued", "archived"].includes(
+      values.status,
+    );
     const allowed = needsActivation
       ? await canIntervention(context, "can_activate_intervention", studentId)
       : await canIntervention(context, "can_manage_intervention_plan", studentId);
@@ -119,8 +131,8 @@ export async function saveInterventionPlanAction(formData: FormData): Promise<Ac
       end_date: values.endDate || null,
       created_by: context.user.id,
       owner_user_id: context.user.id,
-      activated_at: needsActivation ? new Date().toISOString() : existing?.activated_at ?? null,
-      activated_by: needsActivation ? context.user.id : existing?.activated_by ?? null,
+      activated_at: needsActivation ? new Date().toISOString() : (existing?.activated_at ?? null),
+      activated_by: needsActivation ? context.user.id : (existing?.activated_by ?? null),
     };
     const result = existing
       ? await context.supabase
@@ -147,7 +159,11 @@ export async function saveInterventionPlanAction(formData: FormData): Promise<Ac
       resourceId: result.data.id,
       previousState: existing ? { status: existing.status } : null,
       newState: payload,
-      paths: ["/interventions", `/students/${studentId}/interventions`, `/students/${studentId}/interventions/${result.data.id}`],
+      paths: [
+        "/interventions",
+        `/students/${studentId}/interventions`,
+        `/students/${studentId}/interventions/${result.data.id}`,
+      ],
     });
     return { status: "success", message: "Intervention plan saved." };
   } catch {
@@ -156,7 +172,9 @@ export async function saveInterventionPlanAction(formData: FormData): Promise<Ac
 }
 
 export async function addInterventionComponentAction(formData: FormData): Promise<ActionState> {
-  const parsed = interventionComponentSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+  const parsed = interventionComponentSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId);
@@ -164,7 +182,10 @@ export async function addInterventionComponentAction(formData: FormData): Promis
 
   try {
     const plan = await planById(context, values.planId);
-    if (!plan || !(await canIntervention(context, "can_manage_intervention_plan", plan.student_id))) {
+    if (
+      !plan ||
+      !(await canIntervention(context, "can_manage_intervention_plan", plan.student_id))
+    ) {
       return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
     }
     const { error } = await context.supabase.from("intervention_components").insert({
@@ -224,7 +245,10 @@ export async function saveFidelityObservationAction(formData: FormData): Promise
       resourceType: "fidelity_observation",
       resourceId: plan.id,
       newState: { status: values.status },
-      paths: [`/students/${plan.student_id}/interventions/fidelity`, `/students/${plan.student_id}/interventions/analytics`],
+      paths: [
+        `/students/${plan.student_id}/interventions/fidelity`,
+        `/students/${plan.student_id}/interventions/analytics`,
+      ],
     });
     return { status: "success", message: "Fidelity observation saved." };
   } catch {
@@ -241,7 +265,11 @@ export async function saveDosageLogAction(formData: FormData): Promise<ActionSta
 
   try {
     const plan = await planById(context, values.planId);
-    const allowed = await hasPermission(context.supabase, context.organizationId, "intervention.dosage.enter");
+    const allowed = await hasPermission(
+      context.supabase,
+      context.organizationId,
+      "intervention.dosage.enter",
+    );
     if (!plan || !allowed) return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
     const { error } = await context.supabase.from("intervention_dosage_logs").insert({
       plan_id: plan.id,
@@ -261,7 +289,10 @@ export async function saveDosageLogAction(formData: FormData): Promise<ActionSta
       resourceType: "intervention_dosage_log",
       resourceId: plan.id,
       newState: { log_date: values.logDate, sessions_delivered: values.sessionsDelivered },
-      paths: [`/students/${plan.student_id}/interventions/dosage`, `/students/${plan.student_id}/interventions/analytics`],
+      paths: [
+        `/students/${plan.student_id}/interventions/dosage`,
+        `/students/${plan.student_id}/interventions/analytics`,
+      ],
     });
     return { status: "success", message: "Dosage log saved." };
   } catch {
@@ -278,7 +309,11 @@ export async function saveInterventionReviewAction(formData: FormData): Promise<
 
   try {
     const plan = await planById(context, values.planId);
-    const allowed = await hasPermission(context.supabase, context.organizationId, "intervention.review");
+    const allowed = await hasPermission(
+      context.supabase,
+      context.organizationId,
+      "intervention.review",
+    );
     if (!plan || !allowed) return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
     const { error } = await context.supabase.from("intervention_review_records").insert({
       plan_id: plan.id,
@@ -296,7 +331,10 @@ export async function saveInterventionReviewAction(formData: FormData): Promise<
       resourceType: "intervention_review_record",
       resourceId: plan.id,
       newState: { outcome: values.outcome },
-      paths: [`/students/${plan.student_id}/interventions/reviews`, `/students/${plan.student_id}/interventions/${plan.id}`],
+      paths: [
+        `/students/${plan.student_id}/interventions/reviews`,
+        `/students/${plan.student_id}/interventions/${plan.id}`,
+      ],
     });
     return { status: "success", message: "Intervention review saved." };
   } catch {

@@ -16,7 +16,9 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body style={{ background: "#12062D", color: "#FFFFFF", fontFamily: "system-ui, sans-serif" }}>
+      <body
+        style={{ background: "#12062D", color: "#FFFFFF", fontFamily: "system-ui, sans-serif" }}
+      >
         <main style={{ maxWidth: "48rem", margin: "0 auto", padding: "4rem 1rem" }}>
           <h1 style={{ fontSize: "1.875rem", fontWeight: 600 }}>Application error</h1>
           <p style={{ marginTop: "0.75rem", color: "#C9C2D9" }}>

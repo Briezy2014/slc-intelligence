@@ -47,7 +47,9 @@ export async function listMembers(): Promise<DataState<MembersData>> {
         .order("created_at", { ascending: false }),
       context.supabase
         .from("organization_invitations")
-        .select("id,organization_id,email,role_code,status,invited_by,expires_at,accepted_by,accepted_at,created_at,updated_at")
+        .select(
+          "id,organization_id,email,role_code,status,invited_by,expires_at,accepted_by,accepted_at,created_at,updated_at",
+        )
         .eq("organization_id", context.organizationId)
         .order("created_at", { ascending: false }),
     ]);

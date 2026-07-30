@@ -11,7 +11,11 @@ import {
   validationError,
 } from "@/lib/actions/shared";
 import { familyVisibleCommunicationExport } from "@/lib/data/communications";
-import { communicationLogSchema, communicationTemplateSchema, contactSchema } from "@/lib/validation/communications";
+import {
+  communicationLogSchema,
+  communicationTemplateSchema,
+  contactSchema,
+} from "@/lib/validation/communications";
 
 async function canCommunication(
   context: Awaited<ReturnType<typeof getActionContext>>,
@@ -68,7 +72,10 @@ export async function saveContactAction(formData: FormData): Promise<ActionState
       resourceType: "student_contact",
       resourceId: result.data.id,
       newState: payload,
-      paths: ["/family-communication", `/students/${values.studentId}/family-communication/contacts`],
+      paths: [
+        "/family-communication",
+        `/students/${values.studentId}/family-communication/contacts`,
+      ],
     });
     return { status: "success", message: "Contact saved." };
   } catch {
@@ -83,7 +90,8 @@ export async function saveCommunicationLogAction(formData: FormData): Promise<Ac
   const context = await getActionContext(values.organizationId);
   if (!("supabase" in context)) return context;
   try {
-    const requiredRpc = values.status === "finalized" ? "can_finalize_communication" : "can_enter_communication";
+    const requiredRpc =
+      values.status === "finalized" ? "can_finalize_communication" : "can_enter_communication";
     if (!(await canCommunication(context, requiredRpc, values.studentId))) {
       return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
     }
@@ -132,8 +140,15 @@ export async function saveCommunicationLogAction(formData: FormData): Promise<Ac
       actionType: values.communicationId ? "communication.update" : "communication.create",
       resourceType: "communication_log",
       resourceId: result.data.id,
-      newState: { ...payload, summary: values.visibility === "family_visible" ? values.summary : "[internal-or-restricted]" },
-      paths: ["/family-communication", `/students/${values.studentId}/family-communication/communications`],
+      newState: {
+        ...payload,
+        summary:
+          values.visibility === "family_visible" ? values.summary : "[internal-or-restricted]",
+      },
+      paths: [
+        "/family-communication",
+        `/students/${values.studentId}/family-communication/communications`,
+      ],
     });
     return { status: "success", message: "Communication log saved." };
   } catch {
@@ -142,7 +157,9 @@ export async function saveCommunicationLogAction(formData: FormData): Promise<Ac
 }
 
 export async function saveCommunicationTemplateAction(formData: FormData): Promise<ActionState> {
-  const parsed = communicationTemplateSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+  const parsed = communicationTemplateSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId, "communication.template.manage");
@@ -166,12 +183,18 @@ export async function saveCommunicationTemplateAction(formData: FormData): Promi
           .eq("id", values.templateId)
           .select("id")
           .single()
-      : await context.supabase.from("communication_templates").insert(payload).select("id").single();
+      : await context.supabase
+          .from("communication_templates")
+          .insert(payload)
+          .select("id")
+          .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
       actorUserId: context.user.id,
-      actionType: values.templateId ? "communication_template.update" : "communication_template.create",
+      actionType: values.templateId
+        ? "communication_template.update"
+        : "communication_template.create",
       resourceType: "communication_template",
       resourceId: result.data.id,
       newState: payload,
@@ -183,13 +206,18 @@ export async function saveCommunicationTemplateAction(formData: FormData): Promi
   }
 }
 
-export async function recordFamilyCommunicationExportAction(formData: FormData): Promise<ActionState> {
+export async function recordFamilyCommunicationExportAction(
+  formData: FormData,
+): Promise<ActionState> {
   const organizationId = String(formData.get("organizationId") ?? "");
   const context = await getActionContext(organizationId, "communication.read");
   if (!("supabase" in context)) return context;
   const studentId = String(formData.get("studentId") ?? "");
   try {
-    let query = context.supabase.from("communication_logs").select("*").eq("organization_id", context.organizationId);
+    let query = context.supabase
+      .from("communication_logs")
+      .select("*")
+      .eq("organization_id", context.organizationId);
     if (studentId) query = query.eq("student_id", studentId);
     const { data, error } = await query.eq("visibility", "family_visible");
     if (error) return { status: "error", message: GENERIC_ACTION_MESSAGE };

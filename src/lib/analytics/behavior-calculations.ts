@@ -43,7 +43,9 @@ function finalizedOnly(points: BehaviorObservationPoint[]): BehaviorObservationP
 }
 
 function numericValues(values: Array<number | null | undefined>): number[] {
-  return values.filter((value): value is number => typeof value === "number" && Number.isFinite(value));
+  return values.filter(
+    (value): value is number => typeof value === "number" && Number.isFinite(value),
+  );
 }
 
 export function assessDataSufficiency(
@@ -52,7 +54,11 @@ export function assessDataSufficiency(
   label = "observations",
 ): DataSufficiencyResult {
   if (usableCount >= minimum) {
-    return { status: "sufficient", reason: `${usableCount} usable ${label} available.`, usableCount };
+    return {
+      status: "sufficient",
+      reason: `${usableCount} usable ${label} available.`,
+      usableCount,
+    };
   }
   if (usableCount > 0) {
     return {
@@ -64,8 +70,12 @@ export function assessDataSufficiency(
   return { status: "insufficient", reason: `No usable ${label} available.`, usableCount };
 }
 
-export function calculateRate(count: number | null | undefined, durationSeconds: number | null | undefined): number | null {
-  if (typeof count !== "number" || typeof durationSeconds !== "number" || durationSeconds <= 0) return null;
+export function calculateRate(
+  count: number | null | undefined,
+  durationSeconds: number | null | undefined,
+): number | null {
+  if (typeof count !== "number" || typeof durationSeconds !== "number" || durationSeconds <= 0)
+    return null;
   return round((count / durationSeconds) * 60);
 }
 
@@ -141,7 +151,8 @@ export function groupByTimeOfDay(points: BehaviorObservationPoint[]): Record<str
     if (!point.time) return acc;
     const hour = Number(point.time.slice(0, 2));
     if (Number.isNaN(hour)) return acc;
-    const key = hour < 11 ? "morning" : hour < 14 ? "midday" : hour < 17 ? "afternoon" : "after_school";
+    const key =
+      hour < 11 ? "morning" : hour < 14 ? "midday" : hour < 17 ? "afternoon" : "after_school";
     acc[key] = (acc[key] ?? 0) + 1;
     return acc;
   }, {});
@@ -187,7 +198,9 @@ export function replacementRate(points: BehaviorObservationPoint[]): {
   total: number;
   sufficiency: DataSufficiencyResult;
 } {
-  const usable = finalizedOnly(points).filter((point) => typeof point.replacementObserved === "boolean");
+  const usable = finalizedOnly(points).filter(
+    (point) => typeof point.replacementObserved === "boolean",
+  );
   const observed = usable.filter((point) => point.replacementObserved).length;
   return {
     percentage: usable.length === 0 ? null : round((observed / usable.length) * 100),
@@ -228,7 +241,11 @@ export function trend(values: number[]): {
     return {
       slope: null,
       direction: "unavailable",
-      sufficiency: { status: "insufficient", reason: "Trend denominator was zero.", usableCount: usable.length },
+      sufficiency: {
+        status: "insufficient",
+        reason: "Trend denominator was zero.",
+        usableCount: usable.length,
+      },
     };
   }
   const slope = round((n * sumXY - sumX * sumY) / denominator, 6);
@@ -246,8 +263,12 @@ export function comparePhases(
   valueSelector: (point: BehaviorObservationPoint) => number | null | undefined,
 ): PhaseComparison {
   const usable = finalizedOnly(points);
-  const aValues = numericValues(usable.filter((point) => point.phaseId === phaseA).map(valueSelector));
-  const bValues = numericValues(usable.filter((point) => point.phaseId === phaseB).map(valueSelector));
+  const aValues = numericValues(
+    usable.filter((point) => point.phaseId === phaseA).map(valueSelector),
+  );
+  const bValues = numericValues(
+    usable.filter((point) => point.phaseId === phaseB).map(valueSelector),
+  );
   const phaseAMean = mean(aValues);
   const phaseBMean = mean(bValues);
   return {
@@ -257,6 +278,10 @@ export function comparePhases(
     sufficiency:
       aValues.length > 0 && bValues.length > 0
         ? assessDataSufficiency(aValues.length + bValues.length, 4, "phase observations")
-        : { status: "insufficient", reason: "Both phases need usable observations.", usableCount: aValues.length + bValues.length },
+        : {
+            status: "insufficient",
+            reason: "Both phases need usable observations.",
+            usableCount: aValues.length + bValues.length,
+          },
   };
 }

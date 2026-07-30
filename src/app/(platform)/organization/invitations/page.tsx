@@ -16,8 +16,15 @@ export default async function OrganizationInvitationsPage() {
   return (
     <main id="main-content">
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Organization invitations" }]} />
-      <PageHeader title="Organization invitations" description="Pending and historical organization invitations." />
-      {!state.configured ? <ConfigurationState /> : state.error ? <SafeErrorState message={state.error} /> : (
+      <PageHeader
+        title="Organization invitations"
+        description="Pending and historical organization invitations."
+      />
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error ? (
+        <SafeErrorState message={state.error} />
+      ) : (
         <div className="space-y-6">
           <TableShell
             caption="Invitations"
@@ -32,8 +39,12 @@ export default async function OrganizationInvitationsPage() {
           {state.data.canManage && state.data.organizationId ? (
             <Card>
               <CardTitle>Record invitation</CardTitle>
-              <CardDescription>No password or service-role secret is stored by this workflow.</CardDescription>
-              <div className="mt-4"><InvitationForm organizationId={state.data.organizationId} /></div>
+              <CardDescription>
+                No password or service-role secret is stored by this workflow.
+              </CardDescription>
+              <div className="mt-4">
+                <InvitationForm organizationId={state.data.organizationId} />
+              </div>
             </Card>
           ) : null}
         </div>

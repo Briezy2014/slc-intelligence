@@ -276,7 +276,9 @@ function buildProgressions(): LearningProgressionNode[] {
       const grade = grades[index]!;
       const id = `${ladder.subject}-${ladder.key}-g${grade.toLowerCase()}`;
       const following = grades[index + 1];
-      const nextIds = following ? [`${ladder.subject}-${ladder.key}-g${following.toLowerCase()}`] : [];
+      const nextIds = following
+        ? [`${ladder.subject}-${ladder.key}-g${following.toLowerCase()}`]
+        : [];
       nodes.push(
         node(
           id,

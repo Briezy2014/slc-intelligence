@@ -20,10 +20,31 @@ function metricGroups(view: string) {
   const map: Record<string, string[]> = {
     [all]: [],
     organization: [],
-    schools: ["active_students", "active_staff", "active_classrooms", "active_iep_cycles", "active_goals"],
-    programs: ["active_students", "active_goals", "active_intervention_plans", "active_service_plans"],
-    classrooms: ["active_students", "active_goals", "classroom_schedule_changes", "executive_function_plans"],
-    caseloads: ["active_students", "active_goals", "goals_with_recent_finalized_data", "goals_without_recent_finalized_data"],
+    schools: [
+      "active_students",
+      "active_staff",
+      "active_classrooms",
+      "active_iep_cycles",
+      "active_goals",
+    ],
+    programs: [
+      "active_students",
+      "active_goals",
+      "active_intervention_plans",
+      "active_service_plans",
+    ],
+    classrooms: [
+      "active_students",
+      "active_goals",
+      "classroom_schedule_changes",
+      "executive_function_plans",
+    ],
+    caseloads: [
+      "active_students",
+      "active_goals",
+      "goals_with_recent_finalized_data",
+      "goals_without_recent_finalized_data",
+    ],
     reporting: [
       "draft_progress_reports",
       "reports_ready_for_review",
@@ -83,8 +104,9 @@ export function AdministrativeIntelligenceWorkspace({
   return (
     <div className="space-y-6 print:space-y-4">
       <Alert title="Administrative principles" tone="neutral">
-        These dashboards summarize recorded workflow documentation for authorized scopes only. They do not rank
-        staff or students, determine legal compliance, or expand access beyond underlying module authorization.
+        These dashboards summarize recorded workflow documentation for authorized scopes only. They
+        do not rank staff or students, determine legal compliance, or expand access beyond
+        underlying module authorization.
       </Alert>
 
       <Card className="brand-glow print:border print:shadow-none">
@@ -94,10 +116,20 @@ export function AdministrativeIntelligenceWorkspace({
         </CardDescription>
         <form method="get" className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
           <FormField id="startDate" label="Start date">
-            <Input id="startDate" name="startDate" type="date" defaultValue={data.filters.startDate ?? ""} />
+            <Input
+              id="startDate"
+              name="startDate"
+              type="date"
+              defaultValue={data.filters.startDate ?? ""}
+            />
           </FormField>
           <FormField id="endDate" label="End date">
-            <Input id="endDate" name="endDate" type="date" defaultValue={data.filters.endDate ?? ""} />
+            <Input
+              id="endDate"
+              name="endDate"
+              type="date"
+              defaultValue={data.filters.endDate ?? ""}
+            />
           </FormField>
           <FormField id="schoolId" label="School">
             <Select id="schoolId" name="schoolId" defaultValue={data.filters.schoolId ?? ""}>
@@ -120,7 +152,11 @@ export function AdministrativeIntelligenceWorkspace({
             </Select>
           </FormField>
           <FormField id="classroomId" label="Classroom">
-            <Select id="classroomId" name="classroomId" defaultValue={data.filters.classroomId ?? ""}>
+            <Select
+              id="classroomId"
+              name="classroomId"
+              defaultValue={data.filters.classroomId ?? ""}
+            >
               <option value="">All authorized classrooms</option>
               {data.classrooms.map((classroom) => (
                 <option key={classroom.id} value={classroom.id}>
@@ -144,8 +180,12 @@ export function AdministrativeIntelligenceWorkspace({
           <Card key={metric.key} className="motion-safe-rise">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <p className="text-muted text-xs font-semibold tracking-[0.12em] uppercase">{metric.label}</p>
-                <CardTitle className="mt-2 text-2xl tabular-nums">{metric.result.display}</CardTitle>
+                <p className="text-muted text-xs font-semibold tracking-[0.12em] uppercase">
+                  {metric.label}
+                </p>
+                <CardTitle className="mt-2 text-2xl tabular-nums">
+                  {metric.result.display}
+                </CardTitle>
                 <CardDescription>{metric.explanation}</CardDescription>
               </div>
               <Badge tone={metric.result.suppressed ? "warning" : "neutral"}>
@@ -153,11 +193,13 @@ export function AdministrativeIntelligenceWorkspace({
               </Badge>
             </div>
             <details className="mt-3">
-              <summary className="text-muted cursor-pointer text-sm font-medium">Explain calculation</summary>
+              <summary className="text-muted cursor-pointer text-sm font-medium">
+                Explain calculation
+              </summary>
               <p className="text-muted mt-2 text-sm">{metric.explanation}</p>
               <p className="text-muted mt-1 text-sm">
-                Display value uses privacy suppression when required. Missing source records are shown as “No
-                finalized record found,” not zero outcomes.
+                Display value uses privacy suppression when required. Missing source records are
+                shown as “No finalized record found,” not zero outcomes.
               </p>
             </details>
           </Card>
@@ -192,7 +234,10 @@ export function AdministrativeIntelligenceWorkspace({
               ])}
             />
           ) : (
-            <EmptyState title="No export events" description="No administrative exports are recorded yet." />
+            <EmptyState
+              title="No export events"
+              description="No administrative exports are recorded yet."
+            />
           )
         ) : (
           <Alert title="Audit permission required" tone="warning">
@@ -204,17 +249,18 @@ export function AdministrativeIntelligenceWorkspace({
       <ModuleLinkGrid
         links={data.drillDownLinks.map((link) => ({
           ...link,
-          href: link.href.includes("?") || !qs || !link.href.startsWith("/administrative-intelligence")
-            ? link.href
-            : `${link.href}?${qs}`,
+          href:
+            link.href.includes("?") || !qs || !link.href.startsWith("/administrative-intelligence")
+              ? link.href
+              : `${link.href}?${qs}`,
         }))}
       />
 
       <Card>
         <CardTitle>Export controls</CardTitle>
         <CardDescription>
-          Exports require current authorization, reuse the visible scope, apply suppression, and record an export
-          event. Filenames avoid student identifiers.
+          Exports require current authorization, reuse the visible scope, apply suppression, and
+          record an export event. Filenames avoid student identifiers.
         </CardDescription>
         {data.canExport ? (
           <form
@@ -267,13 +313,17 @@ export function AdministrativeIntelligenceWorkspace({
           ))}
         </ul>
         <p className="text-muted mt-3 text-sm">
-          Print this view for a print-friendly summary. Protected student narrative content is not included.
+          Print this view for a print-friendly summary. Protected student narrative content is not
+          included.
         </p>
         <div className="mt-4 flex flex-wrap gap-2 print:hidden">
           <Button type="button" variant="secondary" onClick={() => window.print()}>
             Print-friendly view
           </Button>
-          <Link href="/command-center" className="text-highlight text-sm font-medium underline-offset-4 hover:underline">
+          <Link
+            href="/command-center"
+            className="text-highlight text-sm font-medium underline-offset-4 hover:underline"
+          >
             Return to Command Center
           </Link>
         </div>

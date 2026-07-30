@@ -76,7 +76,9 @@ export async function saveServiceDefinitionAction(formData: FormData): Promise<A
     await auditAndRevalidate({
       organizationId: context.organizationId,
       actorUserId: context.user.id,
-      actionType: values.serviceDefinitionId ? "service_definition.update" : "service_definition.create",
+      actionType: values.serviceDefinitionId
+        ? "service_definition.update"
+        : "service_definition.create",
       resourceType: "service_definition",
       resourceId: result.data.id,
       newState: payload,
@@ -134,7 +136,11 @@ export async function saveServicePlanAction(formData: FormData): Promise<ActionS
       resourceType: "student_service_plan",
       resourceId: result.data.id,
       newState: payload,
-      paths: ["/services", `/students/${values.studentId}/services`, `/students/${values.studentId}/services/${result.data.id}`],
+      paths: [
+        "/services",
+        `/students/${values.studentId}/services`,
+        `/students/${values.studentId}/services/${result.data.id}`,
+      ],
     });
     return { status: "success", message: "Service plan saved." };
   } catch {
@@ -172,7 +178,11 @@ export async function addServiceComponentAction(formData: FormData): Promise<Act
       notes: values.notes ?? null,
       sort_order: values.sortOrder,
     };
-    const result = await context.supabase.from("service_plan_components").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("service_plan_components")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -197,9 +207,15 @@ export async function saveServiceDeliveryLogAction(formData: FormData): Promise<
   if (!("supabase" in context)) return context;
 
   try {
-    const requiredRpc = values.recordStatus === "finalized" ? "can_finalize_service_log" : "can_enter_service_log";
-    const participantIds = parseParticipantIds(values.participantStudentIds, values.primaryStudentId);
-    const participantChecks = await Promise.all(participantIds.map((studentId) => canService(context, requiredRpc, studentId)));
+    const requiredRpc =
+      values.recordStatus === "finalized" ? "can_finalize_service_log" : "can_enter_service_log";
+    const participantIds = parseParticipantIds(
+      values.participantStudentIds,
+      values.primaryStudentId,
+    );
+    const participantChecks = await Promise.all(
+      participantIds.map((studentId) => canService(context, requiredRpc, studentId)),
+    );
     if (participantChecks.some((allowed) => !allowed)) {
       return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
     }
@@ -221,7 +237,11 @@ export async function saveServiceDeliveryLogAction(formData: FormData): Promise<
       finalized_by: values.recordStatus === "finalized" ? context.user.id : null,
       created_by: context.user.id,
     };
-    const result = await context.supabase.from("service_delivery_logs").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("service_delivery_logs")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
 
     const participantRows = participantIds.map((studentId) => ({
@@ -230,7 +250,9 @@ export async function saveServiceDeliveryLogAction(formData: FormData): Promise<
       student_id: studentId,
     }));
     if (participantRows.length) {
-      const participantResult = await context.supabase.from("service_delivery_participants").insert(participantRows);
+      const participantResult = await context.supabase
+        .from("service_delivery_participants")
+        .insert(participantRows);
       if (participantResult.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     }
 
@@ -269,7 +291,11 @@ export async function saveServiceReviewAction(formData: FormData): Promise<Actio
       recommendation: values.recommendation ?? null,
       next_review_date: values.nextReviewDate || null,
     };
-    const result = await context.supabase.from("service_review_records").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("service_review_records")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,

@@ -20,18 +20,18 @@ This roadmap sequences work. Roadmap order is not automatic authorization. Only 
 
 **Phases 16–18 completed for finished-product launch. Post-launch testing in progress.**
 
-| Phase   | Status      |
-| ------- | ----------- |
-| Phase 0 | Completed   |
-| Phase 1 | Completed   |
-| Phase 2 | Completed   |
-| Phase 3 | Completed   |
-| Phase 4 | Completed   |
-| Phase 5 | Completed   |
-| Phase 6 | Completed   |
-| Phase 7 | Completed   |
-| Phase 8 | Completed   |
-| Phase 9 | Completed |
+| Phase    | Status    |
+| -------- | --------- |
+| Phase 0  | Completed |
+| Phase 1  | Completed |
+| Phase 2  | Completed |
+| Phase 3  | Completed |
+| Phase 4  | Completed |
+| Phase 5  | Completed |
+| Phase 6  | Completed |
+| Phase 7  | Completed |
+| Phase 8  | Completed |
+| Phase 9  | Completed |
 | Phase 10 | Completed |
 | Phase 11 | Completed |
 | Phase 12 | Completed |

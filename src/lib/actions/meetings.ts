@@ -10,7 +10,12 @@ import {
   UNAUTHORIZED_ACTION_MESSAGE,
   validationError,
 } from "@/lib/actions/shared";
-import { meetingAcknowledgementSchema, meetingNoteSchema, meetingParticipantSchema, meetingSchema } from "@/lib/validation/meetings";
+import {
+  meetingAcknowledgementSchema,
+  meetingNoteSchema,
+  meetingParticipantSchema,
+  meetingSchema,
+} from "@/lib/validation/meetings";
 
 async function canMeeting(
   context: Awaited<ReturnType<typeof getActionContext>>,
@@ -32,7 +37,8 @@ export async function saveMeetingAction(formData: FormData): Promise<ActionState
   const context = await getActionContext(values.organizationId);
   if (!("supabase" in context)) return context;
   try {
-    const requiredRpc = values.status === "finalized" ? "can_finalize_meeting" : "can_manage_meeting";
+    const requiredRpc =
+      values.status === "finalized" ? "can_finalize_meeting" : "can_manage_meeting";
     if (!(await canMeeting(context, requiredRpc, values.studentId))) {
       return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
     }
@@ -91,13 +97,21 @@ export async function addMeetingParticipantAction(formData: FormData): Promise<A
       participant_kind: values.participantKind,
       user_id: values.participantKind === "staff" ? values.userId || null : null,
       contact_id: values.participantKind === "contact" ? values.contactId || null : null,
-      student_id: values.participantKind === "student" ? values.participantStudentId || values.studentId : null,
-      external_name: values.participantKind === "external" ? values.externalName ?? null : null,
-      external_role: values.participantKind === "external" ? values.externalRole ?? null : null,
-      invitation_status: values.participantKind === "external" ? "not_required" as const : "not_sent" as const,
+      student_id:
+        values.participantKind === "student"
+          ? values.participantStudentId || values.studentId
+          : null,
+      external_name: values.participantKind === "external" ? (values.externalName ?? null) : null,
+      external_role: values.participantKind === "external" ? (values.externalRole ?? null) : null,
+      invitation_status:
+        values.participantKind === "external" ? ("not_required" as const) : ("not_sent" as const),
       attendance_status: "unknown" as const,
     };
-    const result = await context.supabase.from("meeting_participants").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("meeting_participants")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -109,7 +123,11 @@ export async function addMeetingParticipantAction(formData: FormData): Promise<A
         participant_kind: values.participantKind,
         external_participant_does_not_create_auth_user: values.participantKind === "external",
       },
-      paths: ["/meetings", `/students/${values.studentId}/meetings`, `/meetings/${values.meetingId}`],
+      paths: [
+        "/meetings",
+        `/students/${values.studentId}/meetings`,
+        `/meetings/${values.meetingId}`,
+      ],
     });
     return { status: "success", message: "Meeting participant added." };
   } catch {
@@ -134,7 +152,11 @@ export async function addMeetingNoteAction(formData: FormData): Promise<ActionSt
       note_text: values.noteText,
       created_by: context.user.id,
     };
-    const result = await context.supabase.from("meeting_notes").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("meeting_notes")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -143,7 +165,11 @@ export async function addMeetingNoteAction(formData: FormData): Promise<ActionSt
       resourceType: "meeting_note",
       resourceId: result.data.id,
       newState: { note_kind: values.noteKind },
-      paths: ["/meetings", `/students/${values.studentId}/meetings`, `/meetings/${values.meetingId}`],
+      paths: [
+        "/meetings",
+        `/students/${values.studentId}/meetings`,
+        `/meetings/${values.meetingId}`,
+      ],
     });
     return { status: "success", message: "Meeting note added." };
   } catch {
@@ -152,7 +178,9 @@ export async function addMeetingNoteAction(formData: FormData): Promise<ActionSt
 }
 
 export async function recordMeetingAcknowledgementAction(formData: FormData): Promise<ActionState> {
-  const parsed = meetingAcknowledgementSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+  const parsed = meetingAcknowledgementSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId, "meeting.manage");
@@ -167,7 +195,11 @@ export async function recordMeetingAcknowledgementAction(formData: FormData): Pr
       note: values.note ?? null,
       recorded_by: context.user.id,
     };
-    const result = await context.supabase.from("meeting_acknowledgements").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("meeting_acknowledgements")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,

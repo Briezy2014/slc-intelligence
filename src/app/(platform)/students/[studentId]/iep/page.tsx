@@ -12,7 +12,11 @@ import { getStudent } from "@/lib/data/students";
 
 export const metadata: Metadata = { title: "Student IEP" };
 
-export default async function StudentIepPage({ params }: { params: Promise<{ studentId: string }> }) {
+export default async function StudentIepPage({
+  params,
+}: {
+  params: Promise<{ studentId: string }>;
+}) {
   const { studentId } = await params;
   const [studentState, goalsState, documentsState] = await Promise.all([
     getStudent(studentId),
@@ -22,7 +26,13 @@ export default async function StudentIepPage({ params }: { params: Promise<{ stu
 
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/students", label: "Students" }, { label: "IEP" }]} />
+      <Breadcrumbs
+        items={[
+          { href: "/", label: "Home" },
+          { href: "/students", label: "Students" },
+          { label: "IEP" },
+        ]}
+      />
       <PageHeader
         title="Student IEP"
         description="IEP cycles plus blank/pre-populated IEP document drafts and uploads for team review."
@@ -51,7 +61,10 @@ export default async function StudentIepPage({ params }: { params: Promise<{ stu
               <CardTitle>Create IEP cycle</CardTitle>
               <CardDescription>Use authorized student records only.</CardDescription>
               <div className="mt-4">
-                <IepCycleForm organizationId={goalsState.data.organizationId} studentId={studentId} />
+                <IepCycleForm
+                  organizationId={goalsState.data.organizationId}
+                  studentId={studentId}
+                />
               </div>
             </Card>
           ) : null}

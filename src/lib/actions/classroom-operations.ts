@@ -78,7 +78,11 @@ export async function saveClassroomScheduleAction(formData: FormData): Promise<A
       resourceType: "classroom_schedule",
       resourceId: result.data.id,
       newState: payload,
-      paths: ["/classroom-operations", "/classroom-operations/daily", `/classrooms/${values.classroomId}/schedule`],
+      paths: [
+        "/classroom-operations",
+        "/classroom-operations/daily",
+        `/classrooms/${values.classroomId}/schedule`,
+      ],
     });
     return { status: "success", message: "Classroom schedule saved." };
   } catch {
@@ -87,7 +91,9 @@ export async function saveClassroomScheduleAction(formData: FormData): Promise<A
 }
 
 export async function addClassroomScheduleBlockAction(formData: FormData): Promise<ActionState> {
-  const parsed = classroomScheduleBlockSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+  const parsed = classroomScheduleBlockSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId);
@@ -108,7 +114,11 @@ export async function addClassroomScheduleBlockAction(formData: FormData): Promi
       location: values.location ?? null,
       sort_order: values.sortOrder,
     };
-    const result = await context.supabase.from("classroom_schedule_blocks").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("classroom_schedule_blocks")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -117,7 +127,11 @@ export async function addClassroomScheduleBlockAction(formData: FormData): Promi
       resourceType: "classroom_schedule_block",
       resourceId: result.data.id,
       newState: payload,
-      paths: ["/classroom-operations", "/classroom-operations/daily", `/classrooms/${values.classroomId}/schedule`],
+      paths: [
+        "/classroom-operations",
+        "/classroom-operations/daily",
+        `/classrooms/${values.classroomId}/schedule`,
+      ],
     });
     return { status: "success", message: "Schedule block added." };
   } catch {
@@ -132,7 +146,8 @@ export async function saveDailyStudentNoteAction(formData: FormData): Promise<Ac
   const context = await getActionContext(values.organizationId);
   if (!("supabase" in context)) return context;
   try {
-    const requiredRpc = values.status === "finalized" ? "can_finalize_daily_note" : "can_enter_daily_note";
+    const requiredRpc =
+      values.status === "finalized" ? "can_finalize_daily_note" : "can_enter_daily_note";
     if (!(await canDailyNote(context, requiredRpc, values.studentId))) {
       return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
     }
@@ -146,7 +161,11 @@ export async function saveDailyStudentNoteAction(formData: FormData): Promise<Ac
       finalized_at: values.status === "finalized" ? new Date().toISOString() : null,
       finalized_by: values.status === "finalized" ? context.user.id : null,
     };
-    const result = await context.supabase.from("daily_student_notes").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("daily_student_notes")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -155,7 +174,11 @@ export async function saveDailyStudentNoteAction(formData: FormData): Promise<Ac
       resourceType: "daily_student_note",
       resourceId: result.data.id,
       newState: { ...payload, note_text: "[student-scoped-note]" },
-      paths: ["/classroom-operations", "/classroom-operations/daily", `/students/${values.studentId}/classroom-operations`],
+      paths: [
+        "/classroom-operations",
+        "/classroom-operations/daily",
+        `/students/${values.studentId}/classroom-operations`,
+      ],
     });
     return { status: "success", message: "Daily student note saved." };
   } catch {
@@ -164,7 +187,9 @@ export async function saveDailyStudentNoteAction(formData: FormData): Promise<Ac
 }
 
 export async function saveClassroomAnnouncementAction(formData: FormData): Promise<ActionState> {
-  const parsed = classroomAnnouncementSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+  const parsed = classroomAnnouncementSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId, "announcement.manage");
@@ -185,7 +210,11 @@ export async function saveClassroomAnnouncementAction(formData: FormData): Promi
       status: values.status,
       created_by: context.user.id,
     };
-    const result = await context.supabase.from("classroom_announcements").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("classroom_announcements")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -194,7 +223,11 @@ export async function saveClassroomAnnouncementAction(formData: FormData): Promi
       resourceType: "classroom_announcement",
       resourceId: result.data.id,
       newState: payload,
-      paths: ["/classroom-operations", "/classroom-operations/daily", `/classrooms/${values.classroomId}/schedule`],
+      paths: [
+        "/classroom-operations",
+        "/classroom-operations/daily",
+        `/classrooms/${values.classroomId}/schedule`,
+      ],
     });
     return { status: "success", message: "Classroom announcement saved." };
   } catch {

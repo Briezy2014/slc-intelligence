@@ -94,8 +94,12 @@ export async function saveEducationDocumentAction(formData: FormData): Promise<A
   }
 }
 
-export async function recordEducationDocumentUploadAction(formData: FormData): Promise<ActionState> {
-  const parsed = educationDocumentUploadSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+export async function recordEducationDocumentUploadAction(
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = educationDocumentUploadSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId, "education_document.manage");
@@ -111,7 +115,9 @@ export async function recordEducationDocumentUploadAction(formData: FormData): P
       content_type: values.contentType || null,
       byte_size: values.byteSize ?? null,
       storage_path: null,
-      notes: values.notes || "Upload metadata recorded. Binary storage can be connected to Supabase Storage next.",
+      notes:
+        values.notes ||
+        "Upload metadata recorded. Binary storage can be connected to Supabase Storage next.",
       uploaded_by: context.user.id,
     };
 
@@ -130,12 +136,17 @@ export async function recordEducationDocumentUploadAction(formData: FormData): P
       resourceType: "education_document_upload",
       resourceId: data.id,
       newState: payload,
-      paths: ["/education-documents", `/students/${values.studentId}/iep`, `/students/${values.studentId}/etr`],
+      paths: [
+        "/education-documents",
+        `/students/${values.studentId}/iep`,
+        `/students/${values.studentId}/etr`,
+      ],
     });
 
     return {
       status: "success",
-      message: "Upload recorded. File binary storage can be enabled next; metadata is saved for the team workspace.",
+      message:
+        "Upload recorded. File binary storage can be enabled next; metadata is saved for the team workspace.",
     };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };

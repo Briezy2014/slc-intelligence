@@ -64,7 +64,9 @@ const emptyClassroomOperationsData: ClassroomOperationsData = {
   },
 };
 
-export async function listClassroomOperations(options: { classroomId?: string; studentId?: string } = {}): Promise<DataState<ClassroomOperationsData>> {
+export async function listClassroomOperations(
+  options: { classroomId?: string; studentId?: string } = {},
+): Promise<DataState<ClassroomOperationsData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyClassroomOperationsData);
 
@@ -109,16 +111,35 @@ export async function listClassroomOperations(options: { classroomId?: string; s
       .order("note_date", { ascending: false });
     if (options.studentId) dailyNotesQuery = dailyNotesQuery.eq("student_id", options.studentId);
 
-    const [classroomsResult, studentsResult, schedulesResult, routinesResult, notesResult, announcementsResult, reinforcementResult] =
-      await Promise.all([
-        context.supabase.from("classrooms").select("*").eq("organization_id", context.organizationId).order("name"),
-        context.supabase.from("students").select("*").eq("organization_id", context.organizationId).order("last_name"),
-        schedulesQuery,
-        routinesQuery,
-        dailyNotesQuery,
-        announcementsQuery,
-        context.supabase.from("reinforcement_systems").select("*").eq("organization_id", context.organizationId).order("name"),
-      ]);
+    const [
+      classroomsResult,
+      studentsResult,
+      schedulesResult,
+      routinesResult,
+      notesResult,
+      announcementsResult,
+      reinforcementResult,
+    ] = await Promise.all([
+      context.supabase
+        .from("classrooms")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("name"),
+      context.supabase
+        .from("students")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("last_name"),
+      schedulesQuery,
+      routinesQuery,
+      dailyNotesQuery,
+      announcementsQuery,
+      context.supabase
+        .from("reinforcement_systems")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("name"),
+    ]);
 
     if (
       classroomsResult.error ||

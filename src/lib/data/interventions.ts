@@ -86,7 +86,9 @@ const emptyInterventionData: InterventionData = {
   },
 };
 
-export async function listInterventions(options: { studentId?: string; planId?: string; libraryItemId?: string } = {}): Promise<DataState<InterventionData>> {
+export async function listInterventions(
+  options: { studentId?: string; planId?: string; libraryItemId?: string } = {},
+): Promise<DataState<InterventionData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyInterventionData);
 
@@ -150,16 +152,39 @@ export async function listInterventions(options: { studentId?: string; planId?: 
       phasesResult,
     ] = planIds.length
       ? await Promise.all([
-          context.supabase.from("intervention_components").select("*").in("plan_id", planIds).order("sort_order"),
+          context.supabase
+            .from("intervention_components")
+            .select("*")
+            .in("plan_id", planIds)
+            .order("sort_order"),
           context.supabase.from("intervention_target_behaviors").select("*").in("plan_id", planIds),
-          context.supabase.from("intervention_staff_assignments").select("*").in("plan_id", planIds),
+          context.supabase
+            .from("intervention_staff_assignments")
+            .select("*")
+            .in("plan_id", planIds),
           context.supabase.from("intervention_schedules").select("*").in("plan_id", planIds),
           context.supabase.from("fidelity_checklists").select("*").in("plan_id", planIds),
-          context.supabase.from("fidelity_observations").select("*").in("plan_id", planIds).order("observation_date", { ascending: false }),
-          context.supabase.from("intervention_dosage_logs").select("*").in("plan_id", planIds).order("log_date", { ascending: false }),
-          context.supabase.from("intervention_review_records").select("*").in("plan_id", planIds).order("review_date", { ascending: false }),
+          context.supabase
+            .from("fidelity_observations")
+            .select("*")
+            .in("plan_id", planIds)
+            .order("observation_date", { ascending: false }),
+          context.supabase
+            .from("intervention_dosage_logs")
+            .select("*")
+            .in("plan_id", planIds)
+            .order("log_date", { ascending: false }),
+          context.supabase
+            .from("intervention_review_records")
+            .select("*")
+            .in("plan_id", planIds)
+            .order("review_date", { ascending: false }),
           context.supabase.from("intervention_outcome_links").select("*").in("plan_id", planIds),
-          context.supabase.from("intervention_plan_phases").select("*").in("plan_id", planIds).order("start_date"),
+          context.supabase
+            .from("intervention_plan_phases")
+            .select("*")
+            .in("plan_id", planIds)
+            .order("start_date"),
         ])
       : [
           { data: [] as InterventionComponent[], error: null },
@@ -193,10 +218,17 @@ export async function listInterventions(options: { studentId?: string; planId?: 
     const observationIds = (fidelityResult.data ?? []).map((observation) => observation.id);
     const [itemsResult, responsesResult] = await Promise.all([
       checklistIds.length
-        ? context.supabase.from("fidelity_checklist_items").select("*").in("checklist_id", checklistIds).order("sort_order")
+        ? context.supabase
+            .from("fidelity_checklist_items")
+            .select("*")
+            .in("checklist_id", checklistIds)
+            .order("sort_order")
         : { data: [] as FidelityChecklistItem[], error: null },
       observationIds.length
-        ? context.supabase.from("fidelity_item_responses").select("*").in("observation_id", observationIds)
+        ? context.supabase
+            .from("fidelity_item_responses")
+            .select("*")
+            .in("observation_id", observationIds)
         : { data: [] as FidelityItemResponse[], error: null },
     ]);
 

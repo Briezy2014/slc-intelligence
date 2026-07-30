@@ -31,10 +31,12 @@ const empty: EducationDocumentsData = {
   permissions: { canManage: false, canRead: false },
 };
 
-export async function listEducationDocuments(options: {
-  studentId?: string;
-  documentType?: EducationDocumentType;
-} = {}): Promise<DataState<EducationDocumentsData>> {
+export async function listEducationDocuments(
+  options: {
+    studentId?: string;
+    documentType?: EducationDocumentType;
+  } = {},
+): Promise<DataState<EducationDocumentsData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(empty);
 
@@ -65,7 +67,11 @@ export async function listEducationDocuments(options: {
     }
 
     const [studentsResult, documentsResult, uploadsResult] = await Promise.all([
-      context.supabase.from("students").select("*").eq("organization_id", context.organizationId).order("last_name"),
+      context.supabase
+        .from("students")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("last_name"),
       documentsQuery,
       uploadsQuery,
     ]);
@@ -83,7 +89,8 @@ export async function listEducationDocuments(options: {
         uploads: (uploadsResult.data ?? []) as EducationDocumentUpload[],
         permissions: {
           canManage: permissions["education_document.manage"],
-          canRead: permissions["education_document.read"] || permissions["education_document.manage"],
+          canRead:
+            permissions["education_document.read"] || permissions["education_document.manage"],
         },
       },
     };

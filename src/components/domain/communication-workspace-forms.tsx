@@ -40,7 +40,9 @@ export function ContactAndCommunicationForms({
   canEnterCommunication: boolean;
   studentId?: string;
 }) {
-  const visibleStudents = studentId ? students.filter((student) => student.id === studentId) : students;
+  const visibleStudents = studentId
+    ? students.filter((student) => student.id === studentId)
+    : students;
   const [contactStudentId, setContactStudentId] = useState(studentId ?? "");
   const [logStudentId, setLogStudentId] = useState(studentId ?? "");
   const [contactId, setContactId] = useState("");
@@ -51,7 +53,8 @@ export function ContactAndCommunicationForms({
   const [visibility, setVisibility] = useState("family_visible");
 
   const contactsForStudent = useMemo(
-    () => (logStudentId ? contacts.filter((contact) => contact.student_id === logStudentId) : contacts),
+    () =>
+      logStudentId ? contacts.filter((contact) => contact.student_id === logStudentId) : contacts,
     [contacts, logStudentId],
   );
 
@@ -125,7 +128,12 @@ export function ContactAndCommunicationForms({
                 </FormField>
               </div>
               <FormField id="relationship" label="Relationship">
-                <Input id="relationship" name="relationship" required placeholder="Parent / guardian" />
+                <Input
+                  id="relationship"
+                  name="relationship"
+                  required
+                  placeholder="Parent / guardian"
+                />
               </FormField>
               <Button type="submit" disabled={students.length === 0}>
                 Save contact
@@ -199,7 +207,12 @@ export function ContactAndCommunicationForms({
                   placeholder="reading fluency, calm-down routine, etc."
                 />
               </FormField>
-              <Button type="button" variant="secondary" onClick={insertDraft} disabled={!templateId}>
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={insertDraft}
+                disabled={!templateId}
+              >
                 Insert draft language
               </Button>
               <p className="text-muted text-sm">

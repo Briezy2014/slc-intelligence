@@ -21,13 +21,22 @@ export default async function SchoolsPage() {
         description="Manage authorized schools for the selected organization."
         actions={
           state.configured && state.data.canManage ? (
-            <Link href="/schools/new" className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold">
+            <Link
+              href="/schools/new"
+              className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold"
+            >
               New school
             </Link>
           ) : null
         }
       />
-      {!state.configured ? <ConfigurationState /> : state.error ? <SafeErrorState message={state.error} /> : <SchoolList schools={state.data.rows} />}
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error ? (
+        <SafeErrorState message={state.error} />
+      ) : (
+        <SchoolList schools={state.data.rows} />
+      )}
     </main>
   );
 }

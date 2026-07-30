@@ -24,10 +24,14 @@ function resolveView(slug: string[] = []) {
   return slug[0] ?? "organization";
 }
 
-function resolveFilters(slug: string[] = [], searchParams: Record<string, string | string[] | undefined>) {
+function resolveFilters(
+  slug: string[] = [],
+  searchParams: Record<string, string | string[] | undefined>,
+) {
   const schoolId = slug[0] === "schools" && slug[1] ? slug[1] : first(searchParams.schoolId);
   const programId = slug[0] === "programs" && slug[1] ? slug[1] : first(searchParams.programId);
-  const classroomId = slug[0] === "classrooms" && slug[1] ? slug[1] : first(searchParams.classroomId);
+  const classroomId =
+    slug[0] === "classrooms" && slug[1] ? slug[1] : first(searchParams.classroomId);
   return {
     schoolId,
     programId,

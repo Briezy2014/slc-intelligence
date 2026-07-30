@@ -60,7 +60,8 @@ export async function listGoals(studentId?: string): Promise<DataState<GoalsData
         .order("start_date", { ascending: false }),
     ]);
 
-    if (goalsResult.error || studentsResult.error || cyclesResult.error) return safeDataError(emptyGoals);
+    if (goalsResult.error || studentsResult.error || cyclesResult.error)
+      return safeDataError(emptyGoals);
 
     return {
       configured: true,
@@ -88,7 +89,15 @@ export type GoalDetailData = GoalsData & {
 
 export async function getGoal(goalId: string): Promise<DataState<GoalDetailData>> {
   const context = await getOrgDataContext();
-  if (!context) return emptyDataState({ ...emptyGoals, goal: null, student: null, objectives: [], baselines: [], canManageThisGoal: false });
+  if (!context)
+    return emptyDataState({
+      ...emptyGoals,
+      goal: null,
+      student: null,
+      objectives: [],
+      baselines: [],
+      canManageThisGoal: false,
+    });
 
   try {
     const goalResult = await context.supabase
@@ -99,54 +108,90 @@ export async function getGoal(goalId: string): Promise<DataState<GoalDetailData>
       .maybeSingle();
 
     if (goalResult.error) {
-      return safeDataError({ ...emptyGoals, goal: null, student: null, objectives: [], baselines: [], canManageThisGoal: false });
+      return safeDataError({
+        ...emptyGoals,
+        goal: null,
+        student: null,
+        objectives: [],
+        baselines: [],
+        canManageThisGoal: false,
+      });
     }
 
     const goal = goalResult.data;
     if (!goal) {
       return {
         configured: true,
-        data: { ...emptyGoals, organizationId: context.organizationId, organizationName: context.organizationName, goal: null, student: null, objectives: [], baselines: [], canManageThisGoal: false },
+        data: {
+          ...emptyGoals,
+          organizationId: context.organizationId,
+          organizationName: context.organizationName,
+          goal: null,
+          student: null,
+          objectives: [],
+          baselines: [],
+          canManageThisGoal: false,
+        },
       };
     }
 
-    const canRead = await canAccessStudent(context.supabase, context.organizationId, goal.student_id);
+    const canRead = await canAccessStudent(
+      context.supabase,
+      context.organizationId,
+      goal.student_id,
+    );
     if (!canRead) {
-      return safeDataError({ ...emptyGoals, goal: null, student: null, objectives: [], baselines: [], canManageThisGoal: false }, "You are not authorized to view this goal.");
+      return safeDataError(
+        {
+          ...emptyGoals,
+          goal: null,
+          student: null,
+          objectives: [],
+          baselines: [],
+          canManageThisGoal: false,
+        },
+        "You are not authorized to view this goal.",
+      );
     }
 
-    const [permissions, studentResult, studentsResult, cyclesResult, objectivesResult, baselinesResult] =
-      await Promise.all([
-        getPermissionFlags(context, ["goal.manage"]),
-        context.supabase
-          .from("students")
-          .select("*")
-          .eq("organization_id", context.organizationId)
-          .eq("id", goal.student_id)
-          .maybeSingle(),
-        context.supabase
-          .from("students")
-          .select("*")
-          .eq("organization_id", context.organizationId)
-          .order("last_name"),
-        context.supabase
-          .from("iep_cycles")
-          .select("*")
-          .eq("organization_id", context.organizationId)
-          .order("start_date", { ascending: false }),
-        context.supabase
-          .from("iep_objectives")
-          .select("*")
-          .eq("organization_id", context.organizationId)
-          .eq("goal_id", goalId)
-          .order("sequence_no"),
-        context.supabase
-          .from("goal_baselines")
-          .select("*")
-          .eq("organization_id", context.organizationId)
-          .eq("goal_id", goalId)
-          .order("baseline_date", { ascending: false }),
-      ]);
+    const [
+      permissions,
+      studentResult,
+      studentsResult,
+      cyclesResult,
+      objectivesResult,
+      baselinesResult,
+    ] = await Promise.all([
+      getPermissionFlags(context, ["goal.manage"]),
+      context.supabase
+        .from("students")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .eq("id", goal.student_id)
+        .maybeSingle(),
+      context.supabase
+        .from("students")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("last_name"),
+      context.supabase
+        .from("iep_cycles")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("start_date", { ascending: false }),
+      context.supabase
+        .from("iep_objectives")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .eq("goal_id", goalId)
+        .order("sequence_no"),
+      context.supabase
+        .from("goal_baselines")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .eq("goal_id", goalId)
+        .order("baseline_date", { ascending: false }),
+    ]);
 
     if (
       studentResult.error ||
@@ -155,7 +200,14 @@ export async function getGoal(goalId: string): Promise<DataState<GoalDetailData>
       objectivesResult.error ||
       baselinesResult.error
     ) {
-      return safeDataError({ ...emptyGoals, goal: null, student: null, objectives: [], baselines: [], canManageThisGoal: false });
+      return safeDataError({
+        ...emptyGoals,
+        goal: null,
+        student: null,
+        objectives: [],
+        baselines: [],
+        canManageThisGoal: false,
+      });
     }
 
     return {
@@ -171,10 +223,21 @@ export async function getGoal(goalId: string): Promise<DataState<GoalDetailData>
         student: normalizeMaybeSingle(studentResult.data),
         objectives: objectivesResult.data ?? [],
         baselines: baselinesResult.data ?? [],
-        canManageThisGoal: await canManageGoal(context.supabase, context.organizationId, goal.student_id),
+        canManageThisGoal: await canManageGoal(
+          context.supabase,
+          context.organizationId,
+          goal.student_id,
+        ),
       },
     };
   } catch {
-    return safeDataError({ ...emptyGoals, goal: null, student: null, objectives: [], baselines: [], canManageThisGoal: false });
+    return safeDataError({
+      ...emptyGoals,
+      goal: null,
+      student: null,
+      objectives: [],
+      baselines: [],
+      canManageThisGoal: false,
+    });
   }
 }

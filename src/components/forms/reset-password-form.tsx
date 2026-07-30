@@ -19,7 +19,11 @@ function SubmitButton() {
   );
 }
 
-export function ResetPasswordForm({ configurationNeeded = false }: { configurationNeeded?: boolean }) {
+export function ResetPasswordForm({
+  configurationNeeded = false,
+}: {
+  configurationNeeded?: boolean;
+}) {
   const [state, formAction] = useActionState(updatePassword, initialState);
   const [showPassword, setShowPassword] = useState(false);
   const liveRegionId = useId();

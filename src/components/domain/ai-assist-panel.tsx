@@ -117,7 +117,7 @@ export function AiAssistPanel({
             <li key={suggestion.id} className="border-border rounded-[var(--radius-md)] border p-3">
               <p className="font-semibold">{suggestion.title}</p>
               <p className="text-muted mt-1 text-sm">{suggestion.summary}</p>
-              <pre className="bg-[rgb(18_6_45/0.45)] text-foreground mt-2 whitespace-pre-wrap rounded-[var(--radius-md)] p-3 text-xs leading-relaxed">
+              <pre className="text-foreground mt-2 rounded-[var(--radius-md)] bg-[rgb(18_6_45/0.45)] p-3 text-xs leading-relaxed whitespace-pre-wrap">
                 {suggestion.draftText}
               </pre>
               <p className="text-muted mt-2 text-xs">{suggestion.rationale}</p>

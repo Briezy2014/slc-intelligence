@@ -32,7 +32,9 @@ export function safeDataError<T>(data: T, message = GENERIC_DATA_ERROR): DataSta
   return { configured: true, data, error: message };
 }
 
-export async function getOrgDataContext(organizationId?: string | null): Promise<OrgDataContext | null> {
+export async function getOrgDataContext(
+  organizationId?: string | null,
+): Promise<OrgDataContext | null> {
   if (!isServerSupabaseConfigured()) {
     return null;
   }

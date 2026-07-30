@@ -30,8 +30,7 @@ export function getServerEnv(): ServerEnv {
 }
 
 export function getServerSupabaseConfig():
-  | { configured: true; url: string; anonKey: string }
-  | { configured: false; url: ""; anonKey: "" } {
+  { configured: true; url: string; anonKey: string } | { configured: false; url: ""; anonKey: "" } {
   const env = getServerEnv();
   const url = trimEnv(env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL);
   const anonKey = trimEnv(env.SUPABASE_ANON_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);

@@ -8,7 +8,11 @@ import { getStudent } from "@/lib/data/students";
 
 export const metadata: Metadata = { title: "Student ETR" };
 
-export default async function StudentEtrPage({ params }: { params: Promise<{ studentId: string }> }) {
+export default async function StudentEtrPage({
+  params,
+}: {
+  params: Promise<{ studentId: string }>;
+}) {
   const { studentId } = await params;
   const [studentState, documentsState] = await Promise.all([
     getStudent(studentId),

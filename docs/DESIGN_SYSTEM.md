@@ -28,17 +28,17 @@ Modern, premium, professional, clean, data-driven, enterprise SaaS, calm, and ap
 
 ## Official Color Palette
 
-| Token | Hex | Usage |
-| --- | --- | --- |
-| Primary background | `#12062D` | App canvas |
-| Surface cards | `#1A0B3F` | Cards, elevated panels |
-| Primary accent | `#8B3DFF` | Primary actions |
-| Secondary accent | `#A65BFF` | Hover / secondary purple |
-| Highlight | `#39D5D0` | Analytics, success, interactive highlights |
-| Secondary highlight | `#22C7BE` | Supporting teal accents |
-| Primary text | `#FFFFFF` | Headings and body |
-| Secondary text | `#CFCFE8` | Muted copy |
-| Borders | translucent white | Subtle separators |
+| Token               | Hex               | Usage                                      |
+| ------------------- | ----------------- | ------------------------------------------ |
+| Primary background  | `#12062D`         | App canvas                                 |
+| Surface cards       | `#1A0B3F`         | Cards, elevated panels                     |
+| Primary accent      | `#8B3DFF`         | Primary actions                            |
+| Secondary accent    | `#A65BFF`         | Hover / secondary purple                   |
+| Highlight           | `#39D5D0`         | Analytics, success, interactive highlights |
+| Secondary highlight | `#22C7BE`         | Supporting teal accents                    |
+| Primary text        | `#FFFFFF`         | Headings and body                          |
+| Secondary text      | `#CFCFE8`         | Muted copy                                 |
+| Borders             | translucent white | Subtle separators                          |
 
 Purple is the primary action color. Teal is reserved for highlights, analytics, success, and interactive emphasis.
 
@@ -71,8 +71,8 @@ See `ACCESSIBILITY_REQUIREMENTS.md`. Dark theme must retain sufficient contrast,
 
 ## Change History
 
-| Date | Change | Author |
-| --- | --- | --- |
-| 2026-07-28 | Initial Phase 0 draft | Cursor Agent |
-| 2026-07-28 | Bundle 1 provisional tokens | Cursor Agent |
+| Date       | Change                                                | Author       |
+| ---------- | ----------------------------------------------------- | ------------ |
+| 2026-07-28 | Initial Phase 0 draft                                 | Cursor Agent |
+| 2026-07-28 | Bundle 1 provisional tokens                           | Cursor Agent |
 | 2026-07-28 | Official logo palette and dark enterprise SaaS system | Cursor Agent |

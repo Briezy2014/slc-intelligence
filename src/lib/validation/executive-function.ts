@@ -11,7 +11,9 @@ export const executiveFunctionPlanSchema = z
     skillAreaId: optionalUuid,
     title: z.string().trim().min(1, "Plan title is required.").max(180),
     description: z.string().trim().max(4000).optional(),
-    status: z.enum(["draft", "active", "under_review", "revised", "ended", "archived"]).default("draft"),
+    status: z
+      .enum(["draft", "active", "under_review", "revised", "ended", "archived"])
+      .default("draft"),
     startDate: optionalDate,
     endDate: optionalDate,
   })

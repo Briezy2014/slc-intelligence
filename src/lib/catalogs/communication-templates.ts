@@ -101,7 +101,12 @@ export type CommunicationDraftContext = {
 export function applyCommunicationTemplate(
   template: CommunicationTemplateCatalogItem,
   context: CommunicationDraftContext,
-): { subject: string; summary: string; visibility: CommunicationTemplateCatalogItem["defaultVisibility"]; method: CommunicationTemplateCatalogItem["method"] } {
+): {
+  subject: string;
+  summary: string;
+  visibility: CommunicationTemplateCatalogItem["defaultVisibility"];
+  method: CommunicationTemplateCatalogItem["method"];
+} {
   const replace = (value: string) =>
     value
       .replaceAll("{{studentFirstName}}", context.studentFirstName?.trim() || "your student")

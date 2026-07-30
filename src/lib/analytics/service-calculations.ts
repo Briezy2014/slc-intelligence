@@ -15,7 +15,10 @@ function minutesFromTime(value: string): number | null {
   return hours * 60 + minutes;
 }
 
-export function durationMinutesFromStartEnd(startTime?: string | null, endTime?: string | null): number | null {
+export function durationMinutesFromStartEnd(
+  startTime?: string | null,
+  endTime?: string | null,
+): number | null {
   if (!startTime || !endTime) return null;
   const start = minutesFromTime(startTime);
   const end = minutesFromTime(endTime);

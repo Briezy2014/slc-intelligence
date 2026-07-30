@@ -12,12 +12,25 @@ export default async function NewStudentPage() {
   const state = await listStudents();
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/students", label: "Students" }, { label: "New" }]} />
-      <PageHeader title="New student" description="Create a fictional or authorized development student record." />
-      {!state.configured ? <ConfigurationState /> : state.error || !state.data.organizationId || !state.data.canCreate ? (
+      <Breadcrumbs
+        items={[
+          { href: "/", label: "Home" },
+          { href: "/students", label: "Students" },
+          { label: "New" },
+        ]}
+      />
+      <PageHeader
+        title="New student"
+        description="Create a fictional or authorized development student record."
+      />
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error || !state.data.organizationId || !state.data.canCreate ? (
         <SafeErrorState message={state.error ?? "You are not authorized to create students."} />
       ) : (
-        <Card><StudentForm organizationId={state.data.organizationId} /></Card>
+        <Card>
+          <StudentForm organizationId={state.data.organizationId} />
+        </Card>
       )}
     </main>
   );

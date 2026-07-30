@@ -160,7 +160,11 @@ assertEqual(
     { allowError: true },
   );
   const role = lastResult(promote.stdout);
-  assertEqual("Specialist cannot self-promote role", role || "intervention_specialist", "intervention_specialist");
+  assertEqual(
+    "Specialist cannot self-promote role",
+    role || "intervention_specialist",
+    "intervention_specialist",
+  );
 }
 
 // --- Student isolation ---
@@ -219,13 +223,17 @@ assertEqual(
 
 assertEqual(
   "Read-only cannot edit student",
-  lastResult(asUser(northReadonly, `SELECT can_edit_student('${northOrg}', '${riverStudent}');`).stdout),
+  lastResult(
+    asUser(northReadonly, `SELECT can_edit_student('${northOrg}', '${riverStudent}');`).stdout,
+  ),
   "f",
 );
 
 assertEqual(
   "Read-only cannot manage goals",
-  lastResult(asUser(northReadonly, `SELECT can_manage_goal('${northOrg}', '${riverStudent}');`).stdout),
+  lastResult(
+    asUser(northReadonly, `SELECT can_manage_goal('${northOrg}', '${riverStudent}');`).stdout,
+  ),
   "f",
 );
 
@@ -239,7 +247,8 @@ assertEqual(
 assertEqual(
   "South admin cannot see North schools",
   lastResult(
-    asUser(southAdmin, `SELECT count(*) FROM schools WHERE organization_id = '${northOrg}';`).stdout,
+    asUser(southAdmin, `SELECT count(*) FROM schools WHERE organization_id = '${northOrg}';`)
+      .stdout,
   ),
   "0",
 );
@@ -248,10 +257,8 @@ assertEqual(
 assertEqual(
   "North specialist sees North goals only",
   lastResult(
-    asUser(
-      northSpecialist,
-      `SELECT count(*) FROM iep_goals WHERE organization_id = '${southOrg}';`,
-    ).stdout,
+    asUser(northSpecialist, `SELECT count(*) FROM iep_goals WHERE organization_id = '${southOrg}';`)
+      .stdout,
   ),
   "0",
 );
@@ -325,8 +332,10 @@ assertEqual(
 assertEqual(
   "South admin cannot read North progress reports",
   lastResult(
-    asUser(southAdmin, `SELECT count(*) FROM progress_reports WHERE organization_id = '${northOrg}';`)
-      .stdout,
+    asUser(
+      southAdmin,
+      `SELECT count(*) FROM progress_reports WHERE organization_id = '${northOrg}';`,
+    ).stdout,
   ),
   "0",
 );
@@ -334,15 +343,19 @@ assertEqual(
 assertEqual(
   "North specialist cannot read South reporting periods",
   lastResult(
-    asUser(northSpecialist, `SELECT count(*) FROM reporting_periods WHERE organization_id = '${southOrg}';`)
-      .stdout,
+    asUser(
+      northSpecialist,
+      `SELECT count(*) FROM reporting_periods WHERE organization_id = '${southOrg}';`,
+    ).stdout,
   ),
   "0",
 );
 
 assertEqual(
   "Paraprofessional cannot finalize report",
-  lastResult(asUser(northPara, `SELECT can_finalize_report('${northOrg}', '${riverStudent}');`).stdout),
+  lastResult(
+    asUser(northPara, `SELECT can_finalize_report('${northOrg}', '${riverStudent}');`).stdout,
+  ),
   "f",
 );
 
@@ -383,8 +396,10 @@ assertEqual(
 assertEqual(
   "South admin cannot read North behavior sessions",
   lastResult(
-    asUser(southAdmin, `SELECT count(*) FROM behavior_observation_sessions WHERE organization_id = '${northOrg}';`)
-      .stdout,
+    asUser(
+      southAdmin,
+      `SELECT count(*) FROM behavior_observation_sessions WHERE organization_id = '${northOrg}';`,
+    ).stdout,
   ),
   "0",
 );
@@ -392,8 +407,10 @@ assertEqual(
 assertEqual(
   "North specialist cannot read South behavior session by ID",
   lastResult(
-    asUser(northSpecialist, `SELECT count(*) FROM behavior_observation_sessions WHERE id = '${southBehaviorSession}';`)
-      .stdout,
+    asUser(
+      northSpecialist,
+      `SELECT count(*) FROM behavior_observation_sessions WHERE id = '${southBehaviorSession}';`,
+    ).stdout,
   ),
   "0",
 );
@@ -417,7 +434,9 @@ assertEqual(
 
 assertEqual(
   "Paraprofessional cannot finalize behavior",
-  lastResult(asUser(northPara, `SELECT can_finalize_behavior('${northOrg}', '${riverStudent}');`).stdout),
+  lastResult(
+    asUser(northPara, `SELECT can_finalize_behavior('${northOrg}', '${riverStudent}');`).stdout,
+  ),
   "f",
 );
 
@@ -440,7 +459,9 @@ assertEqual(
 
 assertEqual(
   "Read-only reviewer can read FBA but cannot manage",
-  lastResult(asUser(northReadonly, `SELECT can_manage_fba('${northOrg}', '${riverStudent}');`).stdout),
+  lastResult(
+    asUser(northReadonly, `SELECT can_manage_fba('${northOrg}', '${riverStudent}');`).stdout,
+  ),
   "f",
 );
 
@@ -465,8 +486,10 @@ assertEqual(
 assertEqual(
   "South admin cannot read North intervention plans",
   lastResult(
-    asUser(southAdmin, `SELECT count(*) FROM intervention_plans WHERE organization_id = '${northOrg}';`)
-      .stdout,
+    asUser(
+      southAdmin,
+      `SELECT count(*) FROM intervention_plans WHERE organization_id = '${northOrg}';`,
+    ).stdout,
   ),
   "0",
 );
@@ -508,37 +531,62 @@ assertEqual(
 // --- Phase 13-15 application-layer RLS isolation and permissions ---
 assertEqual(
   "South admin cannot read North accommodations",
-  lastResult(asUser(southAdmin, `SELECT count(*) FROM student_accommodations WHERE organization_id = '${northOrg}';`).stdout),
+  lastResult(
+    asUser(
+      southAdmin,
+      `SELECT count(*) FROM student_accommodations WHERE organization_id = '${northOrg}';`,
+    ).stdout,
+  ),
   "0",
 );
 
 assertEqual(
   "North specialist cannot read South service definitions",
-  lastResult(asUser(northSpecialist, `SELECT count(*) FROM service_definitions WHERE organization_id = '${southOrg}';`).stdout),
+  lastResult(
+    asUser(
+      northSpecialist,
+      `SELECT count(*) FROM service_definitions WHERE organization_id = '${southOrg}';`,
+    ).stdout,
+  ),
   "0",
 );
 
 assertEqual(
   "South admin cannot read North contacts",
-  lastResult(asUser(southAdmin, `SELECT count(*) FROM student_contacts WHERE organization_id = '${northOrg}';`).stdout),
+  lastResult(
+    asUser(
+      southAdmin,
+      `SELECT count(*) FROM student_contacts WHERE organization_id = '${northOrg}';`,
+    ).stdout,
+  ),
   "0",
 );
 
 assertEqual(
   "South admin cannot read North meetings",
-  lastResult(asUser(southAdmin, `SELECT count(*) FROM meetings WHERE organization_id = '${northOrg}';`).stdout),
+  lastResult(
+    asUser(southAdmin, `SELECT count(*) FROM meetings WHERE organization_id = '${northOrg}';`)
+      .stdout,
+  ),
   "0",
 );
 
 assertEqual(
   "North specialist cannot read South classroom schedules",
-  lastResult(asUser(northSpecialist, `SELECT count(*) FROM classroom_schedules WHERE organization_id = '${southOrg}';`).stdout),
+  lastResult(
+    asUser(
+      northSpecialist,
+      `SELECT count(*) FROM classroom_schedules WHERE organization_id = '${southOrg}';`,
+    ).stdout,
+  ),
   "0",
 );
 
 assertEqual(
   "Paraprofessional cannot activate service plan",
-  lastResult(asUser(northPara, `SELECT can_activate_service_plan('${northOrg}', '${riverStudent}');`).stdout),
+  lastResult(
+    asUser(northPara, `SELECT can_activate_service_plan('${northOrg}', '${riverStudent}');`).stdout,
+  ),
   "f",
 );
 
@@ -595,7 +643,12 @@ assertEqual(
 
 assertEqual(
   "Para without internal communication permission cannot read internal notes",
-  lastResult(asUser(northPara, `SELECT count(*) FROM communication_logs WHERE id = '${internalCommunication}';`).stdout),
+  lastResult(
+    asUser(
+      northPara,
+      `SELECT count(*) FROM communication_logs WHERE id = '${internalCommunication}';`,
+    ).stdout,
+  ),
   "0",
 );
 
@@ -611,7 +664,8 @@ assertEqual(
   );
   assertTrue(
     "Unauthorized group participant insert is blocked",
-    unauthorizedGroupParticipant.status !== 0 || lastResult(unauthorizedGroupParticipant.stdout) === "0",
+    unauthorizedGroupParticipant.status !== 0 ||
+      lastResult(unauthorizedGroupParticipant.stdout) === "0",
   );
 }
 
@@ -634,13 +688,20 @@ assertEqual(
 
 assertEqual(
   "North paraprofessional can read assigned classroom operations",
-  lastResult(asUser(northPara, `SELECT count(*) FROM classroom_schedules WHERE classroom_id = '${northClassroom}';`).stdout),
+  lastResult(
+    asUser(
+      northPara,
+      `SELECT count(*) FROM classroom_schedules WHERE classroom_id = '${northClassroom}';`,
+    ).stdout,
+  ),
   "1",
 );
 
 assertEqual(
   "North org admin can read admin intelligence permission helper",
-  lastResult(asUser(northAdmin, `SELECT public.can_read_admin_intelligence('${northOrg}')::text;`).stdout),
+  lastResult(
+    asUser(northAdmin, `SELECT public.can_read_admin_intelligence('${northOrg}')::text;`).stdout,
+  ),
   "true",
 );
 
@@ -668,7 +729,9 @@ assertEqual(
 
 assertEqual(
   "Paraprofessional cannot read admin intelligence",
-  lastResult(asUser(northPara, `SELECT public.can_read_admin_intelligence('${northOrg}')::text;`).stdout),
+  lastResult(
+    asUser(northPara, `SELECT public.can_read_admin_intelligence('${northOrg}')::text;`).stdout,
+  ),
   "false",
 );
 
@@ -685,13 +748,18 @@ assertEqual(
 
 assertEqual(
   "North org admin can export admin intelligence",
-  lastResult(asUser(northAdmin, `SELECT public.can_export_admin_intelligence('${northOrg}')::text;`).stdout),
+  lastResult(
+    asUser(northAdmin, `SELECT public.can_export_admin_intelligence('${northOrg}')::text;`).stdout,
+  ),
   "true",
 );
 
 assertEqual(
   "Building admin cannot export admin intelligence by default",
-  lastResult(asUser(northBuilding, `SELECT public.can_export_admin_intelligence('${northOrg}')::text;`).stdout),
+  lastResult(
+    asUser(northBuilding, `SELECT public.can_export_admin_intelligence('${northOrg}')::text;`)
+      .stdout,
+  ),
   "false",
 );
 
@@ -720,7 +788,11 @@ assertEqual(
       RETURNING 1
     ) SELECT count(*) FROM ins;`,
   );
-  assertEqual("North org admin can insert administrative export event", lastResult(northExport.stdout), "1");
+  assertEqual(
+    "North org admin can insert administrative export event",
+    lastResult(northExport.stdout),
+    "1",
+  );
 }
 
 assertTrue(

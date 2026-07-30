@@ -27,8 +27,9 @@ export default function AiAssistPage() {
       />
       <div className="space-y-6">
         <Alert title="Assistive, not autonomous" tone="info">
-          AI Assist drafts communications, accommodations, interventions, goals, and EF ideas for your review. It does
-          not diagnose, determine eligibility/placement, or auto-finalize IEP decisions.
+          AI Assist drafts communications, accommodations, interventions, goals, and EF ideas for
+          your review. It does not diagnose, determine eligibility/placement, or auto-finalize IEP
+          decisions.
         </Alert>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {MODULE_LINKS.map((link) => (
@@ -45,7 +46,8 @@ export default function AiAssistPage() {
         <Card>
           <CardTitle>Try a draft here</CardTitle>
           <CardDescription>
-            Use this hub to generate ideas quickly, then apply or copy them into the matching module form.
+            Use this hub to generate ideas quickly, then apply or copy them into the matching module
+            form.
           </CardDescription>
           <div className="mt-4">
             <AiAssistPanel domain="communication" title="Quick communication draft" />

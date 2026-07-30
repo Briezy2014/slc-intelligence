@@ -67,7 +67,9 @@ const emptyReportingData: ReportingData = {
   },
 };
 
-export async function listReporting(options: { studentId?: string; reportId?: string } = {}): Promise<DataState<ReportingData>> {
+export async function listReporting(
+  options: { studentId?: string; reportId?: string } = {},
+): Promise<DataState<ReportingData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyReportingData);
 
@@ -89,34 +91,37 @@ export async function listReporting(options: { studentId?: string; reportId?: st
     if (options.studentId) reportsQuery = reportsQuery.eq("student_id", options.studentId);
     if (options.reportId) reportsQuery = reportsQuery.eq("id", options.reportId);
 
-    const [periodsResult, reportsResult, studentsResult, goalsResult, cyclesResult, descriptorsResult] =
-      await Promise.all([
-        context.supabase
-          .from("reporting_periods")
-          .select("*")
-          .eq("organization_id", context.organizationId)
-          .order("start_date", { ascending: false }),
-        reportsQuery,
-        context.supabase
-          .from("students")
-          .select("*")
-          .eq("organization_id", context.organizationId)
-          .order("last_name"),
-        context.supabase
-          .from("iep_goals")
-          .select("*")
-          .eq("organization_id", context.organizationId)
-          .order("goal_area"),
-        context.supabase
-          .from("iep_cycles")
-          .select("*")
-          .eq("organization_id", context.organizationId)
-          .order("start_date", { ascending: false }),
-        context.supabase
-          .from("progress_descriptor_options")
-          .select("*")
-          .order("sort_order"),
-      ]);
+    const [
+      periodsResult,
+      reportsResult,
+      studentsResult,
+      goalsResult,
+      cyclesResult,
+      descriptorsResult,
+    ] = await Promise.all([
+      context.supabase
+        .from("reporting_periods")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("start_date", { ascending: false }),
+      reportsQuery,
+      context.supabase
+        .from("students")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("last_name"),
+      context.supabase
+        .from("iep_goals")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("goal_area"),
+      context.supabase
+        .from("iep_cycles")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("start_date", { ascending: false }),
+      context.supabase.from("progress_descriptor_options").select("*").order("sort_order"),
+    ]);
 
     if (
       periodsResult.error ||
@@ -133,7 +138,10 @@ export async function listReporting(options: { studentId?: string; reportId?: st
     const reportIds = reports.map((report) => report.id);
     const [sectionsResult, historyResult, versionsResult, exportsResult] = reportIds.length
       ? await Promise.all([
-          context.supabase.from("progress_report_goal_sections").select("*").in("report_id", reportIds),
+          context.supabase
+            .from("progress_report_goal_sections")
+            .select("*")
+            .in("report_id", reportIds),
           context.supabase
             .from("progress_report_status_history")
             .select("*")
@@ -158,14 +166,22 @@ export async function listReporting(options: { studentId?: string; reportId?: st
           { data: [] as ReportExport[], error: null },
         ];
 
-    if (sectionsResult.error || historyResult.error || versionsResult.error || exportsResult.error) {
+    if (
+      sectionsResult.error ||
+      historyResult.error ||
+      versionsResult.error ||
+      exportsResult.error
+    ) {
       return safeDataError(emptyReportingData);
     }
 
     const sections = sectionsResult.data ?? [];
     const sectionIds = sections.map((section) => section.id);
     const evidenceResult = sectionIds.length
-      ? await context.supabase.from("progress_report_evidence_links").select("*").in("section_id", sectionIds)
+      ? await context.supabase
+          .from("progress_report_evidence_links")
+          .select("*")
+          .in("section_id", sectionIds)
       : { data: [] as ProgressReportEvidenceLink[], error: null };
 
     if (evidenceResult.error) return safeDataError(emptyReportingData);
@@ -201,7 +217,9 @@ export async function listReporting(options: { studentId?: string; reportId?: st
   }
 }
 
-export async function getReport(reportId: string): Promise<DataState<ReportingData & { report: ProgressReport | null }>> {
+export async function getReport(
+  reportId: string,
+): Promise<DataState<ReportingData & { report: ProgressReport | null }>> {
   const reporting = await listReporting({ reportId });
   return {
     ...reporting,

@@ -66,7 +66,9 @@ const emptyServicesData: ServicesData = {
   },
 };
 
-export async function listServices(options: { studentId?: string; servicePlanId?: string } = {}): Promise<DataState<ServicesData>> {
+export async function listServices(
+  options: { studentId?: string; servicePlanId?: string } = {},
+): Promise<DataState<ServicesData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyServicesData);
 
@@ -90,32 +92,66 @@ export async function listServices(options: { studentId?: string; servicePlanId?
     if (options.servicePlanId) plansQuery = plansQuery.eq("id", options.servicePlanId);
 
     const [studentsResult, cyclesResult, definitionsResult, plansResult] = await Promise.all([
-      context.supabase.from("students").select("*").eq("organization_id", context.organizationId).order("last_name"),
-      context.supabase.from("iep_cycles").select("*").eq("organization_id", context.organizationId).order("start_date", { ascending: false }),
-      context.supabase.from("service_definitions").select("*").eq("organization_id", context.organizationId).order("name"),
+      context.supabase
+        .from("students")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("last_name"),
+      context.supabase
+        .from("iep_cycles")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("start_date", { ascending: false }),
+      context.supabase
+        .from("service_definitions")
+        .select("*")
+        .eq("organization_id", context.organizationId)
+        .order("name"),
       plansQuery,
     ]);
 
-    if (studentsResult.error || cyclesResult.error || definitionsResult.error || plansResult.error) {
+    if (
+      studentsResult.error ||
+      cyclesResult.error ||
+      definitionsResult.error ||
+      plansResult.error
+    ) {
       return safeDataError(emptyServicesData);
     }
 
     const planIds = (plansResult.data ?? []).map((plan) => plan.id);
-    const [componentsResult, schedulesResult, logsResult, reviewsResult, exportsResult] = planIds.length
-      ? await Promise.all([
-          context.supabase.from("service_plan_components").select("*").in("service_plan_id", planIds).order("sort_order"),
-          context.supabase.from("service_schedules").select("*").in("service_plan_id", planIds),
-          context.supabase.from("service_delivery_logs").select("*").in("service_plan_id", planIds).order("service_date", { ascending: false }),
-          context.supabase.from("service_review_records").select("*").in("service_plan_id", planIds).order("review_date", { ascending: false }),
-          context.supabase.from("service_exports").select("*").in("service_plan_id", planIds).order("created_at", { ascending: false }),
-        ])
-      : [
-          { data: [] as ServicePlanComponent[], error: null },
-          { data: [] as ServiceSchedule[], error: null },
-          { data: [] as ServiceDeliveryLog[], error: null },
-          { data: [] as ServiceReviewRecord[], error: null },
-          { data: [] as ServiceExport[], error: null },
-        ];
+    const [componentsResult, schedulesResult, logsResult, reviewsResult, exportsResult] =
+      planIds.length
+        ? await Promise.all([
+            context.supabase
+              .from("service_plan_components")
+              .select("*")
+              .in("service_plan_id", planIds)
+              .order("sort_order"),
+            context.supabase.from("service_schedules").select("*").in("service_plan_id", planIds),
+            context.supabase
+              .from("service_delivery_logs")
+              .select("*")
+              .in("service_plan_id", planIds)
+              .order("service_date", { ascending: false }),
+            context.supabase
+              .from("service_review_records")
+              .select("*")
+              .in("service_plan_id", planIds)
+              .order("review_date", { ascending: false }),
+            context.supabase
+              .from("service_exports")
+              .select("*")
+              .in("service_plan_id", planIds)
+              .order("created_at", { ascending: false }),
+          ])
+        : [
+            { data: [] as ServicePlanComponent[], error: null },
+            { data: [] as ServiceSchedule[], error: null },
+            { data: [] as ServiceDeliveryLog[], error: null },
+            { data: [] as ServiceReviewRecord[], error: null },
+            { data: [] as ServiceExport[], error: null },
+          ];
 
     if (
       componentsResult.error ||
@@ -129,7 +165,10 @@ export async function listServices(options: { studentId?: string; servicePlanId?
 
     const logIds = (logsResult.data ?? []).map((log) => log.id);
     const participantsResult = logIds.length
-      ? await context.supabase.from("service_delivery_participants").select("*").in("delivery_log_id", logIds)
+      ? await context.supabase
+          .from("service_delivery_participants")
+          .select("*")
+          .in("delivery_log_id", logIds)
       : { data: [] as ServiceDeliveryParticipant[], error: null };
     if (participantsResult.error) return safeDataError(emptyServicesData);
 
