@@ -4,11 +4,10 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { saveClassroomAction } from "@/lib/actions/classrooms";
-import { saveGoalAction, saveIepCycleAction, saveObjectiveAction } from "@/lib/actions/goals";
+import { saveIepCycleAction, saveObjectiveAction } from "@/lib/actions/goals";
 import { createInvitationAction } from "@/lib/actions/invitations";
 import { updateMemberAction } from "@/lib/actions/members";
 import { saveProgramAction } from "@/lib/actions/programs";
-import { saveProgressSessionAction } from "@/lib/actions/progress";
 import { saveSchoolAction } from "@/lib/actions/schools";
 import {
   saveStudentClassroomAssignmentAction,
@@ -20,14 +19,15 @@ import {
 import { ROLE_LABELS } from "@/lib/permissions/matrix";
 import type {
   Classroom,
-  IepCycle,
-  IepGoal,
   Program,
   RoleCode,
   School,
   Student,
   UserProfile,
 } from "@/lib/supabase/types";
+
+export { GoalForm } from "@/components/domain/goal-form";
+export { ProgressEntryForm } from "@/components/domain/progress-entry-form";
 
 function submitAction(action: (formData: FormData) => Promise<unknown>) {
   return action as unknown as (formData: FormData) => void;
@@ -234,83 +234,6 @@ export function IepCycleForm({ organizationId, studentId }: { organizationId: st
   );
 }
 
-export function GoalForm({
-  organizationId,
-  studentId,
-  cycles,
-  goal,
-}: {
-  organizationId: string;
-  studentId: string;
-  cycles: IepCycle[];
-  goal?: IepGoal | null;
-}) {
-  return (
-    <form action={submitAction(saveGoalAction)} className="space-y-4">
-      <input type="hidden" name="organizationId" value={organizationId} />
-      <input type="hidden" name="studentId" value={studentId} />
-      {goal ? <input type="hidden" name="goalId" value={goal.id} /> : null}
-      <FormField id="iepCycleId" label="IEP cycle">
-        <Select id="iepCycleId" name="iepCycleId" required defaultValue={goal?.iep_cycle_id ?? ""}>
-          <option value="">Choose an IEP cycle</option>
-          {cycles.filter((cycle) => cycle.student_id === studentId).map((cycle) => (
-            <option key={cycle.id} value={cycle.id}>{cycle.label}</option>
-          ))}
-        </Select>
-      </FormField>
-      <FormField id="goalArea" label="Goal area">
-        <Input id="goalArea" name="goalArea" required defaultValue={goal?.goal_area ?? ""} />
-      </FormField>
-      <FormField id="goalStatement" label="Goal statement">
-        <Textarea id="goalStatement" name="goalStatement" required defaultValue={goal?.goal_statement ?? ""} />
-      </FormField>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="measurementType" label="Measurement type">
-          <Select id="measurementType" name="measurementType" defaultValue={goal?.measurement_type ?? "percentage"}>
-            <option value="percentage">Percentage</option>
-            <option value="frequency">Frequency</option>
-            <option value="rate">Rate</option>
-            <option value="duration">Duration</option>
-            <option value="latency">Latency</option>
-            <option value="rubric">Rubric</option>
-            <option value="prompt_level">Prompt level</option>
-            <option value="task_analysis">Task analysis</option>
-            <option value="reading_fluency">Reading fluency</option>
-            <option value="reading_accuracy">Reading accuracy</option>
-            <option value="independence">Independence</option>
-            <option value="custom_numeric">Custom numeric</option>
-          </Select>
-        </FormField>
-        <FormField id="targetDirection" label="Target direction">
-          <Select id="targetDirection" name="targetDirection" defaultValue={goal?.target_direction ?? "increase"}>
-            <option value="increase">Increase</option>
-            <option value="decrease">Decrease</option>
-          </Select>
-        </FormField>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <FormField id="targetValue" label="Target value">
-          <Input id="targetValue" name="targetValue" type="number" step="any" defaultValue={goal?.target_value ?? ""} />
-        </FormField>
-        <FormField id="startDate" label="Start date">
-          <Input id="startDate" name="startDate" type="date" defaultValue={goal?.start_date ?? ""} />
-        </FormField>
-        <FormField id="targetDate" label="Target date">
-          <Input id="targetDate" name="targetDate" type="date" defaultValue={goal?.target_date ?? ""} />
-        </FormField>
-      </div>
-      <FormField id="unitOfMeasurement" label="Unit of measurement">
-        <Input id="unitOfMeasurement" name="unitOfMeasurement" defaultValue={goal?.unit_of_measurement ?? ""} />
-      </FormField>
-      <FormField id="evaluationFrequency" label="Evaluation frequency">
-        <Input id="evaluationFrequency" name="evaluationFrequency" defaultValue={goal?.evaluation_frequency ?? ""} />
-      </FormField>
-      <input type="hidden" name="status" value={goal?.status ?? "active"} />
-      <Button type="submit">{goal ? "Save goal" : "Create goal"}</Button>
-    </form>
-  );
-}
-
 export function ObjectiveForm({ organizationId, goalId }: { organizationId: string; goalId: string }) {
   return (
     <form action={submitAction(saveObjectiveAction)} className="space-y-4">
@@ -324,145 +247,6 @@ export function ObjectiveForm({ organizationId, goalId }: { organizationId: stri
       </FormField>
       <input type="hidden" name="status" value="active" />
       <Button type="submit">Add objective</Button>
-    </form>
-  );
-}
-
-export function ProgressEntryForm({
-  organizationId,
-  students,
-  goals,
-}: {
-  organizationId: string;
-  students: Student[];
-  goals: IepGoal[];
-}) {
-  const today = new Date().toISOString().slice(0, 10);
-
-  return (
-    <form action={submitAction(saveProgressSessionAction)} className="space-y-4">
-      <input type="hidden" name="organizationId" value={organizationId} />
-      <FormField id="studentId" label="Student">
-        <Select id="studentId" name="studentId" required>
-          <option value="">Choose a student</option>
-          {students.map((student) => (
-            <option key={student.id} value={student.id}>{student.last_name}, {student.preferred_name || student.first_name}</option>
-          ))}
-        </Select>
-      </FormField>
-      <FormField id="goalId" label="Goal">
-        <Select id="goalId" name="goalId" required>
-          <option value="">Choose a goal</option>
-          {goals.map((goal) => (
-            <option key={goal.id} value={goal.id}>{goal.goal_area}</option>
-          ))}
-        </Select>
-      </FormField>
-      <div className="grid gap-4 sm:grid-cols-3">
-        <FormField id="sessionDate" label="Session date">
-          <Input id="sessionDate" name="sessionDate" type="date" required defaultValue={today} />
-        </FormField>
-        <FormField id="measurementType" label="Measurement type">
-          <Select id="measurementType" name="measurementType" defaultValue="percentage">
-            <option value="percentage">Percentage</option>
-            <option value="reading_accuracy">Reading accuracy</option>
-            <option value="reading_fluency">Reading fluency</option>
-            <option value="frequency">Frequency</option>
-            <option value="rate">Rate</option>
-            <option value="duration">Duration</option>
-            <option value="latency">Latency</option>
-            <option value="rubric">Rubric</option>
-            <option value="prompt_level">Prompt level</option>
-            <option value="task_analysis">Task analysis</option>
-            <option value="independence">Independence</option>
-            <option value="custom_numeric">Custom numeric</option>
-          </Select>
-        </FormField>
-        <FormField id="status" label="Status">
-          <Select id="status" name="status" defaultValue="draft">
-            <option value="draft">Draft</option>
-            <option value="finalized">Finalized</option>
-          </Select>
-        </FormField>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-4">
-        <FormField id="correctCount" label="Correct count">
-          <Input id="correctCount" name="correctCount" type="number" min="0" defaultValue="0" />
-        </FormField>
-        <FormField id="totalOpportunities" label="Total opportunities">
-          <Input id="totalOpportunities" name="totalOpportunities" type="number" min="1" defaultValue="1" />
-        </FormField>
-        <FormField id="countValue" label="Count value">
-          <Input id="countValue" name="countValue" type="number" min="0" defaultValue="0" />
-        </FormField>
-        <FormField id="observationDurationSeconds" label="Duration seconds">
-          <Input id="observationDurationSeconds" name="observationDurationSeconds" type="number" min="1" defaultValue="60" />
-        </FormField>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-4">
-        <FormField id="wordsRead" label="Words read">
-          <Input id="wordsRead" name="wordsRead" type="number" min="0" defaultValue="0" />
-        </FormField>
-        <FormField id="errorCount" label="Errors">
-          <Input id="errorCount" name="errorCount" type="number" min="0" defaultValue="0" />
-        </FormField>
-        <FormField id="readingTimeSeconds" label="Reading seconds">
-          <Input id="readingTimeSeconds" name="readingTimeSeconds" type="number" min="1" defaultValue="60" />
-        </FormField>
-        <FormField id="rateUnit" label="Rate unit">
-          <Select id="rateUnit" name="rateUnit" defaultValue="per_minute">
-            <option value="per_minute">Per minute</option>
-            <option value="per_hour">Per hour</option>
-          </Select>
-        </FormField>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-4">
-        <FormField id="durationValue" label="Duration value">
-          <Input id="durationValue" name="durationValue" type="number" min="0" defaultValue="0" />
-        </FormField>
-        <FormField id="latencyValue" label="Latency value">
-          <Input id="latencyValue" name="latencyValue" type="number" min="0" defaultValue="0" />
-        </FormField>
-        <FormField id="rubricScore" label="Rubric score">
-          <Input id="rubricScore" name="rubricScore" type="number" min="0" defaultValue="0" />
-        </FormField>
-        <FormField id="independenceValue" label="Independence value">
-          <Input id="independenceValue" name="independenceValue" type="number" min="0" defaultValue="0" />
-        </FormField>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-4">
-        <FormField id="promptLevel" label="Prompt level">
-          <Input id="promptLevel" name="promptLevel" defaultValue="unspecified" />
-        </FormField>
-        <FormField id="customNumericValue" label="Custom numeric value">
-          <Input id="customNumericValue" name="customNumericValue" type="number" step="any" defaultValue="0" />
-        </FormField>
-        <FormField id="customUnit" label="Custom unit">
-          <Input id="customUnit" name="customUnit" defaultValue="units" />
-        </FormField>
-        <FormField id="higherIsBetter" label="Direction">
-          <Select id="higherIsBetter" name="higherIsBetter" defaultValue="true">
-            <option value="true">Higher is better</option>
-            <option value="false">Lower is better</option>
-          </Select>
-        </FormField>
-      </div>
-      <input type="hidden" name="durationUnit" value="minutes" />
-      <input type="hidden" name="latencyUnit" value="seconds" />
-      <input type="hidden" name="taskIndependentSteps" value="0" />
-      <input type="hidden" name="taskPromptedSteps" value="0" />
-      <input type="hidden" name="taskIncorrectSteps" value="0" />
-      <input type="hidden" name="taskNotAttemptedSteps" value="0" />
-      <FormField id="setting" label="Setting">
-        <Input id="setting" name="setting" />
-      </FormField>
-      <FormField id="activity" label="Activity">
-        <Input id="activity" name="activity" />
-      </FormField>
-      <FormField id="notes" label="Notes">
-        <Textarea id="notes" name="notes" />
-      </FormField>
-      <Button type="submit">Save progress session</Button>
     </form>
   );
 }

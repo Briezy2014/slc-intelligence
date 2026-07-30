@@ -530,6 +530,11 @@ export function InterventionDashboard({ data }: { data: InterventionData }) {
   return (
     <div className="space-y-6">
       <DataReadinessPanel status={fidelity.sufficiency.status} reason={fidelity.sufficiency.reason} />
+      {data.libraryItems.length === 0 ? (
+        <Alert title="Load starter interventions" tone="warning">
+          Intervention library dropdowns stay empty until you add items or load starter libraries under Organization settings.
+        </Alert>
+      ) : null}
       <div className="grid gap-4 md:grid-cols-3">
         <Card><CardTitle>{data.plans.length}</CardTitle><CardDescription>Intervention plans</CardDescription></Card>
         <Card><CardTitle>{fidelity.percent ?? "Not available"}%</CardTitle><CardDescription>Scored fidelity</CardDescription></Card>
