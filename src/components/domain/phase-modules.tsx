@@ -10,6 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { FormField } from "@/components/forms/form-field";
 import { EmptyState } from "@/components/feedback/empty-state";
 import { TableShell } from "@/components/data-display/table-shell";
+import { PermissionDeniedState } from "@/components/domain/page-states";
 import {
   addEvidenceLinkAction,
   correctReportAction,
@@ -20,12 +21,7 @@ import {
   saveReportSectionAction,
   submitReportForReviewAction,
 } from "@/lib/actions/reporting";
-import {
-  finalizeBehaviorObservationAction,
-  saveBehaviorDefinitionAction,
-  saveBehaviorObservationAction,
-  saveFbaWorkspaceAction,
-} from "@/lib/actions/behavior";
+import { finalizeBehaviorObservationAction, saveFbaWorkspaceAction } from "@/lib/actions/behavior";
 import {
   addInterventionComponentAction,
   saveDosageLogAction,
@@ -66,15 +62,7 @@ function statusBadge(status: string) {
   return <Badge tone={tone}>{status.replaceAll("_", " ")}</Badge>;
 }
 
-export function PermissionDeniedState({
-  message = "Your current role can view this area but cannot complete this action.",
-}) {
-  return (
-    <Alert title="Permission needed" tone="warning">
-      {message}
-    </Alert>
-  );
-}
+export { PermissionDeniedState } from "@/components/domain/page-states";
 
 export function DataReadinessPanel({
   title = "Data readiness",
@@ -406,155 +394,11 @@ export function ReportPrintView({ data, reportId }: { data: ReportingData; repor
   );
 }
 
-export function BehaviorDefinitionForm({
-  data,
-  studentId,
-}: {
-  data: BehaviorData;
-  studentId?: string;
-}) {
-  if (!data.permissions.canDefine)
-    return (
-      <PermissionDeniedState message="Behavior definition permission is required to create definitions." />
-    );
-  return (
-    <form action={submitAction(saveBehaviorDefinitionAction)} className="space-y-4">
-      <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-      <FormField id="studentId" label="Student">
-        <Select id="studentId" name="studentId" required defaultValue={studentId ?? ""}>
-          <option value="">Choose student</option>
-          {data.students.map((student) => (
-            <option key={student.id} value={student.id}>
-              {studentName(student)}
-            </option>
-          ))}
-        </Select>
-      </FormField>
-      <FormField id="name" label="Behavior name">
-        <Input id="name" name="name" required />
-      </FormField>
-      <FormField id="operationalDefinition" label="Operational definition">
-        <Textarea id="operationalDefinition" name="operationalDefinition" required />
-      </FormField>
-      <FormField id="examples" label="Examples (one per line)">
-        <Textarea id="examples" name="examples" />
-      </FormField>
-      <FormField id="nonexamples" label="Nonexamples (one per line)">
-        <Textarea id="nonexamples" name="nonexamples" />
-      </FormField>
-      <input type="hidden" name="status" value="active" />
-      <Button type="submit">Save behavior definition</Button>
-    </form>
-  );
-}
-
-export function BehaviorObservationForm({
-  data,
-  studentId,
-}: {
-  data: BehaviorData;
-  studentId?: string;
-}) {
-  if (!data.permissions.canObserve)
-    return (
-      <PermissionDeniedState message="Observation permission is required to enter behavior data." />
-    );
-  const today = new Date().toISOString().slice(0, 10);
-  return (
-    <form action={submitAction(saveBehaviorObservationAction)} className="space-y-4">
-      <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-      <FormField id="studentId" label="Student">
-        <Select id="studentId" name="studentId" required defaultValue={studentId ?? ""}>
-          <option value="">Choose student</option>
-          {data.students.map((student) => (
-            <option key={student.id} value={student.id}>
-              {studentName(student)}
-            </option>
-          ))}
-        </Select>
-      </FormField>
-      <FormField id="behaviorDefinitionId" label="Behavior definition">
-        <Select id="behaviorDefinitionId" name="behaviorDefinitionId" required>
-          <option value="">Choose behavior</option>
-          {data.definitions.map((definition) => (
-            <option key={definition.id} value={definition.id}>
-              {definition.name}
-            </option>
-          ))}
-        </Select>
-      </FormField>
-      <div className="grid gap-4 sm:grid-cols-4">
-        <FormField id="measurementMethod" label="Method">
-          <Select id="measurementMethod" name="measurementMethod" defaultValue="frequency">
-            <option value="abc">ABC</option>
-            <option value="frequency">Frequency</option>
-            <option value="duration">Duration</option>
-            <option value="latency">Latency</option>
-            <option value="interval">Interval</option>
-          </Select>
-        </FormField>
-        <FormField id="sessionDate" label="Date">
-          <Input id="sessionDate" name="sessionDate" type="date" required defaultValue={today} />
-        </FormField>
-        <FormField id="sessionTime" label="Time">
-          <Input id="sessionTime" name="sessionTime" type="time" />
-        </FormField>
-        <FormField id="status" label="Status">
-          <Select id="status" name="status" defaultValue="draft">
-            <option value="draft">Draft</option>
-            <option value="finalized">Finalized</option>
-          </Select>
-        </FormField>
-      </div>
-      <div className="grid gap-4 sm:grid-cols-4">
-        <FormField id="count" label="Count">
-          <Input id="count" name="count" type="number" min="0" defaultValue="0" />
-        </FormField>
-        <FormField id="observationDurationSeconds" label="Observation seconds">
-          <Input
-            id="observationDurationSeconds"
-            name="observationDurationSeconds"
-            type="number"
-            min="1"
-            defaultValue="60"
-          />
-        </FormField>
-        <FormField id="totalDurationSeconds" label="Total duration seconds">
-          <Input
-            id="totalDurationSeconds"
-            name="totalDurationSeconds"
-            type="number"
-            min="0"
-            defaultValue="0"
-          />
-        </FormField>
-        <FormField id="episodeCount" label="Episodes">
-          <Input id="episodeCount" name="episodeCount" type="number" min="0" defaultValue="0" />
-        </FormField>
-      </div>
-      <input type="hidden" name="recordedAntecedent" value="Not entered for this method" />
-      <input type="hidden" name="observableBehavior" value="Not entered for this method" />
-      <input type="hidden" name="recordedConsequence" value="Not entered for this method" />
-      <input type="hidden" name="triggerDescription" value="Not entered for this method" />
-      <input type="hidden" name="latencySeconds" value="0" />
-      <input type="hidden" name="recordingMethod" value="partial" />
-      <input type="hidden" name="intervalDurationSeconds" value="60" />
-      <input type="hidden" name="intervalCount" value="1" />
-      <input type="hidden" name="intervalsPositive" value="0" />
-      <input type="hidden" name="replacementObserved" value="false" />
-      <FormField id="setting" label="Setting">
-        <Input id="setting" name="setting" />
-      </FormField>
-      <FormField id="activity" label="Activity">
-        <Input id="activity" name="activity" />
-      </FormField>
-      <FormField id="notes" label="Notes">
-        <Textarea id="notes" name="notes" />
-      </FormField>
-      <Button type="submit">Save observation</Button>
-    </form>
-  );
-}
+export {
+  BehaviorDefinitionForm,
+  BehaviorObservationForm,
+  BehaviorQuickStart,
+} from "@/components/domain/behavior-forms";
 
 export function BehaviorDashboard({ data, studentId }: { data: BehaviorData; studentId?: string }) {
   const analytics = summarizeBehaviorAnalytics(data);

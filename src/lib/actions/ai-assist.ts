@@ -14,10 +14,12 @@ const suggestSchema = z.object({
     "goal",
     "executive_function",
     "progress",
+    "education_document",
+    "behavior",
   ]),
   focusArea: z.string().trim().max(200).optional().or(z.literal("")),
   studentContext: z.string().trim().max(400).optional().or(z.literal("")),
-  extraNotes: z.string().trim().max(600).optional().or(z.literal("")),
+  extraNotes: z.string().trim().max(20000).optional().or(z.literal("")),
 });
 
 export async function generateAiAssistSuggestionsAction(

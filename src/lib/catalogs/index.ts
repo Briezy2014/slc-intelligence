@@ -13,6 +13,7 @@ export * from "@/lib/catalogs/ef-skill-templates";
 export * from "@/lib/catalogs/communication-templates";
 export * from "@/lib/catalogs/learning-progressions";
 export * from "@/lib/catalogs/education-document-templates";
+export * from "@/lib/catalogs/behavior-templates";
 
 export function getStarterCatalogCounts() {
   const progressions = getLearningProgressionCounts();

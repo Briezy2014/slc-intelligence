@@ -6,7 +6,10 @@ import {
   INTERVENTION_TEMPLATES,
   applyCommunicationTemplate,
 } from "@/lib/catalogs";
+import { getEducationDocumentTemplate } from "@/lib/catalogs/education-document-templates";
+import { BEHAVIOR_DEFINITION_TEMPLATES } from "@/lib/catalogs/behavior-templates";
 import type { AiAssistDomain, AiSuggestInput, AiSuggestion } from "@/lib/ai/types";
+import type { EducationDocumentType } from "@/lib/supabase/types";
 
 function tokens(value: string | undefined): string[] {
   return (value ?? "")
@@ -34,6 +37,53 @@ function topScored<T>(
 
 function contextBlob(input: AiSuggestInput): string {
   return [input.focusArea, input.studentContext, input.extraNotes].filter(Boolean).join(" ");
+}
+
+function extractFieldFromText(text: string, labels: string[]): string {
+  const lower = text.toLowerCase();
+  for (const label of labels) {
+    const idx = lower.indexOf(label.toLowerCase());
+    if (idx < 0) continue;
+    const slice = text.slice(idx + label.length).replace(/^[\s:.\-–—]+/, "");
+    const line = slice.split(/\n+/)[0]?.trim() ?? "";
+    if (line.length > 3) return line.slice(0, 1200);
+  }
+  return "";
+}
+
+function buildEducationDocumentFields(
+  documentType: EducationDocumentType,
+  sourceText: string,
+): Record<string, string> {
+  const template = getEducationDocumentTemplate(documentType);
+  const fields: Record<string, string> = {};
+  for (const section of template.sections) {
+    for (const field of section.fields) {
+      const extracted = extractFieldFromText(sourceText, [field.label, field.key]);
+      if (extracted) fields[field.key] = extracted;
+    }
+  }
+  if (!fields.strengths) {
+    fields.strengths = extractFieldFromText(sourceText, ["strengths", "student strengths"]);
+  }
+  if (!fields.needs) {
+    fields.needs = extractFieldFromText(sourceText, ["needs", "areas of need", "present levels"]);
+  }
+  if (!fields.goalSummary) {
+    fields.goalSummary = extractFieldFromText(sourceText, [
+      "annual goals",
+      "goals",
+      "measurable annual goals",
+    ]);
+  }
+  if (!fields.howDisabilityAffects) {
+    fields.howDisabilityAffects = extractFieldFromText(sourceText, [
+      "how the disability affects",
+      "effect of the disability",
+      "impact on involvement",
+    ]);
+  }
+  return Object.fromEntries(Object.entries(fields).filter(([, value]) => value.length > 0));
 }
 
 export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
@@ -89,14 +139,14 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
         domain,
         title: item.name,
         summary: item.accommodationArea,
-        draftText: `${item.description}\n\nImplementation notes: ${item.defaultImplementationNotes}`,
+        draftText: item.description,
         fields: {
           name: item.name,
-          accommodationArea: item.accommodationArea,
+          category: item.accommodationArea,
           description: item.description,
-          title: item.name,
+          implementationNotes: item.defaultImplementationNotes,
         },
-        rationale: "Ranked accommodation library intelligence for the stated focus.",
+        rationale: "Suggested accommodations aligned to your focus area.",
         source: "local_intelligence",
         requiresReview: true,
       }));
@@ -193,6 +243,66 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
         },
       ];
 
+    case "education_document": {
+      const documentType: EducationDocumentType =
+        input.focusArea === "etr"
+          ? "etr"
+          : input.focusArea === "progress_report"
+            ? "progress_report"
+            : "iep";
+      const sourceText = input.extraNotes || input.studentContext || "";
+      const fields = buildEducationDocumentFields(documentType, sourceText);
+      const filled = Object.keys(fields).length;
+      return [
+        {
+          id: `local-education-document-${documentType}`,
+          domain,
+          title: `Populate ${documentType.toUpperCase()} draft fields`,
+          summary:
+            filled > 0
+              ? `Mapped ${filled} field(s) from the pasted document text.`
+              : "No clear section labels found — model assist can enrich when AI_API_KEY is set.",
+          draftText:
+            filled > 0
+              ? Object.entries(fields)
+                  .map(([key, value]) => `${key}: ${value}`)
+                  .join("\n")
+              : "Paste more of the IEP/ETR text (present levels, goals, services) and run again.",
+          fields,
+          rationale:
+            "Local extraction looks for common IEP/ETR section labels. Always review before team use.",
+          source: "local_intelligence",
+          requiresReview: true,
+        },
+      ];
+    }
+
+    case "behavior":
+      return topScored(
+        BEHAVIOR_DEFINITION_TEMPLATES,
+        (template) =>
+          scoreText(
+            `${template.name} ${template.category} ${template.operationalDefinition}`,
+            needle,
+          ),
+        5,
+      ).map(({ item }, index) => ({
+        id: `local-behavior-${item.id}-${index}`,
+        domain,
+        title: item.name,
+        summary: item.category,
+        draftText: item.operationalDefinition,
+        fields: {
+          name: item.name,
+          operationalDefinition: item.operationalDefinition,
+          examples: item.examples.join("\n"),
+          nonexamples: item.nonexamples.join("\n"),
+        },
+        rationale: `Suggested strategies: ${item.suggestedStrategies.join("; ")}`,
+        source: "local_intelligence",
+        requiresReview: true,
+      }));
+
     default:
       return [];
   }
@@ -206,5 +316,7 @@ export function domainsSupported(): AiAssistDomain[] {
     "goal",
     "executive_function",
     "progress",
+    "education_document",
+    "behavior",
   ];
 }

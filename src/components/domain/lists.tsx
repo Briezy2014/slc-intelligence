@@ -183,12 +183,22 @@ export function StudentList({ students }: { students: Student[] }) {
   );
 }
 
-export function GoalList({ goals, students }: { goals: IepGoal[]; students: Student[] }) {
+export function GoalList({
+  goals,
+  students,
+  createHref,
+}: {
+  goals: IepGoal[];
+  students: Student[];
+  createHref?: string;
+}) {
   if (goals.length === 0) {
     return (
       <EmptyState
-        title="No goals found"
-        description="Create IEP goals before entering progress monitoring data."
+        title="No goals yet"
+        description="Open a student Goals page, choose grade + subject to load recommended learning progressions (ELA, math, functional math, ASL, and more), then save a goal. Or create a demo student to try it immediately."
+        actionLabel={createHref ? "Go to students / create demo" : undefined}
+        actionHref={createHref}
       />
     );
   }

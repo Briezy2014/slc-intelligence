@@ -14,6 +14,7 @@ import {
   recordEducationDocumentUploadAction,
   saveEducationDocumentAction,
 } from "@/lib/actions/education-documents";
+import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import {
   EDUCATION_DOCUMENT_DISCLAIMER,
   buildPrefillFields,
@@ -235,10 +236,39 @@ export function EducationDocumentsWorkspace({
       </Card>
 
       <Card>
+        <CardTitle>AI scan · populate fields from IEP/ETR text</CardTitle>
+        <CardDescription>
+          Paste text from an existing IEP/ETR (or OCR export). Local + optional model assist maps
+          content into the draft fields below. Always review — this does not finalize legal
+          documents. PDF binary auto-OCR storage can be connected next.
+        </CardDescription>
+        {data.permissions.canManage ? (
+          <div className="mt-4">
+            <AiAssistPanel
+              domain="education_document"
+              title="Scan document text into fields"
+              description="Paste source text in Extra notes. Focus area can be iep, etr, or progress_report."
+              defaultFocusArea={tab}
+              onApply={(suggestion) => {
+                if (suggestion.fields && Object.keys(suggestion.fields).length > 0) {
+                  setFields((current) => ({ ...current, ...suggestion.fields }));
+                  setMessage(
+                    "AI mapped fields into the draft. Review every section before saving or team use.",
+                  );
+                } else {
+                  setMessage(suggestion.draftText || "No fields were mapped from that text.");
+                }
+              }}
+            />
+          </div>
+        ) : null}
+      </Card>
+
+      <Card>
         <CardTitle>Upload existing {tab.toUpperCase()} / related file</CardTitle>
         <CardDescription>
-          Records file metadata in the workspace. Binary cloud storage can be connected next; use
-          this to track uploaded IEPs/ETRs now.
+          Records file metadata now. For field population, paste document text into AI scan above
+          (full PDF OCR storage can be connected next).
         </CardDescription>
         {data.permissions.canManage ? (
           <form

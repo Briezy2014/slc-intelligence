@@ -3,7 +3,7 @@ import { BrainCircuit } from "lucide-react";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import { PageHeader } from "@/components/layout/page-header";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
-import { BehaviorDashboard, ModuleLinkGrid } from "@/components/domain/phase-modules";
+import { BehaviorDashboard, BehaviorQuickStart } from "@/components/domain/phase-modules";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { listBehavior } from "@/lib/data/behavior";
 
@@ -16,7 +16,7 @@ export default async function BehaviorDetectivePage() {
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Behavior Detective" }]} />
       <PageHeader
         title="Behavior Detective"
-        description="Observable definitions, direct observations, ABC context, analytics readiness, and FBA evidence workspaces."
+        description="Define observable behaviors, log observations with dropdowns, and review try-next suggestions. Not an automated diagnosis."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -32,19 +32,13 @@ export default async function BehaviorDetectivePage() {
               <div>
                 <CardTitle>Behavior Detective workspace</CardTitle>
                 <CardDescription>
-                  No diagnostic or legal conclusions are generated. Summaries organize
-                  educator-reviewed evidence.
+                  Pick one focus student, load a suggested definition, then log ABC or other
+                  observations. Summaries organize educator-reviewed evidence only.
                 </CardDescription>
               </div>
             </div>
           </Card>
-          <ModuleLinkGrid
-            links={state.data.students.slice(0, 6).map((student) => ({
-              href: `/students/${student.id}/behavior`,
-              label: `${student.last_name}, ${student.preferred_name || student.first_name}`,
-              description: "Open behavior definitions, observations, analytics, and FBA support.",
-            }))}
-          />
+          <BehaviorQuickStart data={state.data} />
           <BehaviorDashboard data={state.data} />
         </div>
       )}
