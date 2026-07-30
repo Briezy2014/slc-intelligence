@@ -31,6 +31,9 @@ function mapBrowserAuthError(error: { message?: string; status?: number } | null
   if (message.includes("email not confirmed")) {
     return "This email is not confirmed yet. Open the user in Supabase Auth and confirm the account.";
   }
+  if (message.includes("no api key") || message.includes("invalid api key") || status === 401) {
+    return "Authentication is misconfigured. In Vercel, re-enter NEXT_PUBLIC_SUPABASE_ANON_KEY and SUPABASE_ANON_KEY with no spaces or line breaks, then redeploy.";
+  }
   return "We could not complete that request. Check your information and try again.";
 }
 
