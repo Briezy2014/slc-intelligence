@@ -39,17 +39,21 @@ export default async function OrganizationSettingsPage() {
         <Card>
           <CardTitle>{organization?.name ?? "Selected organization"}</CardTitle>
           <CardDescription>
-            Organization code (slug):{" "}
-            <span className="font-semibold">{organization?.slug ?? "not available"}</span>. Your
-            role: {ROLE_LABELS[membership.role_code]}.
+            Your role: {ROLE_LABELS[membership.role_code]}.
+            {organization?.slug ? (
+              <>
+                {" "}
+                Staff invite code: <span className="font-semibold">{organization.slug}</span>
+              </>
+            ) : null}
           </CardDescription>
         </Card>
         {accessState.data.canManage ? (
           <Card>
             <CardTitle>Access requests</CardTitle>
             <CardDescription>
-              Educators can create an account at Request access, select role checkboxes, and wait
-              for your approval.
+              Educators can create an account at Request access, choose their roles, and wait for
+              your approval.
             </CardDescription>
             {pendingCount > 0 ? (
               <div className="mt-3">

@@ -25,7 +25,7 @@ function mapSignupError(error: { message?: string; status?: number } | null): st
     return "Too many attempts. Please wait a few minutes and try again.";
   }
   if (message.includes("organization not found")) {
-    return "That organization code was not found. Check the code with your administrator.";
+    return "That invite code was not found. Check the code with your administrator.";
   }
   if (message.includes("pending request already exists")) {
     return "You already have a pending request. An administrator still needs to approve it.";
@@ -165,18 +165,17 @@ export function RequestAccessForm({
         <Input id="email" name="email" type="email" required autoComplete="email" />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="organizationSlug">Organization code</Label>
+        <Label htmlFor="organizationSlug">Staff invite code</Label>
         <Input
           id="organizationSlug"
           name="organizationSlug"
           required
           defaultValue={defaultOrganizationSlug}
-          placeholder="your-district-code"
+          placeholder="Ask your administrator"
           autoComplete="organization"
         />
         <p className="text-muted text-xs">
-          Your administrator shares this code (organization slug). Example format:
-          `groveport-madison-slc`.
+          Use the invite code your administrator shares with new staff.
         </p>
       </div>
       <div className="grid gap-4 sm:grid-cols-2">

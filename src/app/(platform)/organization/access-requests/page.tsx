@@ -51,8 +51,8 @@ export default async function AccessRequestsPage() {
             </Alert>
           ) : null}
           {state.data.organizationSlug ? (
-            <Alert title="Share your organization code" tone="info">
-              Educators enter this code when requesting access:{" "}
+            <Alert title="Staff invite code" tone="info">
+              Share this code with new educators when they request access:{" "}
               <span className="font-semibold">{state.data.organizationSlug}</span>
             </Alert>
           ) : null}

@@ -14,10 +14,10 @@ export const accessRequestSignupSchema = z
     organizationSlug: z
       .string()
       .trim()
-      .min(2, "Enter the organization code provided by your administrator.")
+      .min(2, "Enter the staff invite code from your administrator.")
       .regex(
         /^[a-z0-9]+(?:-[a-z0-9]+)*$/i,
-        "Organization code can only include letters, numbers, and hyphens.",
+        "Invite codes can only include letters, numbers, and hyphens.",
       ),
     requestedRoleCodes: z
       .array(z.enum(ROLE_CODES))

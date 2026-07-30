@@ -50,24 +50,28 @@ export async function OrganizationSelector() {
         >
           Organization
         </label>
-        <Select
-          id="organizationId"
-          name="organizationId"
-          defaultValue={selected.organization_id}
-          aria-label="Selected organization"
-          className="min-w-48"
-        >
-          {activeMemberships.map((membership) => (
-            <option key={membership.organization_id} value={membership.organization_id}>
-              {membership.organization?.name ?? "Unnamed organization"} -{" "}
-              {ROLE_LABELS[membership.role_code]}
-            </option>
-          ))}
-        </Select>
+        <div className="mt-1 flex flex-wrap items-center gap-2">
+          <Select
+            id="organizationId"
+            name="organizationId"
+            defaultValue={selected.organization_id}
+            aria-label="Selected organization"
+            className="min-w-48"
+          >
+            {activeMemberships.map((membership) => (
+              <option key={membership.organization_id} value={membership.organization_id}>
+                {membership.organization?.name ?? "Unnamed organization"}
+              </option>
+            ))}
+          </Select>
+          <Badge tone="neutral">{ROLE_LABELS[selected.role_code]}</Badge>
+        </div>
       </div>
-      <Button type="submit" variant="secondary" size="sm">
-        Switch
-      </Button>
+      {activeMemberships.length > 1 ? (
+        <Button type="submit" variant="secondary" size="sm">
+          Switch
+        </Button>
+      ) : null}
     </form>
   );
 }

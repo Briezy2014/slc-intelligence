@@ -76,8 +76,8 @@ export default async function SelectOrganizationPage({
               >
                 {activeMemberships.map((membership) => (
                   <option key={membership.organization_id} value={membership.organization_id}>
-                    {membership.organization?.name ?? "Unnamed organization"} -{" "}
-                    {ROLE_LABELS[membership.role_code]}
+                    {membership.organization?.name ?? "Unnamed organization"} (
+                    {ROLE_LABELS[membership.role_code]})
                   </option>
                 ))}
               </Select>
