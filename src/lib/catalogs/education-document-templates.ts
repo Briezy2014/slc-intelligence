@@ -1,4 +1,10 @@
 import type { EducationDocumentType } from "@/lib/supabase/types";
+import {
+  OHIO_DOCUMENT_DISCLAIMER,
+  OHIO_ETR_BLANK_TEMPLATE,
+  OHIO_IEP_BLANK_TEMPLATE,
+  OHIO_PROGRESS_REPORT_TEMPLATE,
+} from "@/lib/catalogs/ohio-education-templates";
 
 export type DocumentFieldDef = {
   key: string;
@@ -22,6 +28,8 @@ export type EducationDocumentTemplate = {
 
 export const EDUCATION_DOCUMENT_DISCLAIMER =
   "Draft for educator/IEP team review only. This tool assists documentation; it does not independently create a legally controlling IEP, ETR, or progress report. District procedures and authorized signatures remain required.";
+
+export { OHIO_DOCUMENT_DISCLAIMER };
 
 export const IEP_BLANK_TEMPLATE: EducationDocumentTemplate = {
   key: "iep_blank_v1",
@@ -272,7 +280,23 @@ export const SECTION_504_BLANK_TEMPLATE: EducationDocumentTemplate = {
           key: "gradeLevel",
           label: "Grade level",
           kind: "select",
-          options: ["PreK", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Transition"],
+          options: [
+            "PreK",
+            "K",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "Transition",
+          ],
           prefillFrom: "gradeLevel",
         },
         { key: "meetingDate", label: "Meeting / review date", kind: "date" },
@@ -314,7 +338,23 @@ export const GIFTED_BLANK_TEMPLATE: EducationDocumentTemplate = {
           key: "gradeLevel",
           label: "Grade level",
           kind: "select",
-          options: ["PreK", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Transition"],
+          options: [
+            "PreK",
+            "K",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "Transition",
+          ],
           prefillFrom: "gradeLevel",
         },
         {
@@ -359,7 +399,23 @@ export const EL_BLANK_TEMPLATE: EducationDocumentTemplate = {
           key: "gradeLevel",
           label: "Grade level",
           kind: "select",
-          options: ["PreK", "K", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12", "Transition"],
+          options: [
+            "PreK",
+            "K",
+            "1",
+            "2",
+            "3",
+            "4",
+            "5",
+            "6",
+            "7",
+            "8",
+            "9",
+            "10",
+            "11",
+            "12",
+            "Transition",
+          ],
           prefillFrom: "gradeLevel",
         },
         { key: "homeLanguage", label: "Home / primary language", kind: "text" },
@@ -367,7 +423,15 @@ export const EL_BLANK_TEMPLATE: EducationDocumentTemplate = {
           key: "proficiencyLevel",
           label: "Language proficiency level (district scale)",
           kind: "select",
-          options: ["Entering", "Emerging", "Developing", "Expanding", "Bridging", "Reaching", "Not assessed"],
+          options: [
+            "Entering",
+            "Emerging",
+            "Developing",
+            "Expanding",
+            "Bridging",
+            "Reaching",
+            "Not assessed",
+          ],
         },
       ],
     },
@@ -377,22 +441,53 @@ export const EL_BLANK_TEMPLATE: EducationDocumentTemplate = {
       fields: [
         { key: "languageGoals", label: "Language goals", kind: "textarea" },
         { key: "accommodations", label: "Classroom / assessment supports", kind: "textarea" },
-        { key: "familyCommunicationPlan", label: "Family communication language plan", kind: "textarea" },
+        {
+          key: "familyCommunicationPlan",
+          label: "Family communication language plan",
+          kind: "textarea",
+        },
         { key: "progressMonitoringPlan", label: "Progress monitoring plan", kind: "textarea" },
       ],
     },
   ],
 };
 
+export type EducationTemplatePack = "ohio_aligned" | "generic";
+
+export function listEducationDocumentTemplates(
+  documentType: EducationDocumentType,
+): EducationDocumentTemplate[] {
+  if (documentType === "etr") return [OHIO_ETR_BLANK_TEMPLATE, ETR_BLANK_TEMPLATE];
+  if (documentType === "progress_report")
+    return [OHIO_PROGRESS_REPORT_TEMPLATE, PROGRESS_REPORT_TEMPLATE];
+  if (documentType === "section_504") return [SECTION_504_BLANK_TEMPLATE];
+  if (documentType === "gifted") return [GIFTED_BLANK_TEMPLATE];
+  if (documentType === "el") return [EL_BLANK_TEMPLATE];
+  return [OHIO_IEP_BLANK_TEMPLATE, IEP_BLANK_TEMPLATE];
+}
+
 export function getEducationDocumentTemplate(
   documentType: EducationDocumentType,
+  pack: EducationTemplatePack = "ohio_aligned",
 ): EducationDocumentTemplate {
-  if (documentType === "etr") return ETR_BLANK_TEMPLATE;
-  if (documentType === "progress_report") return PROGRESS_REPORT_TEMPLATE;
-  if (documentType === "section_504") return SECTION_504_BLANK_TEMPLATE;
-  if (documentType === "gifted") return GIFTED_BLANK_TEMPLATE;
-  if (documentType === "el") return EL_BLANK_TEMPLATE;
-  return IEP_BLANK_TEMPLATE;
+  const templates = listEducationDocumentTemplates(documentType);
+  if (documentType === "section_504" || documentType === "gifted" || documentType === "el") {
+    return templates[0]!;
+  }
+  if (pack === "generic") {
+    return templates.find((template) => !template.key.startsWith("ohio_")) ?? templates[0]!;
+  }
+  return templates.find((template) => template.key.startsWith("ohio_")) ?? templates[0]!;
+}
+
+export function getEducationDocumentTemplateByKey(
+  key: string,
+  documentType: EducationDocumentType,
+): EducationDocumentTemplate {
+  return (
+    listEducationDocumentTemplates(documentType).find((template) => template.key === key) ??
+    getEducationDocumentTemplate(documentType)
+  );
 }
 
 export function buildPrefillFields(args: {

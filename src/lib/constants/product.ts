@@ -6,6 +6,7 @@ export const CANONICAL_PRODUCTION_URL = "https://slcintelligence.com";
 export const PUBLIC_NAV = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
+  { href: "/capabilities", label: "Capabilities" },
   { href: "/privacy", label: "Privacy" },
   { href: "/pilot-use", label: "Pilot use" },
   { href: "/terms", label: "Terms" },
@@ -32,9 +33,12 @@ export const PLATFORM_NAV = [
   { href: "/accommodations", label: "Accommodations" },
   { href: "/services", label: "Services" },
   { href: "/family-communication", label: "Family Communication" },
+  { href: "/parent-share", label: "Parent Share" },
+  { href: "/deadlines", label: "Deadline Tracker" },
   { href: "/meetings", label: "Meetings" },
   { href: "/executive-function", label: "Executive Function" },
   { href: "/classroom-operations", label: "Classroom Operations" },
   { href: "/administrative-intelligence", label: "Administrative Intelligence" },
+  { href: "/capability-roadmap", label: "Capability Roadmap" },
   { href: "/organization/settings", label: "Organization" },
 ] as const;

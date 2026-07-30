@@ -14,6 +14,7 @@ export * from "@/lib/catalogs/communication-templates";
 export * from "@/lib/catalogs/communication-languages";
 export * from "@/lib/catalogs/learning-progressions";
 export * from "@/lib/catalogs/education-document-templates";
+export * from "@/lib/catalogs/ohio-education-templates";
 export * from "@/lib/catalogs/behavior-templates";
 
 export function getStarterCatalogCounts() {

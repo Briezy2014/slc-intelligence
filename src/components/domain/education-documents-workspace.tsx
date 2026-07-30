@@ -19,8 +19,11 @@ import {
 import { generateAiAssistSuggestionsAction } from "@/lib/actions/ai-assist";
 import {
   EDUCATION_DOCUMENT_DISCLAIMER,
+  OHIO_DOCUMENT_DISCLAIMER,
   buildPrefillFields,
   getEducationDocumentTemplate,
+  listEducationDocumentTemplates,
+  type EducationTemplatePack,
 } from "@/lib/catalogs/education-document-templates";
 import { extractDocumentText } from "@/lib/documents/extract-document-text";
 import { mapDocumentTextToFields } from "@/lib/documents/map-document-text";
@@ -50,6 +53,7 @@ export function EducationDocumentsWorkspace({
   lockedStudentId?: string;
 }) {
   const [tab, setTab] = useState<EducationDocumentType>(initialTab);
+  const [templatePack, setTemplatePack] = useState<EducationTemplatePack>("ohio_aligned");
   const [studentId, setStudentId] = useState(lockedStudentId ?? "");
   const [fields, setFields] = useState<Record<string, string>>({});
   const [message, setMessage] = useState<string | null>(null);
@@ -60,7 +64,11 @@ export function EducationDocumentsWorkspace({
   const [scanPending, setScanPending] = useState(false);
   const [pending, startTransition] = useTransition();
 
-  const template = useMemo(() => getEducationDocumentTemplate(tab), [tab]);
+  const template = useMemo(
+    () => getEducationDocumentTemplate(tab, templatePack),
+    [tab, templatePack],
+  );
+  const packOptions = useMemo(() => listEducationDocumentTemplates(tab), [tab]);
   const selectedStudent = data.students.find((student) => student.id === studentId);
   const effectiveStudentId = lockedStudentId || studentId;
   const documents = data.documents.filter(
@@ -207,7 +215,7 @@ export function EducationDocumentsWorkspace({
   return (
     <div className="space-y-6">
       <Alert title="Educator / team review required" tone="warning">
-        {EDUCATION_DOCUMENT_DISCLAIMER}
+        {templatePack === "ohio_aligned" ? OHIO_DOCUMENT_DISCLAIMER : EDUCATION_DOCUMENT_DISCLAIMER}
       </Alert>
 
       <div className="flex flex-wrap gap-2">
@@ -226,6 +234,26 @@ export function EducationDocumentsWorkspace({
           </Button>
         ))}
       </div>
+
+      <FormField id="templatePack" label="Blank template pack">
+        <Select
+          id="templatePack"
+          value={templatePack}
+          onChange={(event) => {
+            setTemplatePack(event.target.value as EducationTemplatePack);
+            setFields({});
+            setMessage(null);
+          }}
+        >
+          <option value="ohio_aligned">Ohio-aligned official-style blank (recommended)</option>
+          <option value="generic">Generic structured blank</option>
+        </Select>
+      </FormField>
+      <p className="text-muted text-sm">
+        Active draft: {template.title}. Available packs:{" "}
+        {packOptions.map((entry) => entry.title).join(" · ")}. These are structured drafting aids,
+        not ODE fillable legal PDFs.
+      </p>
 
       <Card>
         <CardTitle>District blank {tab.replaceAll("_", " ").toUpperCase()} template</CardTitle>

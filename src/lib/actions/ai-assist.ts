@@ -16,6 +16,7 @@ const suggestSchema = z.object({
     "progress",
     "education_document",
     "behavior",
+    "lesson_plan",
   ]),
   focusArea: z.string().trim().max(200).optional().or(z.literal("")),
   studentContext: z.string().trim().max(400).optional().or(z.literal("")),

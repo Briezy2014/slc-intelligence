@@ -39,6 +39,11 @@ const MODULE_LINKS = [
     label: "Rapid Progress",
     description: "Enter progress data and prepare monitoring prompts.",
   },
+  {
+    href: "/classroom-operations",
+    label: "Lesson planning",
+    description: "Generate AI lesson ideas for specialized learning classrooms.",
+  },
 ] as const;
 
 export default function AiAssistPage() {
@@ -72,7 +77,17 @@ export default function AiAssistPage() {
             Generate a starting draft here, then move it into the matching module to complete and
             save.
           </CardDescription>
-          <div className="mt-4">
+          <div className="mt-4 space-y-6">
+            <AiAssistPanel
+              domain="lesson_plan"
+              title="AI lesson planning"
+              description="Create a reviewable specialized learning classroom lesson plan draft."
+            />
+            <AiAssistPanel
+              domain="goal"
+              title="AI draft IEP goals"
+              description="Create measurable goal language for educator and IEP team review."
+            />
             <AiAssistPanel
               domain="communication"
               title="Family communication draft"

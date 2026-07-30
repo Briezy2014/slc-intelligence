@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Image from "next/image";
+import Link from "next/link";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { APP_NAME } from "@/lib/constants";
+import { BENEFIT_POINTS, CAPABILITY_GUARDRAIL } from "@/lib/content/capabilities";
 
 export const metadata: Metadata = {
   title: "About",
@@ -24,28 +26,48 @@ export default function AboutPage() {
       </div>
       <PageHeader
         title={`About ${APP_NAME}`}
-        description="A special education platform vision focused on authentic classroom workflows and human professional authority."
+        description="A special education classroom intelligence platform focused on authentic workflows, stronger documentation, and human professional authority."
       />
       <div className="text-muted space-y-6">
         <p>
           Special education teams often document progress, behavior, interventions, accommodations,
-          services, and communication across disconnected tools. That fragmentation increases
-          workload and weakens the usability of classroom evidence.
+          services, and family communication across disconnected tools. That fragmentation costs
+          time and weakens the usability of classroom evidence for instruction and IEP team review.
         </p>
         <p>
-          Repeated data entry makes it harder to keep records consistent. Educators need a way to
-          enter information once and reuse it only where authorized and educationally appropriate.
+          {APP_NAME} is designed for intervention specialists, special education teachers,
+          paraprofessionals, and related service providers. It brings daily data collection, goal
+          tracking, Behavior Detective, progress monitoring, accommodation tracking, AI drafting
+          support, Ohio-aligned blank IEP/ETR/progress templates, parent communication, signature
+          workflows, parent share packets, and timeline reminders into one professional workspace.
         </p>
         <p>
-          Classroom data is frequently collected, but turning it into understandable, actionable
-          insight for instruction and IEP team review remains difficult. {APP_NAME} is being
-          designed around a planned one-entry architecture and evidence-first analytics.
+          The platform emphasizes time savings, better documentation, more consistent progress
+          monitoring, AI assistance with educator review, clearer parent communication, and
+          practical compliance reminders—while keeping educational decisions with qualified
+          professionals and the IEP team.
+        </p>
+        <div className="space-y-3">
+          <h2 className="text-foreground text-xl font-semibold">Benefits for special education</h2>
+          <ul className="list-disc space-y-2 pl-5">
+            {BENEFIT_POINTS.map((item) => (
+              <li key={item.title}>
+                <span className="text-foreground font-medium">{item.title}:</span> {item.body}
+              </li>
+            ))}
+          </ul>
+        </div>
+        <p>{CAPABILITY_GUARDRAIL}</p>
+        <p>
+          Advanced district integrations such as SIS, EMIS, expanded Section 504, compliance
+          reports, OCR reporting packages, and state reporting are on the roadmap and remain not
+          activated until district and legal counsel approve.
         </p>
         <p>
-          Decision support will remain educator-centered. The platform is intended to support
-          professional judgment and must not replace the IEP team, evaluation team, administrator,
-          intervention specialist, psychologist, related service provider, parent, or other
-          qualified decision-maker.
+          <Link href="/capabilities" className="text-highlight font-semibold underline">
+            Review the full capabilities page
+          </Link>
+          .
         </p>
       </div>
     </main>

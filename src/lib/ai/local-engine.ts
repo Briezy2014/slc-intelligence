@@ -256,6 +256,71 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
         requiresReview: true,
       }));
 
+    case "lesson_plan": {
+      const focus = input.focusArea || "the current instructional focus";
+      const context = input.studentContext || "specialized learning classroom";
+      const drafts = [
+        {
+          title: `Explicit instruction lesson · ${focus}`,
+          summary: "I do / We do / You do lesson frame with scaffolds.",
+          draftText: [
+            `Lesson focus: ${focus}`,
+            `Setting: ${context}`,
+            "",
+            "Objective: Students will practice the target skill with decreasing prompts.",
+            "Warm-up (3–5 min): Activate prior knowledge with a quick visual/example.",
+            "I do: Model the skill with clear language and think-alouds.",
+            "We do: Guided practice with prompt hierarchy and error correction.",
+            "You do: Independent/paired practice with accommodations as needed.",
+            "Closure: Students show one example of the skill; note data for progress monitoring.",
+            "Materials: Visual supports, manipulatives, data sheet.",
+          ].join("\n"),
+        },
+        {
+          title: `Stations / rotation lesson · ${focus}`,
+          summary: "Small-group rotation plan with adult-led and independent work.",
+          draftText: [
+            `Lesson focus: ${focus}`,
+            `Setting: ${context}`,
+            "",
+            "Station 1 (teacher-led): Targeted instruction with modeling and choral response.",
+            "Station 2 (para/support): Structured practice with visual checklist.",
+            "Station 3 (independent/technology): Fluency or maintenance task with clear finished criteria.",
+            "Data: Collect 3–5 trials on accuracy/independence during teacher-led station.",
+            "Differentiation: Adjust prompt level, response mode, and time.",
+          ].join("\n"),
+        },
+        {
+          title: `Functional / routines lesson · ${focus}`,
+          summary: "Routine-based instruction for functional skill application.",
+          draftText: [
+            `Lesson focus: ${focus}`,
+            `Setting: ${context}`,
+            "",
+            "Routine context: Embed skill practice in a meaningful classroom routine.",
+            "Pre-teach: Preview vocabulary, visuals, and expected behavior.",
+            "Practice: Use task analysis steps with least-to-most prompting.",
+            "Generalization: Practice in a second setting or with a second adult.",
+            "Family connection: Optional one-sentence home practice suggestion.",
+          ].join("\n"),
+        },
+      ];
+      return drafts.map((draft, index) => ({
+        id: `local-lesson-plan-${index}`,
+        domain,
+        title: draft.title,
+        summary: draft.summary,
+        draftText: draft.draftText,
+        fields: {
+          focusArea: focus,
+          lessonPlan: draft.draftText,
+        },
+        rationale: "Local lesson-planning frames for specialized learning classroom instruction.",
+        source: "local_intelligence" as const,
+        requiresReview: true as const,
+      }));
+    }
+
     default:
       return [];
   }
@@ -271,5 +336,6 @@ export function domainsSupported(): AiAssistDomain[] {
     "progress",
     "education_document",
     "behavior",
+    "lesson_plan",
   ];
 }
