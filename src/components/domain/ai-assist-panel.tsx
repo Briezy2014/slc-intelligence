@@ -12,8 +12,8 @@ import type { AiAssistDomain, AiSuggestion } from "@/lib/ai/types";
 
 export function AiAssistPanel({
   domain,
-  title = "AI Assist",
-  description = "Generate reviewable drafts and dropdown-ready suggestions from SLC intelligence.",
+  title = "Draft assistant",
+  description = "Generate a reviewable starting draft. Edit before sending or saving.",
   defaultFocusArea = "",
   onApply,
 }: {
@@ -45,20 +45,20 @@ export function AiAssistPanel({
             placeholder="reading fluency, transitions, calm-down routine…"
           />
         </FormField>
-        <FormField id={`${domain}-context`} label="Minimized student context (optional)">
+        <FormField id={`${domain}-context`} label="Student context (optional)">
           <Input
             id={`${domain}-context`}
             value={studentContext}
             onChange={(event) => setStudentContext(event.target.value)}
-            placeholder="Grade band, setting, or support need — avoid unnecessary identifiers"
+            placeholder="Grade, setting, or support need"
           />
         </FormField>
-        <FormField id={`${domain}-notes`} label="Extra notes (optional)">
+        <FormField id={`${domain}-notes`} label="Notes (optional)">
           <Textarea
             id={`${domain}-notes`}
             value={extraNotes}
             onChange={(event) => setExtraNotes(event.target.value)}
-            placeholder="What should the draft emphasize?"
+            placeholder="What should this draft emphasize?"
           />
         </FormField>
         <Button
@@ -76,21 +76,21 @@ export function AiAssistPanel({
               setDisclaimer(result.disclaimer);
               setModeLabel(
                 result.mode === "model_assist"
-                  ? "Model-assisted drafts"
+                  ? "Model-assisted draft"
                   : result.mode === "local_intelligence"
-                    ? "Local SLC intelligence"
-                    : "Disabled",
+                    ? "Catalog-assisted draft"
+                    : null,
               );
               setSuggestions(result.suggestions);
               if (!result.enabled) {
-                setError(result.message ?? "AI Assist is unavailable.");
+                setError(result.message ?? "Draft assistant is unavailable.");
               } else if (result.message) {
                 setError(result.message);
               }
             });
           }}
         >
-          {pending ? "Generating…" : "Generate AI suggestions"}
+          {pending ? "Generating…" : "Generate draft"}
         </Button>
       </div>
 
