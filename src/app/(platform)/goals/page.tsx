@@ -15,8 +15,17 @@ export default async function GoalsPage() {
   return (
     <main id="main-content">
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Goals" }]} />
-      <PageHeader title="Goals" description="Authorized IEP goals across the selected organization." />
-      {!state.configured ? <ConfigurationState /> : state.error ? <SafeErrorState message={state.error} /> : <GoalList goals={state.data.rows} students={state.data.students} />}
+      <PageHeader
+        title="Goals"
+        description="Authorized IEP goals across the selected organization."
+      />
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error ? (
+        <SafeErrorState message={state.error} />
+      ) : (
+        <GoalList goals={state.data.rows} students={state.data.students} />
+      )}
     </main>
   );
 }

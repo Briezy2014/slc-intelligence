@@ -21,7 +21,11 @@ describe("intervention calculations", () => {
       percent: 50,
       scoredItems: 3,
       possibleItems: 4,
-      sufficiency: { status: "sufficient", reason: "3 usable fidelity items available.", usableCount: 3 },
+      sufficiency: {
+        status: "sufficient",
+        reason: "3 usable fidelity items available.",
+        usableCount: 3,
+      },
     });
     expect(componentFidelity(responses)).toEqual({
       prompting: { percent: 75, scoredItems: 2 },
@@ -31,13 +35,10 @@ describe("intervention calculations", () => {
 
   it("compares planned and delivered dosage", () => {
     expect(
-      plannedVsDelivered(
-        { plannedSessions: 5, plannedMinutes: 100 },
-        [
-          { sessionsDelivered: 2, durationMinutes: 30 },
-          { sessionsDelivered: 3, durationMinutes: 45 },
-        ],
-      ),
+      plannedVsDelivered({ plannedSessions: 5, plannedMinutes: 100 }, [
+        { sessionsDelivered: 2, durationMinutes: 30 },
+        { sessionsDelivered: 3, durationMinutes: 45 },
+      ]),
     ).toEqual({
       plannedSessions: 5,
       deliveredSessions: 5,

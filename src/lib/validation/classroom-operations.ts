@@ -1,7 +1,11 @@
 import { z } from "zod";
 
 const optionalUuid = z.string().uuid().optional().or(z.literal(""));
-const optionalTime = z.string().regex(/^\d{2}:\d{2}(:\d{2})?$/).optional().or(z.literal(""));
+const optionalTime = z
+  .string()
+  .regex(/^\d{2}:\d{2}(:\d{2})?$/)
+  .optional()
+  .or(z.literal(""));
 
 export const classroomScheduleSchema = z.object({
   organizationId: z.string().uuid(),

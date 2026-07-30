@@ -18,7 +18,11 @@ export function MobileNav() {
         aria-controls="mobile-nav-panel"
         onClick={() => setOpen((value) => !value)}
       >
-        {open ? <X className="size-4" aria-hidden="true" /> : <Menu className="size-4" aria-hidden="true" />}
+        {open ? (
+          <X className="size-4" aria-hidden="true" />
+        ) : (
+          <Menu className="size-4" aria-hidden="true" />
+        )}
         <span>{open ? "Close" : "Menu"}</span>
       </Button>
       {open ? (

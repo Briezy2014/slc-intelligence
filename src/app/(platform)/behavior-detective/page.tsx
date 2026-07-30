@@ -26,10 +26,15 @@ export default async function BehaviorDetectivePage() {
         <div className="space-y-6">
           <Card className="brand-glow">
             <div className="flex items-start gap-3">
-              <span className="bg-success-soft text-highlight rounded-[var(--radius-md)] p-2"><BrainCircuit className="size-5" aria-hidden="true" /></span>
+              <span className="bg-success-soft text-highlight rounded-[var(--radius-md)] p-2">
+                <BrainCircuit className="size-5" aria-hidden="true" />
+              </span>
               <div>
                 <CardTitle>Behavior Detective workspace</CardTitle>
-                <CardDescription>No diagnostic or legal conclusions are generated. Summaries organize educator-reviewed evidence.</CardDescription>
+                <CardDescription>
+                  No diagnostic or legal conclusions are generated. Summaries organize
+                  educator-reviewed evidence.
+                </CardDescription>
               </div>
             </div>
           </Card>

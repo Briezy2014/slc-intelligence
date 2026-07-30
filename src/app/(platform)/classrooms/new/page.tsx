@@ -12,12 +12,26 @@ export default async function NewClassroomPage() {
   const state = await listClassrooms();
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/classrooms", label: "Classrooms" }, { label: "New" }]} />
+      <Breadcrumbs
+        items={[
+          { href: "/", label: "Home" },
+          { href: "/classrooms", label: "Classrooms" },
+          { label: "New" },
+        ]}
+      />
       <PageHeader title="New classroom" description="Create a classroom scope." />
-      {!state.configured ? <ConfigurationState /> : state.error || !state.data.organizationId || !state.data.canManage ? (
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error || !state.data.organizationId || !state.data.canManage ? (
         <SafeErrorState message={state.error ?? "You are not authorized to create classrooms."} />
       ) : (
-        <Card><ClassroomForm organizationId={state.data.organizationId} schools={state.data.schools} programs={state.data.programs} /></Card>
+        <Card>
+          <ClassroomForm
+            organizationId={state.data.organizationId}
+            schools={state.data.schools}
+            programs={state.data.programs}
+          />
+        </Card>
       )}
     </main>
   );

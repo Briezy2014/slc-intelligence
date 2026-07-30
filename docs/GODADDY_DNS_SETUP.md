@@ -24,8 +24,8 @@ Canonical URL: `https://slcintelligence.com`
 
 Fill with the exact values from Vercel at cutover time:
 
-| Host | Type | Value | TTL | Source |
-| --- | --- | --- | --- | --- |
-| `@` | A / ALIAS | _from Vercel_ | default | Vercel domains UI |
-| `www` | CNAME | _from Vercel_ | default | Vercel domains UI |
-| optional verification | TXT | _from Vercel_ | default | Vercel domains UI |
+| Host                  | Type      | Value         | TTL     | Source            |
+| --------------------- | --------- | ------------- | ------- | ----------------- |
+| `@`                   | A / ALIAS | _from Vercel_ | default | Vercel domains UI |
+| `www`                 | CNAME     | _from Vercel_ | default | Vercel domains UI |
+| optional verification | TXT       | _from Vercel_ | default | Vercel domains UI |

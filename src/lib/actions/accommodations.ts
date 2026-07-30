@@ -55,17 +55,27 @@ export async function saveAccommodationLibraryItemAction(formData: FormData): Pr
           .eq("id", values.libraryItemId)
           .select("id")
           .single()
-      : await context.supabase.from("accommodation_library_items").insert(payload).select("id").single();
+      : await context.supabase
+          .from("accommodation_library_items")
+          .insert(payload)
+          .select("id")
+          .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
 
     await auditAndRevalidate({
       organizationId: context.organizationId,
       actorUserId: context.user.id,
-      actionType: values.libraryItemId ? "accommodation_library.update" : "accommodation_library.create",
+      actionType: values.libraryItemId
+        ? "accommodation_library.update"
+        : "accommodation_library.create",
       resourceType: "accommodation_library_item",
       resourceId: result.data.id,
       newState: payload,
-      paths: ["/accommodations", "/accommodations/library", `/accommodations/library/${result.data.id}`],
+      paths: [
+        "/accommodations",
+        "/accommodations/library",
+        `/accommodations/library/${result.data.id}`,
+      ],
     });
     return { status: "success", message: "Accommodation library item saved." };
   } catch {
@@ -119,11 +129,17 @@ export async function saveStudentAccommodationAction(formData: FormData): Promis
     await auditAndRevalidate({
       organizationId: context.organizationId,
       actorUserId: context.user.id,
-      actionType: values.accommodationId ? "student_accommodation.update" : "student_accommodation.create",
+      actionType: values.accommodationId
+        ? "student_accommodation.update"
+        : "student_accommodation.create",
       resourceType: "student_accommodation",
       resourceId: result.data.id,
       newState: payload,
-      paths: ["/accommodations", `/students/${values.studentId}/accommodations`, `/students/${values.studentId}/accommodations/${result.data.id}`],
+      paths: [
+        "/accommodations",
+        `/students/${values.studentId}/accommodations`,
+        `/students/${values.studentId}/accommodations/${result.data.id}`,
+      ],
     });
     return { status: "success", message: "Student accommodation saved." };
   } catch {
@@ -131,8 +147,12 @@ export async function saveStudentAccommodationAction(formData: FormData): Promis
   }
 }
 
-export async function saveAccommodationImplementationLogAction(formData: FormData): Promise<ActionState> {
-  const parsed = accommodationImplementationLogSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+export async function saveAccommodationImplementationLogAction(
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = accommodationImplementationLogSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId);
@@ -157,7 +177,11 @@ export async function saveAccommodationImplementationLogAction(formData: FormDat
       finalized_by: values.status === "finalized" ? context.user.id : null,
       created_by: context.user.id,
     };
-    const result = await context.supabase.from("accommodation_implementation_logs").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("accommodation_implementation_logs")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
 
     await auditAndRevalidate({
@@ -196,7 +220,11 @@ export async function saveAccommodationReviewAction(formData: FormData): Promise
       recommendation: values.recommendation ?? null,
       next_review_date: values.nextReviewDate || null,
     };
-    const result = await context.supabase.from("accommodation_review_records").insert(payload).select("id").single();
+    const result = await context.supabase
+      .from("accommodation_review_records")
+      .insert(payload)
+      .select("id")
+      .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,

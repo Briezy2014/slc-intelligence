@@ -23,11 +23,12 @@ export type ObservationPoint = {
 };
 
 export type DataSufficiency =
-  | { status: "ok"; reason?: undefined }
-  | { status: "unavailable"; reason: string };
+  { status: "ok"; reason?: undefined } | { status: "unavailable"; reason: string };
 
 function finalizedOnly(points: ObservationPoint[]): ObservationPoint[] {
-  return points.filter((point) => !point.status || point.status === "finalized" || point.status === "corrected");
+  return points.filter(
+    (point) => !point.status || point.status === "finalized" || point.status === "corrected",
+  );
 }
 
 export function calculatePercentage(correct: number, total: number): number {
@@ -57,7 +58,9 @@ export function calculateReadingAccuracy(correct: number, total: number): number
   return calculatePercentage(correct, total);
 }
 
-export function summarizeTaskAnalysis(steps: Array<"independent" | "prompted" | "incorrect" | "not_attempted">) {
+export function summarizeTaskAnalysis(
+  steps: Array<"independent" | "prompted" | "incorrect" | "not_attempted">,
+) {
   return {
     independent: steps.filter((step) => step === "independent").length,
     prompted: steps.filter((step) => step === "prompted").length,
@@ -91,8 +94,7 @@ export function standardDeviation(values: number[]): number | null {
   if (values.length < 2) return null;
   const avg = mean(values);
   if (avg === null) return null;
-  const variance =
-    values.reduce((sum, value) => sum + (value - avg) ** 2, 0) / (values.length - 1);
+  const variance = values.reduce((sum, value) => sum + (value - avg) ** 2, 0) / (values.length - 1);
   return Number(Math.sqrt(variance).toFixed(4));
 }
 
@@ -116,7 +118,11 @@ export function linearTrend(points: Array<{ x: number; y: number }>): {
 export function rateOfImprovement(
   points: ObservationPoint[],
   higherIsBetter: boolean,
-): { value: number; direction: "improving" | "declining" | "stable"; sufficiency: DataSufficiency } {
+): {
+  value: number;
+  direction: "improving" | "declining" | "stable";
+  sufficiency: DataSufficiency;
+} {
   const usable = finalizedOnly(points).filter((point) => point.value !== null);
   if (usable.length < 3) {
     return {
@@ -158,7 +164,10 @@ export function aimLine(args: {
   if (Number.isNaN(start) || Number.isNaN(end) || Number.isNaN(current) || end <= start) {
     return {
       value: Number.NaN,
-      sufficiency: { status: "unavailable", reason: "Aim line requires valid baseline, target, and dates" },
+      sufficiency: {
+        status: "unavailable",
+        reason: "Aim line requires valid baseline, target, and dates",
+      },
     };
   }
   const progress = Math.min(Math.max((current - start) / (end - start), 0), 1);
@@ -202,8 +211,12 @@ export function comparePhases(
   phaseB: { count: number; mean: number | null };
   sufficiency: DataSufficiency;
 } {
-  const a = finalizedOnly(points).filter((point) => point.phaseId === phaseA && point.value !== null);
-  const b = finalizedOnly(points).filter((point) => point.phaseId === phaseB && point.value !== null);
+  const a = finalizedOnly(points).filter(
+    (point) => point.phaseId === phaseA && point.value !== null,
+  );
+  const b = finalizedOnly(points).filter(
+    (point) => point.phaseId === phaseB && point.value !== null,
+  );
   const sufficiency: DataSufficiency =
     a.length === 0 || b.length === 0
       ? { status: "unavailable", reason: "Both phases need at least one finalized observation" }

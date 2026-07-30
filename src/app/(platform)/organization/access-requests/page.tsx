@@ -25,7 +25,10 @@ export default async function AccessRequestsPage() {
         title="Access requests"
         description="Approve or deny educator account requests. Pending requests are your in-app notification queue."
         actions={
-          <Link href="/organization/settings" className="text-accent text-sm font-semibold hover:underline">
+          <Link
+            href="/organization/settings"
+            className="text-accent text-sm font-semibold hover:underline"
+          >
             Organization settings
           </Link>
         }
@@ -39,8 +42,12 @@ export default async function AccessRequestsPage() {
       ) : (
         <div className="space-y-6">
           {state.data.pendingCount > 0 ? (
-            <Alert title={`${state.data.pendingCount} pending request${state.data.pendingCount === 1 ? "" : "s"}`} tone="warning">
-              Review each request below. Approving creates an active organization membership for that account.
+            <Alert
+              title={`${state.data.pendingCount} pending request${state.data.pendingCount === 1 ? "" : "s"}`}
+              tone="warning"
+            >
+              Review each request below. Approving creates an active organization membership for
+              that account.
             </Alert>
           ) : null}
           {state.data.organizationSlug ? (

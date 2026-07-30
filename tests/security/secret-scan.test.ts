@@ -3,7 +3,13 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
 const repoRoot = process.cwd();
-const ignoredDirectories = new Set([".git", ".next", "node_modules", "coverage", "playwright-report"]);
+const ignoredDirectories = new Set([
+  ".git",
+  ".next",
+  "node_modules",
+  "coverage",
+  "playwright-report",
+]);
 const ignoredExtensions = new Set([".png", ".jpg", ".jpeg", ".gif", ".webp", ".pdf"]);
 
 const secretPatterns = [
@@ -29,7 +35,9 @@ describe("secret scan", () => {
   it("does not contain obvious committed service-role keys or secrets", () => {
     const findings = collectFiles(repoRoot).flatMap((file) => {
       const content = readFileSync(file, "utf8");
-      return secretPatterns.some((pattern) => pattern.test(content)) ? [relative(repoRoot, file)] : [];
+      return secretPatterns.some((pattern) => pattern.test(content))
+        ? [relative(repoRoot, file)]
+        : [];
     });
 
     expect(findings).toEqual([]);

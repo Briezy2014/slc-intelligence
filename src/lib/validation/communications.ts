@@ -40,8 +40,13 @@ export const communicationTemplateSchema = z.object({
   organizationId: z.string().uuid(),
   templateId: optionalUuid,
   name: z.string().trim().min(1, "Template name is required.").max(180),
-  defaultVisibility: z.enum(["family_visible", "internal", "restricted_admin"]).default("family_visible"),
-  method: z.enum(["phone", "email", "text", "letter", "in_person", "portal", "video", "other"]).optional().or(z.literal("")),
+  defaultVisibility: z
+    .enum(["family_visible", "internal", "restricted_admin"])
+    .default("family_visible"),
+  method: z
+    .enum(["phone", "email", "text", "letter", "in_person", "portal", "video", "other"])
+    .optional()
+    .or(z.literal("")),
   subjectTemplate: z.string().trim().max(180).optional(),
   bodyTemplate: z.string().trim().min(1, "Template body is required.").max(4000),
   active: z.coerce.boolean().default(true),

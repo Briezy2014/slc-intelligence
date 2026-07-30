@@ -41,7 +41,13 @@ export type AdministrativeIntelligenceData = {
   programs: Program[];
   classrooms: Classroom[];
   metrics: AdminMetricValue[];
-  chartSeries: Array<{ key: string; label: string; display: string; suppressed: boolean; value: number | null }>;
+  chartSeries: Array<{
+    key: string;
+    label: string;
+    display: string;
+    suppressed: boolean;
+    value: number | null;
+  }>;
   drillDownLinks: Array<{ href: string; label: string; description: string }>;
   exportEvents: AdministrativeExportEvent[];
   privacy: OrganizationPrivacySettings | null;
@@ -127,7 +133,12 @@ async function resolveScopedStudentIds(
   return ids ?? new Set();
 }
 
-function scopeLabel(filters: AdminScopeFilters, schools: School[], programs: Program[], classrooms: Classroom[]) {
+function scopeLabel(
+  filters: AdminScopeFilters,
+  schools: School[],
+  programs: Program[],
+  classrooms: Classroom[],
+) {
   if (filters.classroomId) {
     const classroom = classrooms.find((row) => row.id === filters.classroomId);
     return classroom ? `Classroom: ${classroom.name}` : "Classroom scope";
@@ -378,16 +389,22 @@ export async function getAdministrativeIntelligence(
 
     let scopedClassrooms = allClassrooms;
     if (normalizedFilters.schoolId) {
-      scopedClassrooms = scopedClassrooms.filter((row) => row.school_id === normalizedFilters.schoolId);
+      scopedClassrooms = scopedClassrooms.filter(
+        (row) => row.school_id === normalizedFilters.schoolId,
+      );
     }
     if (normalizedFilters.programId) {
-      scopedClassrooms = scopedClassrooms.filter((row) => row.program_id === normalizedFilters.programId);
+      scopedClassrooms = scopedClassrooms.filter(
+        (row) => row.program_id === normalizedFilters.programId,
+      );
     }
     if (normalizedFilters.classroomId) {
       scopedClassrooms = scopedClassrooms.filter((row) => row.id === normalizedFilters.classroomId);
     }
 
-    const students = (studentsResult.data ?? []).filter((row) => !studentIds || studentIds.has(row.id));
+    const students = (studentsResult.data ?? []).filter(
+      (row) => !studentIds || studentIds.has(row.id),
+    );
     const studentIdList = new Set(students.map((row) => row.id));
 
     const goals = (goalsResult.data ?? []).filter((row) => studentIdList.has(row.student_id));
@@ -400,7 +417,9 @@ export async function getAdministrativeIntelligence(
     const goalsWithoutRecent = goals.length - goalsWithRecent;
 
     const reports = (reportsResult.data ?? []).filter((row) => studentIdList.has(row.student_id));
-    const openFollowUps = (followupsResult.data ?? []).filter((row) => studentIdList.has(row.student_id)).length;
+    const openFollowUps = (followupsResult.data ?? []).filter((row) =>
+      studentIdList.has(row.student_id),
+    ).length;
     const openDataQualityWarnings = goalsWithoutRecent + openFollowUps;
 
     const interventionPlans = (interventionPlansResult.data ?? []).filter((row) =>
@@ -426,7 +445,9 @@ export async function getAdministrativeIntelligence(
         .filter((row) => studentIdList.has(row.student_id))
         .map((row) => row.id),
     );
-    const openActionItems = (actionItemsResult.data ?? []).filter((row) => meetingIds.has(row.meeting_id)).length;
+    const openActionItems = (actionItemsResult.data ?? []).filter((row) =>
+      meetingIds.has(row.meeting_id),
+    ).length;
 
     const scheduleChanges = (scheduleExceptionsResult.data ?? []).filter((row) => {
       if (normalizedFilters.classroomId) return row.classroom_id === normalizedFilters.classroomId;
@@ -437,7 +458,9 @@ export async function getAdministrativeIntelligence(
       active_students: students.length,
       active_staff: (membershipsResult.data ?? []).length,
       active_classrooms: scopedClassrooms.length,
-      active_iep_cycles: (cyclesResult.data ?? []).filter((row) => studentIdList.has(row.student_id)).length,
+      active_iep_cycles: (cyclesResult.data ?? []).filter((row) =>
+        studentIdList.has(row.student_id),
+      ).length,
       active_goals: goals.length,
       goals_with_recent_finalized_data: goalsWithRecent,
       goals_without_recent_finalized_data: goalsWithoutRecent,
@@ -450,27 +473,34 @@ export async function getAdministrativeIntelligence(
         if (!stamp) return true;
         return stamp >= startDate && stamp <= endDate;
       }).length,
-      active_accommodations: (accommodationsResult.data ?? []).filter((row) => studentIdList.has(row.student_id))
-        .length,
-      accommodation_records_awaiting_finalization: (accommodationLogsResult.data ?? []).filter((row) =>
+      active_accommodations: (accommodationsResult.data ?? []).filter((row) =>
         studentIdList.has(row.student_id),
       ).length,
-      active_service_plans: (servicePlansResult.data ?? []).filter((row) => studentIdList.has(row.student_id)).length,
+      accommodation_records_awaiting_finalization: (accommodationLogsResult.data ?? []).filter(
+        (row) => studentIdList.has(row.student_id),
+      ).length,
+      active_service_plans: (servicePlansResult.data ?? []).filter((row) =>
+        studentIdList.has(row.student_id),
+      ).length,
       finalized_service_records: (serviceLogsResult.data ?? []).filter((row) =>
         studentIdList.has(row.primary_student_id),
       ).length,
       open_family_follow_ups: openFollowUps,
-      upcoming_meetings: (meetingsResult.data ?? []).filter((row) => studentIdList.has(row.student_id)).length,
+      upcoming_meetings: (meetingsResult.data ?? []).filter((row) =>
+        studentIdList.has(row.student_id),
+      ).length,
       open_meeting_action_items: openActionItems,
       active_behavior_definitions: (behaviorDefinitionsResult.data ?? []).filter((row) =>
         studentIdList.has(row.student_id),
       ).length,
-      behavior_observations_awaiting_finalization: (behaviorSessionsResult.data ?? []).filter((row) =>
-        studentIdList.has(row.student_id),
+      behavior_observations_awaiting_finalization: (behaviorSessionsResult.data ?? []).filter(
+        (row) => studentIdList.has(row.student_id),
       ).length,
       active_intervention_plans: interventionPlans.length,
       fidelity_observations: fidelityCount,
-      executive_function_plans: (efPlansResult.data ?? []).filter((row) => studentIdList.has(row.student_id)).length,
+      executive_function_plans: (efPlansResult.data ?? []).filter((row) =>
+        studentIdList.has(row.student_id),
+      ).length,
       classroom_schedule_changes: scheduleChanges.length,
       open_data_quality_warnings: openDataQualityWarnings,
     };
@@ -584,9 +614,21 @@ export async function getAdministrativeIntelligence(
       ...schoolLinks,
       ...programLinks,
       ...classroomLinks,
-      { href: "/reports", label: "Open Progress Reporting", description: "Review underlying progress reports." },
-      { href: "/services", label: "Open Services", description: "Review underlying service records." },
-      { href: "/meetings", label: "Open Meeting Center", description: "Review underlying meetings." },
+      {
+        href: "/reports",
+        label: "Open Progress Reporting",
+        description: "Review underlying progress reports.",
+      },
+      {
+        href: "/services",
+        label: "Open Services",
+        description: "Review underlying service records.",
+      },
+      {
+        href: "/meetings",
+        label: "Open Meeting Center",
+        description: "Review underlying meetings.",
+      },
       {
         href: "/behavior-detective",
         label: "Open Behavior Detective",

@@ -45,7 +45,10 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
       return topScored(
         COMMUNICATION_TEMPLATES,
         (template) =>
-          scoreText(`${template.name} ${template.subjectTemplate} ${template.bodyTemplate}`, needle),
+          scoreText(
+            `${template.name} ${template.subjectTemplate} ${template.bodyTemplate}`,
+            needle,
+          ),
         4,
       ).map(({ item }, index) => {
         const draft = applyCommunicationTemplate(item, {
@@ -101,7 +104,8 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
     case "intervention":
       return topScored(
         INTERVENTION_TEMPLATES,
-        (template) => scoreText(`${template.name} ${template.category} ${template.description}`, needle),
+        (template) =>
+          scoreText(`${template.name} ${template.category} ${template.description}`, needle),
         5,
       ).map(({ item }, index) => ({
         id: `local-intervention-${item.id}-${index}`,
@@ -195,5 +199,12 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
 }
 
 export function domainsSupported(): AiAssistDomain[] {
-  return ["communication", "accommodation", "intervention", "goal", "executive_function", "progress"];
+  return [
+    "communication",
+    "accommodation",
+    "intervention",
+    "goal",
+    "executive_function",
+    "progress",
+  ];
 }

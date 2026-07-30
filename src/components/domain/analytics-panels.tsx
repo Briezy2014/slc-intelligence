@@ -12,10 +12,18 @@ import {
 
 export function DataSufficiencyPanel({ sufficiency }: { sufficiency: DataSufficiency }) {
   if (sufficiency.status === "ok") {
-    return <Alert title="Data sufficiency" tone="neutral">Enough compatible finalized data exists for this calculation.</Alert>;
+    return (
+      <Alert title="Data sufficiency" tone="neutral">
+        Enough compatible finalized data exists for this calculation.
+      </Alert>
+    );
   }
 
-  return <Alert title="Data sufficiency" tone="warning">{sufficiency.reason}</Alert>;
+  return (
+    <Alert title="Data sufficiency" tone="warning">
+      {sufficiency.reason}
+    </Alert>
+  );
 }
 
 export function CalculationExplanationPanel() {
@@ -39,8 +47,8 @@ export function DataQualityPanel({ points }: { points: ObservationPoint[] }) {
     <Card>
       <CardTitle>Data quality</CardTitle>
       <CardDescription>
-        {draftCount} draft observations and {missingValueCount} observations without a numeric
-        value are excluded or marked unavailable in calculations.
+        {draftCount} draft observations and {missingValueCount} observations without a numeric value
+        are excluded or marked unavailable in calculations.
       </CardDescription>
     </Card>
   );
@@ -98,8 +106,16 @@ export function GoalProgressChart({
           caption="Phase comparison"
           headers={["Phase", "Observation count", "Mean"]}
           rows={[
-            [firstPhase ?? "Phase A", String(phaseComparison.phaseA.count), String(phaseComparison.phaseA.mean ?? "Unavailable")],
-            [secondPhase ?? "Phase B", String(phaseComparison.phaseB.count), String(phaseComparison.phaseB.mean ?? "Unavailable")],
+            [
+              firstPhase ?? "Phase A",
+              String(phaseComparison.phaseA.count),
+              String(phaseComparison.phaseA.mean ?? "Unavailable"),
+            ],
+            [
+              secondPhase ?? "Phase B",
+              String(phaseComparison.phaseB.count),
+              String(phaseComparison.phaseB.mean ?? "Unavailable"),
+            ],
           ]}
         />
       ) : null}

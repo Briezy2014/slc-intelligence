@@ -17,11 +17,11 @@ Provide role-aware administrative workflow analytics for authorized leaders with
 
 ## Permissions
 
-| Permission | Purpose |
-| --- | --- |
-| `admin.intelligence.read` | View authorized aggregates |
-| `admin.export` | Export suppressed summaries |
-| `admin.audit.read` | View administrative export events |
+| Permission                | Purpose                           |
+| ------------------------- | --------------------------------- |
+| `admin.intelligence.read` | View authorized aggregates        |
+| `admin.export`            | Export suppressed summaries       |
+| `admin.audit.read`        | View administrative export events |
 
 Default grants:
 

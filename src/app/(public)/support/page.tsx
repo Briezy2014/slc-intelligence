@@ -17,16 +17,16 @@ export default function SupportPage() {
       />
       <div className="text-muted space-y-4">
         <p>
-          For production access issues, authentication problems, or deployment defects, contact the product owner
-          through the approved organizational support channel.
+          For production access issues, authentication problems, or deployment defects, contact the
+          product owner through the approved organizational support channel.
         </p>
         <p>
-          Do not include real student names, family narrative content, or protected education records in support
-          emails or screenshots.
+          Do not include real student names, family narrative content, or protected education
+          records in support emails or screenshots.
         </p>
         <p>
-          Use the post-launch issue template in the repository documentation when reporting defects after
-          deployment.
+          Use the post-launch issue template in the repository documentation when reporting defects
+          after deployment.
         </p>
         <p>
           Account deletion requests should follow the instructions on the{" "}

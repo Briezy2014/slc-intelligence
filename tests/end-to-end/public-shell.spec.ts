@@ -20,13 +20,15 @@ test.describe("public shell", () => {
     await page.goto("/sign-in");
     await expect(page.getByLabel("Work email")).toBeVisible();
     await expect(page.getByLabel("Password")).toBeVisible();
-    await expect(page.getByRole("link", { name: "Forgot password" })).toBeVisible();
+    await expect(page.getByRole("link", { name: /Forgot password/i })).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign in" })).toBeVisible();
-    await page.getByLabel("Work email").fill("educator@example.org");
-    await page.getByLabel("Password").fill("example-password");
-    await page.getByRole("button", { name: "Sign in" }).click();
     await expect(
-      page.getByText(/Supabase authentication is not configured|Unable to sign in|Configuration needed/i).first(),
+      page.getByText(/Supabase authentication is not configured|Configuration needed/i).first(),
+    ).toBeVisible();
+    // Sign-in is disabled until Supabase env is present; messaging is shown up front.
+    await expect(page.getByRole("button", { name: "Sign in" })).toBeDisabled();
+    await expect(
+      page.locator("#main-content").getByRole("link", { name: /Request access/i }),
     ).toBeVisible();
   });
 

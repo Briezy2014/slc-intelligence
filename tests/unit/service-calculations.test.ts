@@ -27,7 +27,11 @@ describe("service calculations", () => {
     expect(describeDocumentationGap({ plannedMinutes: 30, recordedMinutes: null })).toBe(
       "A planned service entry does not yet have recorded minutes.",
     );
-    expect(describeDocumentationGap({ plannedMinutes: null, recordedMinutes: null })).toContain("unavailable");
-    expect(describeDocumentationGap({ plannedMinutes: 30, recordedMinutes: 20 })).not.toContain("owed");
+    expect(describeDocumentationGap({ plannedMinutes: null, recordedMinutes: null })).toContain(
+      "unavailable",
+    );
+    expect(describeDocumentationGap({ plannedMinutes: 30, recordedMinutes: 20 })).not.toContain(
+      "owed",
+    );
   });
 });

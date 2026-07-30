@@ -37,7 +37,11 @@ export async function saveStudentAction(formData: FormData): Promise<ActionState
 
   try {
     if (values.studentId) {
-      const allowed = await canEditStudent(context.supabase, context.organizationId, values.studentId);
+      const allowed = await canEditStudent(
+        context.supabase,
+        context.organizationId,
+        values.studentId,
+      );
       if (!allowed) return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
     }
 
@@ -136,10 +140,17 @@ export async function updateStudentArchiveStatusAction(formData: FormData): Prom
       resourceType: "student",
       resourceId: values.studentId,
       newState: { enrollment_status: nextStatus },
-      paths: ["/students", `/students/${values.studentId}`, `/students/${values.studentId}/overview`],
+      paths: [
+        "/students",
+        `/students/${values.studentId}`,
+        `/students/${values.studentId}/overview`,
+      ],
     });
 
-    return { status: "success", message: values.intent === "archive" ? "Student archived." : "Student restored." };
+    return {
+      status: "success",
+      message: values.intent === "archive" ? "Student archived." : "Student restored.",
+    };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
   }
@@ -179,7 +190,9 @@ export async function saveStudentEnrollmentAction(formData: FormData): Promise<A
 }
 
 export async function saveStudentProgramAssignmentAction(formData: FormData): Promise<ActionState> {
-  const parsed = studentProgramAssignmentSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+  const parsed = studentProgramAssignmentSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId);
@@ -211,8 +224,12 @@ export async function saveStudentProgramAssignmentAction(formData: FormData): Pr
   return { status: "success", message: "Program assignment saved." };
 }
 
-export async function saveStudentClassroomAssignmentAction(formData: FormData): Promise<ActionState> {
-  const parsed = studentClassroomAssignmentSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+export async function saveStudentClassroomAssignmentAction(
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = studentClassroomAssignmentSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId);
@@ -245,7 +262,9 @@ export async function saveStudentClassroomAssignmentAction(formData: FormData): 
 }
 
 export async function saveStudentStaffAssignmentAction(formData: FormData): Promise<ActionState> {
-  const parsed = studentStaffAssignmentSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+  const parsed = studentStaffAssignmentSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId, "staff.assign");

@@ -1,4 +1,9 @@
-import { mean, median, trend, type DataSufficiencyResult } from "@/lib/analytics/behavior-calculations";
+import {
+  mean,
+  median,
+  trend,
+  type DataSufficiencyResult,
+} from "@/lib/analytics/behavior-calculations";
 
 export type FidelityResponse = "yes" | "partial" | "no" | "not_observed";
 
@@ -38,7 +43,12 @@ function scoreResponse(response: FidelityResponse): number | null {
 }
 
 function sufficiency(usableCount: number, minimum: number, label: string): DataSufficiencyResult {
-  if (usableCount >= minimum) return { status: "sufficient", reason: `${usableCount} usable ${label} available.`, usableCount };
+  if (usableCount >= minimum)
+    return {
+      status: "sufficient",
+      reason: `${usableCount} usable ${label} available.`,
+      usableCount,
+    };
   if (usableCount > 0) {
     return {
       status: "limited",
@@ -55,16 +65,23 @@ export function fidelityPercent(results: FidelityItemResult[]): {
   possibleItems: number;
   sufficiency: DataSufficiencyResult;
 } {
-  const scores = results.map((result) => scoreResponse(result.response)).filter((score): score is number => score !== null);
+  const scores = results
+    .map((result) => scoreResponse(result.response))
+    .filter((score): score is number => score !== null);
   return {
-    percent: scores.length === 0 ? null : round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 100),
+    percent:
+      scores.length === 0
+        ? null
+        : round((scores.reduce((sum, score) => sum + score, 0) / scores.length) * 100),
     scoredItems: scores.length,
     possibleItems: results.length,
     sufficiency: sufficiency(scores.length, 1, "fidelity items"),
   };
 }
 
-export function componentFidelity(results: FidelityItemResult[]): Record<string, { percent: number | null; scoredItems: number }> {
+export function componentFidelity(
+  results: FidelityItemResult[],
+): Record<string, { percent: number | null; scoredItems: number }> {
   const grouped = results.reduce<Record<string, FidelityItemResult[]>>((acc, result) => {
     const key = result.componentId ?? "unassigned";
     acc[key] = [...(acc[key] ?? []), result];
@@ -79,12 +96,18 @@ export function componentFidelity(results: FidelityItemResult[]): Record<string,
   );
 }
 
-export function dosagePercent(planned: number | null | undefined, delivered: number | null | undefined): number | null {
+export function dosagePercent(
+  planned: number | null | undefined,
+  delivered: number | null | undefined,
+): number | null {
   if (typeof planned !== "number" || typeof delivered !== "number" || planned <= 0) return null;
   return round((delivered / planned) * 100);
 }
 
-export function plannedVsDelivered(planned: DosagePlan, delivered: DosageDelivered[]): {
+export function plannedVsDelivered(
+  planned: DosagePlan,
+  delivered: DosageDelivered[],
+): {
   plannedSessions: number | null;
   deliveredSessions: number;
   sessionPercent: number | null;
@@ -132,8 +155,12 @@ export function phaseComparison(
       point.value !== null &&
       (point.status === undefined || point.status === "finalized" || point.status === "corrected"),
   );
-  const aValues = usable.filter((point) => point.phaseId === phaseA).map((point) => point.value as number);
-  const bValues = usable.filter((point) => point.phaseId === phaseB).map((point) => point.value as number);
+  const aValues = usable
+    .filter((point) => point.phaseId === phaseA)
+    .map((point) => point.value as number);
+  const bValues = usable
+    .filter((point) => point.phaseId === phaseB)
+    .map((point) => point.value as number);
   const aMean = mean(aValues);
   const bMean = mean(bValues);
   return {
@@ -144,6 +171,10 @@ export function phaseComparison(
     sufficiency:
       aValues.length > 0 && bValues.length > 0
         ? sufficiency(aValues.length + bValues.length, 4, "phase data points")
-        : { status: "insufficient", reason: "Both phases need usable data points.", usableCount: aValues.length + bValues.length },
+        : {
+            status: "insufficient",
+            reason: "Both phases need usable data points.",
+            usableCount: aValues.length + bValues.length,
+          },
   };
 }

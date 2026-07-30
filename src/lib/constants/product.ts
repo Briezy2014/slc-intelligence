@@ -24,6 +24,7 @@ export const PLATFORM_NAV = [
   { href: "/staff", label: "Staff" },
   { href: "/goals", label: "Goals" },
   { href: "/progress/enter", label: "Rapid Progress" },
+  { href: "/education-documents", label: "IEP / ETR Docs" },
   { href: "/reports", label: "Reports" },
   { href: "/behavior-detective", label: "Behavior Detective" },
   { href: "/interventions", label: "Interventions" },

@@ -16,7 +16,9 @@ export async function getSelectedOrganizationId(): Promise<string | null> {
   return cookieStore.get(SELECTED_ORGANIZATION_COOKIE)?.value ?? null;
 }
 
-export async function listMembershipsForUser(userId: string): Promise<MembershipWithOrganization[]> {
+export async function listMembershipsForUser(
+  userId: string,
+): Promise<MembershipWithOrganization[]> {
   if (!isServerSupabaseConfigured()) {
     return [];
   }

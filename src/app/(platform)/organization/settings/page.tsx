@@ -31,24 +31,32 @@ export default async function OrganizationSettingsPage() {
   return (
     <main id="main-content">
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Organization settings" }]} />
-      <PageHeader title="Organization settings" description="Selected tenant context and your active role." />
+      <PageHeader
+        title="Organization settings"
+        description="Selected tenant context and your active role."
+      />
       <div className="space-y-6">
         <Card>
           <CardTitle>{organization?.name ?? "Selected organization"}</CardTitle>
           <CardDescription>
-            Organization code (slug): <span className="font-semibold">{organization?.slug ?? "not available"}</span>.
-            Your role: {ROLE_LABELS[membership.role_code]}.
+            Organization code (slug):{" "}
+            <span className="font-semibold">{organization?.slug ?? "not available"}</span>. Your
+            role: {ROLE_LABELS[membership.role_code]}.
           </CardDescription>
         </Card>
         {accessState.data.canManage ? (
           <Card>
             <CardTitle>Access requests</CardTitle>
             <CardDescription>
-              Educators can create an account at Request access, select role checkboxes, and wait for your approval.
+              Educators can create an account at Request access, select role checkboxes, and wait
+              for your approval.
             </CardDescription>
             {pendingCount > 0 ? (
               <div className="mt-3">
-                <Alert title={`${pendingCount} pending approval${pendingCount === 1 ? "" : "s"}`} tone="warning">
+                <Alert
+                  title={`${pendingCount} pending approval${pendingCount === 1 ? "" : "s"}`}
+                  tone="warning"
+                >
                   Open the access request queue to approve or deny.
                 </Alert>
               </div>

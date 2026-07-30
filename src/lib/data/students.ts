@@ -59,9 +59,12 @@ const emptyStudents: StudentsData = {
   canArchive: false,
 };
 
-export async function listStudents(filters: StudentListFilters = {}): Promise<DataState<StudentsData>> {
+export async function listStudents(
+  filters: StudentListFilters = {},
+): Promise<DataState<StudentsData>> {
   const context = await getOrgDataContext();
-  if (!context) return emptyDataState({ ...emptyStudents, filters: { ...defaultFilters, ...filters } });
+  if (!context)
+    return emptyDataState({ ...emptyStudents, filters: { ...defaultFilters, ...filters } });
 
   const normalized: Required<StudentListFilters> = {
     search: filters.search?.trim() ?? "",
@@ -158,7 +161,8 @@ export async function getStudent(studentId: string): Promise<DataState<StudentDe
 
   try {
     const canRead = await canAccessStudent(context.supabase, context.organizationId, studentId);
-    if (!canRead) return safeDataError(emptyStudentDetail, "You are not authorized to view this student.");
+    if (!canRead)
+      return safeDataError(emptyStudentDetail, "You are not authorized to view this student.");
 
     const [
       permissions,

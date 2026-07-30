@@ -23,7 +23,16 @@ export const interventionPlanSchema = z
     title: z.string().trim().min(1, "Plan title is required.").max(180),
     description: z.string().trim().max(4000).optional(),
     status: z
-      .enum(["draft", "ready_for_review", "active", "paused", "revised", "completed", "discontinued", "archived"])
+      .enum([
+        "draft",
+        "ready_for_review",
+        "active",
+        "paused",
+        "revised",
+        "completed",
+        "discontinued",
+        "archived",
+      ])
       .default("draft"),
     startDate: z.string().date().optional().or(z.literal("")),
     endDate: z.string().date().optional().or(z.literal("")),

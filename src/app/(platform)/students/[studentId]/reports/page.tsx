@@ -8,13 +8,26 @@ import { listReporting } from "@/lib/data/reporting";
 
 export const metadata: Metadata = { title: "Student reports" };
 
-export default async function StudentReportsPage({ params }: { params: Promise<{ studentId: string }> }) {
+export default async function StudentReportsPage({
+  params,
+}: {
+  params: Promise<{ studentId: string }>;
+}) {
   const { studentId } = await params;
   const state = await listReporting({ studentId });
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { href: "/students", label: "Students" }, { label: "Reports" }]} />
-      <PageHeader title="Student reports" description="Progress reports available in your authorized student scope." />
+      <Breadcrumbs
+        items={[
+          { href: "/", label: "Home" },
+          { href: "/students", label: "Students" },
+          { label: "Reports" },
+        ]}
+      />
+      <PageHeader
+        title="Student reports"
+        description="Progress reports available in your authorized student scope."
+      />
       {!state.configured ? (
         <ConfigurationState />
       ) : state.error ? (
@@ -24,7 +37,14 @@ export default async function StudentReportsPage({ params }: { params: Promise<{
           <Card>
             <CardTitle>Create report draft</CardTitle>
             <CardDescription>Only authorized periods and IEP cycles are shown.</CardDescription>
-            <div className="mt-4"><ReportCreateForm data={{ ...state.data, students: state.data.students.filter((student) => student.id === studentId) }} /></div>
+            <div className="mt-4">
+              <ReportCreateForm
+                data={{
+                  ...state.data,
+                  students: state.data.students.filter((student) => student.id === studentId),
+                }}
+              />
+            </div>
           </Card>
           <ReportingTables data={state.data} />
         </div>

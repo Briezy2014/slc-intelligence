@@ -19,13 +19,24 @@ export default async function ProgramsPage() {
       <PageHeader
         title="Programs"
         description="Manage authorized programs and service groupings."
-        actions={state.configured && state.data.canManage ? (
-          <Link href="/programs/new" className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold">
-            New program
-          </Link>
-        ) : null}
+        actions={
+          state.configured && state.data.canManage ? (
+            <Link
+              href="/programs/new"
+              className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold"
+            >
+              New program
+            </Link>
+          ) : null
+        }
       />
-      {!state.configured ? <ConfigurationState /> : state.error ? <SafeErrorState message={state.error} /> : <ProgramList programs={state.data.rows} schools={state.data.schools} />}
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error ? (
+        <SafeErrorState message={state.error} />
+      ) : (
+        <ProgramList programs={state.data.rows} schools={state.data.schools} />
+      )}
     </main>
   );
 }

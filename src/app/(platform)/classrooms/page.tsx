@@ -19,11 +19,28 @@ export default async function ClassroomsPage() {
       <PageHeader
         title="Classrooms"
         description="Manage authorized classroom scopes and service locations."
-        actions={state.configured && state.data.canManage ? (
-          <Link href="/classrooms/new" className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold">New classroom</Link>
-        ) : null}
+        actions={
+          state.configured && state.data.canManage ? (
+            <Link
+              href="/classrooms/new"
+              className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold"
+            >
+              New classroom
+            </Link>
+          ) : null
+        }
       />
-      {!state.configured ? <ConfigurationState /> : state.error ? <SafeErrorState message={state.error} /> : <ClassroomList classrooms={state.data.rows} schools={state.data.schools} programs={state.data.programs} />}
+      {!state.configured ? (
+        <ConfigurationState />
+      ) : state.error ? (
+        <SafeErrorState message={state.error} />
+      ) : (
+        <ClassroomList
+          classrooms={state.data.rows}
+          schools={state.data.schools}
+          programs={state.data.programs}
+        />
+      )}
     </main>
   );
 }

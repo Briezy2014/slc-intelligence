@@ -7,7 +7,16 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/about", "/privacy", "/terms", "/accessibility", "/support", "/sign-in", "/forgot-password"],
+        allow: [
+          "/",
+          "/about",
+          "/privacy",
+          "/terms",
+          "/accessibility",
+          "/support",
+          "/sign-in",
+          "/forgot-password",
+        ],
         disallow: [
           "/command-center",
           "/students",
@@ -17,6 +26,7 @@ export default function robots(): MetadataRoute.Robots {
           "/staff",
           "/goals",
           "/progress",
+          "/education-documents",
           "/reports",
           "/behavior-detective",
           "/interventions",

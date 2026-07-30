@@ -14,12 +14,18 @@ export const meetingSchema = z
     scheduledEnd: optionalDateTime,
     location: z.string().trim().max(180).optional(),
     virtualLinkNote: z.string().trim().max(500).optional(),
-    status: z.enum(["draft", "scheduled", "held", "finalized", "canceled", "archived"]).default("draft"),
+    status: z
+      .enum(["draft", "scheduled", "held", "finalized", "canceled", "archived"])
+      .default("draft"),
   })
-  .refine((value) => !value.scheduledStart || !value.scheduledEnd || value.scheduledEnd >= value.scheduledStart, {
-    message: "Meeting end must be after start.",
-    path: ["scheduledEnd"],
-  });
+  .refine(
+    (value) =>
+      !value.scheduledStart || !value.scheduledEnd || value.scheduledEnd >= value.scheduledStart,
+    {
+      message: "Meeting end must be after start.",
+      path: ["scheduledEnd"],
+    },
+  );
 
 export const meetingParticipantSchema = z.object({
   organizationId: z.string().uuid(),
@@ -57,7 +63,15 @@ export const meetingAcknowledgementSchema = z.object({
   contactId: optionalUuid,
   acknowledgedByName: z.string().trim().max(180).optional(),
   status: z
-    .enum(["received", "reviewed", "acknowledged", "declined", "requested_clarification", "no_response", "other"])
+    .enum([
+      "received",
+      "reviewed",
+      "acknowledged",
+      "declined",
+      "requested_clarification",
+      "no_response",
+      "other",
+    ])
     .default("no_response"),
   note: z.string().trim().max(2000).optional(),
 });

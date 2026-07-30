@@ -10,7 +10,10 @@ import {
   UNAUTHORIZED_ACTION_MESSAGE,
   validationError,
 } from "@/lib/actions/shared";
-import { buildAdministrativeExportCsv, getAdministrativeIntelligence } from "@/lib/data/administrative";
+import {
+  buildAdministrativeExportCsv,
+  getAdministrativeIntelligence,
+} from "@/lib/data/administrative";
 import type { Json } from "@/lib/supabase/types";
 import { z } from "zod";
 

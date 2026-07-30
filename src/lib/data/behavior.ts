@@ -93,7 +93,9 @@ const emptyBehaviorData: BehaviorData = {
   },
 };
 
-export async function listBehavior(options: { studentId?: string; behaviorId?: string } = {}): Promise<DataState<BehaviorData>> {
+export async function listBehavior(
+  options: { studentId?: string; behaviorId?: string } = {},
+): Promise<DataState<BehaviorData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyBehaviorData);
 
@@ -206,20 +208,47 @@ export async function listBehavior(options: { studentId?: string; behaviorId?: s
       fbaEvidenceResult,
     ] = await Promise.all([
       definitionIds.length
-        ? context.supabase.from("behavior_definition_examples").select("*").in("behavior_definition_id", definitionIds)
+        ? context.supabase
+            .from("behavior_definition_examples")
+            .select("*")
+            .in("behavior_definition_id", definitionIds)
         : { data: [] as BehaviorDefinitionExample[], error: null },
       definitionIds.length
-        ? context.supabase.from("behavior_definition_nonexamples").select("*").in("behavior_definition_id", definitionIds)
+        ? context.supabase
+            .from("behavior_definition_nonexamples")
+            .select("*")
+            .in("behavior_definition_id", definitionIds)
         : { data: [] as BehaviorDefinitionNonexample[], error: null },
-      sessionIds.length ? context.supabase.from("abc_observations").select("*").in("session_id", sessionIds) : { data: [] as AbcObservation[], error: null },
-      sessionIds.length ? context.supabase.from("frequency_observations").select("*").in("session_id", sessionIds) : { data: [] as FrequencyObservation[], error: null },
-      sessionIds.length ? context.supabase.from("duration_observations").select("*").in("session_id", sessionIds) : { data: [] as DurationObservation[], error: null },
-      sessionIds.length ? context.supabase.from("latency_observations").select("*").in("session_id", sessionIds) : { data: [] as LatencyObservation[], error: null },
-      sessionIds.length ? context.supabase.from("interval_observations").select("*").in("session_id", sessionIds) : { data: [] as IntervalObservation[], error: null },
-      sessionIds.length ? context.supabase.from("intensity_ratings").select("*").in("session_id", sessionIds) : { data: [] as IntensityRating[], error: null },
-      scaleIds.length ? context.supabase.from("intensity_scale_levels").select("*").in("scale_id", scaleIds) : { data: [] as IntensityScaleLevel[], error: null },
-      sessionIds.length ? context.supabase.from("abc_observation_category_assignments").select("*").in("session_id", sessionIds) : { data: [] as AbcObservationCategoryAssignment[], error: null },
-      workspaceIds.length ? context.supabase.from("fba_evidence_links").select("*").in("workspace_id", workspaceIds) : { data: [] as FbaEvidenceLink[], error: null },
+      sessionIds.length
+        ? context.supabase.from("abc_observations").select("*").in("session_id", sessionIds)
+        : { data: [] as AbcObservation[], error: null },
+      sessionIds.length
+        ? context.supabase.from("frequency_observations").select("*").in("session_id", sessionIds)
+        : { data: [] as FrequencyObservation[], error: null },
+      sessionIds.length
+        ? context.supabase.from("duration_observations").select("*").in("session_id", sessionIds)
+        : { data: [] as DurationObservation[], error: null },
+      sessionIds.length
+        ? context.supabase.from("latency_observations").select("*").in("session_id", sessionIds)
+        : { data: [] as LatencyObservation[], error: null },
+      sessionIds.length
+        ? context.supabase.from("interval_observations").select("*").in("session_id", sessionIds)
+        : { data: [] as IntervalObservation[], error: null },
+      sessionIds.length
+        ? context.supabase.from("intensity_ratings").select("*").in("session_id", sessionIds)
+        : { data: [] as IntensityRating[], error: null },
+      scaleIds.length
+        ? context.supabase.from("intensity_scale_levels").select("*").in("scale_id", scaleIds)
+        : { data: [] as IntensityScaleLevel[], error: null },
+      sessionIds.length
+        ? context.supabase
+            .from("abc_observation_category_assignments")
+            .select("*")
+            .in("session_id", sessionIds)
+        : { data: [] as AbcObservationCategoryAssignment[], error: null },
+      workspaceIds.length
+        ? context.supabase.from("fba_evidence_links").select("*").in("workspace_id", workspaceIds)
+        : { data: [] as FbaEvidenceLink[], error: null },
     ]);
 
     if (

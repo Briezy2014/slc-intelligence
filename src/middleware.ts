@@ -15,6 +15,7 @@ const PROTECTED_PREFIXES = [
   "/students",
   "/goals",
   "/progress",
+  "/education-documents",
   "/reports",
   "/behavior-detective",
   "/interventions",

@@ -56,8 +56,11 @@ export function AccessRequestReviewCards({
                 {request.full_name} · {request.status}
               </CardTitle>
               <CardDescription>
-                {request.email}. Requested: {request.requested_role_codes.map(roleLabel).join(", ")}.
-                {request.granted_role_code ? ` Granted: ${roleLabel(request.granted_role_code)}.` : ""}
+                {request.email}. Requested: {request.requested_role_codes.map(roleLabel).join(", ")}
+                .
+                {request.granted_role_code
+                  ? ` Granted: ${roleLabel(request.granted_role_code)}.`
+                  : ""}
               </CardDescription>
             </Card>
           ))}
@@ -127,11 +130,7 @@ function AccessRequestCard({
           <Textarea id={`reviewNote-${request.id}`} name="reviewNote" />
         </FormField>
         <div className="flex flex-wrap gap-3">
-          <Button
-            type="submit"
-            disabled={pending}
-            onClick={() => setDecision("approved")}
-          >
+          <Button type="submit" disabled={pending} onClick={() => setDecision("approved")}>
             Approve
           </Button>
           <Button

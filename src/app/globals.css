@@ -166,7 +166,9 @@
   }
 
   .brand-glow {
-    box-shadow: 0 0 0 1px rgb(255 255 255 / 8%), 0 18px 40px rgb(8 2 24 / 45%),
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 8%),
+      0 18px 40px rgb(8 2 24 / 45%),
       0 0 40px rgb(139 61 255 / 12%);
   }
 

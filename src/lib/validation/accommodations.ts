@@ -23,7 +23,9 @@ export const studentAccommodationSchema = z
     accommodationArea: z.string().trim().max(120).optional(),
     description: z.string().trim().min(1, "Description is required.").max(4000),
     implementationNotes: z.string().trim().max(4000).optional(),
-    status: z.enum(["draft", "active", "under_review", "revised", "ended", "archived"]).default("draft"),
+    status: z
+      .enum(["draft", "active", "under_review", "revised", "ended", "archived"])
+      .default("draft"),
     startDate: z.string().date().optional().or(z.literal("")),
     endDate: z.string().date().optional().or(z.literal("")),
   })

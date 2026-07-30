@@ -20,101 +20,101 @@ authorization; active organization membership and assignment scope are also requ
 
 ## Implemented Permission Codes
 
-| Permission | Purpose |
-| --- | --- |
-| `org.manage` | Manage organization settings |
-| `org.members.manage` | Manage memberships and invitations |
-| `org.audit.read` | Read audit events |
-| `school.manage` | Create/update schools |
-| `program.manage` | Create/update programs |
-| `classroom.manage` | Create/update classrooms |
-| `staff.assign` | Manage school/program/classroom/student staff assignments |
-| `student.create` | Create student records |
-| `student.edit` | Edit authorized student records and assignments |
-| `student.archive` | Archive/restore students |
-| `student.read` | Read authorized students |
-| `iep.manage` | Manage IEP cycles |
-| `goal.manage` | Manage goals/objectives/baselines |
-| `goal.read` | Read goals for authorized students |
-| `progress.enter` | Enter progress sessions/data points |
-| `progress.finalize` | Finalize progress sessions |
-| `progress.read` | Read progress sessions/data points |
-| `analytics.read` | Read calculated analytics summaries |
-| `report.period.manage` | Manage reporting periods |
-| `report.draft` | Create and edit draft progress reports |
-| `report.review` | Review submitted progress reports |
-| `report.finalize` | Finalize and correct progress reports |
-| `report.read` | Read authorized progress reports |
-| `report.export` | Record report print/PDF exports |
-| `behavior.define` | Create and edit behavior definitions |
-| `behavior.observe` | Enter behavior observations |
-| `behavior.finalize` | Finalize and correct behavior observations |
-| `behavior.read` | Read behavior data |
-| `behavior.configure` | Configure behavior categories/scales |
-| `fba.manage` | Manage FBA evidence workspaces |
-| `fba.read` | Read FBA evidence workspaces |
-| `intervention.library.manage` | Manage intervention library |
-| `intervention.plan.manage` | Manage intervention plans |
-| `intervention.plan.activate` | Activate, pause, complete, discontinue, or archive plans |
-| `intervention.fidelity.enter` | Enter fidelity observations |
-| `intervention.fidelity.finalize` | Finalize fidelity observations |
-| `intervention.dosage.enter` | Enter dosage logs |
-| `intervention.review` | Record intervention reviews |
-| `intervention.read` | Read intervention data |
-| `accommodation.library.manage` | Manage accommodation library items |
-| `accommodation.manage` | Create and edit student accommodations |
-| `accommodation.implement` | Record accommodation implementation activity |
-| `accommodation.read` | Read authorized accommodation records |
-| `service.definition.manage` | Manage service definitions |
-| `service.plan.manage` | Create and edit student service plans |
-| `service.plan.activate` | Activate, end, and archive service plans |
-| `service.log.enter` | Enter service delivery logs |
-| `service.log.finalize` | Finalize or correct service delivery logs |
-| `service.read` | Read authorized service records |
-| `service.export` | Record service exports |
-| `contact.manage` | Manage student contacts |
-| `contact.read` | Read student contacts |
-| `communication.enter` | Enter communication logs |
-| `communication.finalize` | Finalize communication logs |
-| `communication.read` | Read authorized communication logs |
-| `communication.template.manage` | Manage communication templates |
-| `communication.internal.read` | Read internal/restricted communications |
-| `meeting.manage` | Manage meetings |
-| `meeting.finalize` | Finalize meeting records |
-| `meeting.read` | Read authorized meetings |
-| `meeting.type.manage` | Manage meeting types |
-| `classroom.schedule.manage` | Manage classroom and student schedules |
-| `classroom.operations.read` | Read classroom operations records |
-| `routine.manage` | Manage classroom routines |
-| `task_analysis.manage` | Manage task analyses |
-| `ef.plan.manage` | Manage executive-function plans |
-| `ef.observe` | Record executive-function observations |
-| `ef.read` | Read executive-function support records |
-| `checklist.manage` | Manage checklists |
-| `checklist.respond` | Record checklist responses |
-| `staff.duty.assign` | Assign staff duties |
-| `daily_note.enter` | Enter daily student notes |
-| `daily_note.finalize` | Finalize daily student notes |
-| `daily_note.read` | Read daily student notes |
-| `reinforcement.manage` | Manage reinforcement systems |
-| `announcement.manage` | Manage classroom announcements |
+| Permission                       | Purpose                                                   |
+| -------------------------------- | --------------------------------------------------------- |
+| `org.manage`                     | Manage organization settings                              |
+| `org.members.manage`             | Manage memberships and invitations                        |
+| `org.audit.read`                 | Read audit events                                         |
+| `school.manage`                  | Create/update schools                                     |
+| `program.manage`                 | Create/update programs                                    |
+| `classroom.manage`               | Create/update classrooms                                  |
+| `staff.assign`                   | Manage school/program/classroom/student staff assignments |
+| `student.create`                 | Create student records                                    |
+| `student.edit`                   | Edit authorized student records and assignments           |
+| `student.archive`                | Archive/restore students                                  |
+| `student.read`                   | Read authorized students                                  |
+| `iep.manage`                     | Manage IEP cycles                                         |
+| `goal.manage`                    | Manage goals/objectives/baselines                         |
+| `goal.read`                      | Read goals for authorized students                        |
+| `progress.enter`                 | Enter progress sessions/data points                       |
+| `progress.finalize`              | Finalize progress sessions                                |
+| `progress.read`                  | Read progress sessions/data points                        |
+| `analytics.read`                 | Read calculated analytics summaries                       |
+| `report.period.manage`           | Manage reporting periods                                  |
+| `report.draft`                   | Create and edit draft progress reports                    |
+| `report.review`                  | Review submitted progress reports                         |
+| `report.finalize`                | Finalize and correct progress reports                     |
+| `report.read`                    | Read authorized progress reports                          |
+| `report.export`                  | Record report print/PDF exports                           |
+| `behavior.define`                | Create and edit behavior definitions                      |
+| `behavior.observe`               | Enter behavior observations                               |
+| `behavior.finalize`              | Finalize and correct behavior observations                |
+| `behavior.read`                  | Read behavior data                                        |
+| `behavior.configure`             | Configure behavior categories/scales                      |
+| `fba.manage`                     | Manage FBA evidence workspaces                            |
+| `fba.read`                       | Read FBA evidence workspaces                              |
+| `intervention.library.manage`    | Manage intervention library                               |
+| `intervention.plan.manage`       | Manage intervention plans                                 |
+| `intervention.plan.activate`     | Activate, pause, complete, discontinue, or archive plans  |
+| `intervention.fidelity.enter`    | Enter fidelity observations                               |
+| `intervention.fidelity.finalize` | Finalize fidelity observations                            |
+| `intervention.dosage.enter`      | Enter dosage logs                                         |
+| `intervention.review`            | Record intervention reviews                               |
+| `intervention.read`              | Read intervention data                                    |
+| `accommodation.library.manage`   | Manage accommodation library items                        |
+| `accommodation.manage`           | Create and edit student accommodations                    |
+| `accommodation.implement`        | Record accommodation implementation activity              |
+| `accommodation.read`             | Read authorized accommodation records                     |
+| `service.definition.manage`      | Manage service definitions                                |
+| `service.plan.manage`            | Create and edit student service plans                     |
+| `service.plan.activate`          | Activate, end, and archive service plans                  |
+| `service.log.enter`              | Enter service delivery logs                               |
+| `service.log.finalize`           | Finalize or correct service delivery logs                 |
+| `service.read`                   | Read authorized service records                           |
+| `service.export`                 | Record service exports                                    |
+| `contact.manage`                 | Manage student contacts                                   |
+| `contact.read`                   | Read student contacts                                     |
+| `communication.enter`            | Enter communication logs                                  |
+| `communication.finalize`         | Finalize communication logs                               |
+| `communication.read`             | Read authorized communication logs                        |
+| `communication.template.manage`  | Manage communication templates                            |
+| `communication.internal.read`    | Read internal/restricted communications                   |
+| `meeting.manage`                 | Manage meetings                                           |
+| `meeting.finalize`               | Finalize meeting records                                  |
+| `meeting.read`                   | Read authorized meetings                                  |
+| `meeting.type.manage`            | Manage meeting types                                      |
+| `classroom.schedule.manage`      | Manage classroom and student schedules                    |
+| `classroom.operations.read`      | Read classroom operations records                         |
+| `routine.manage`                 | Manage classroom routines                                 |
+| `task_analysis.manage`           | Manage task analyses                                      |
+| `ef.plan.manage`                 | Manage executive-function plans                           |
+| `ef.observe`                     | Record executive-function observations                    |
+| `ef.read`                        | Read executive-function support records                   |
+| `checklist.manage`               | Manage checklists                                         |
+| `checklist.respond`              | Record checklist responses                                |
+| `staff.duty.assign`              | Assign staff duties                                       |
+| `daily_note.enter`               | Enter daily student notes                                 |
+| `daily_note.finalize`            | Finalize daily student notes                              |
+| `daily_note.read`                | Read daily student notes                                  |
+| `reinforcement.manage`           | Manage reinforcement systems                              |
+| `announcement.manage`            | Manage classroom announcements                            |
 
 ## Implemented Role Matrix
 
-| Role | Permissions |
-| --- | --- |
-| `organization_admin` | All implemented permissions |
-| `district_sped_admin` | Broad school/program/classroom/staff, student, IEP/goal, progress, reporting, behavior, FBA, intervention, accommodation/service, communication/meeting, EF/classroom operations, analytics, and audit |
-| `building_admin` | Building-scoped student access plus reporting review/read, behavior observe/read, FBA manage/read, intervention read controls, contact/communication/meeting, and classroom operations |
-| `program_admin` | Program-scoped student access plus reporting, behavior, FBA, intervention, progress, accommodations/services, communication/meetings, EF/classroom operations, and analytics |
-| `intervention_specialist` | Student read, IEP/goal, progress, reporting finalize/read/draft, behavior/FBA, intervention, accommodations/services, communication/meetings, EF supports, and daily notes |
-| `special_education_teacher` | Student read, progress/report/behavior/intervention read-entry permissions plus accommodations, service log entry, communication entry, classroom operations, EF observation, checklists, daily notes, and announcements |
-| `related_service_provider` | Student read, progress/report/behavior/intervention read-entry permissions plus service plan/log permissions, communication entry, EF observation, checklist response, and daily notes |
-| `school_psychologist` | Student read, goal/progress/analytics, report review/read, behavior define/observe/finalize/read, FBA read, intervention review/read, internal communication, and meeting management |
-| `case_manager` | Student read, IEP/goal, progress, reporting finalize/read/draft, behavior/FBA, intervention, accommodations/services, communication/meetings, EF supports, checklists, and daily notes |
-| `paraprofessional` | Student read, goal/progress entry/read, behavior observe/read, intervention evidence entry/read, accommodation implementation/read, service log entry/read, communication entry/read, classroom operations read, EF observe/read, checklist response, and daily note entry/read |
-| `read_only_reviewer` | Student/goal/progress/analytics/report/behavior/FBA/intervention/accommodation/service/contact/communication/meeting/classroom/EF/daily-note read |
-| `platform_admin` | Reserved; no blanket student access in the app matrix |
+| Role                        | Permissions                                                                                                                                                                                                                                                                     |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `organization_admin`        | All implemented permissions                                                                                                                                                                                                                                                     |
+| `district_sped_admin`       | Broad school/program/classroom/staff, student, IEP/goal, progress, reporting, behavior, FBA, intervention, accommodation/service, communication/meeting, EF/classroom operations, analytics, and audit                                                                          |
+| `building_admin`            | Building-scoped student access plus reporting review/read, behavior observe/read, FBA manage/read, intervention read controls, contact/communication/meeting, and classroom operations                                                                                          |
+| `program_admin`             | Program-scoped student access plus reporting, behavior, FBA, intervention, progress, accommodations/services, communication/meetings, EF/classroom operations, and analytics                                                                                                    |
+| `intervention_specialist`   | Student read, IEP/goal, progress, reporting finalize/read/draft, behavior/FBA, intervention, accommodations/services, communication/meetings, EF supports, and daily notes                                                                                                      |
+| `special_education_teacher` | Student read, progress/report/behavior/intervention read-entry permissions plus accommodations, service log entry, communication entry, classroom operations, EF observation, checklists, daily notes, and announcements                                                        |
+| `related_service_provider`  | Student read, progress/report/behavior/intervention read-entry permissions plus service plan/log permissions, communication entry, EF observation, checklist response, and daily notes                                                                                          |
+| `school_psychologist`       | Student read, goal/progress/analytics, report review/read, behavior define/observe/finalize/read, FBA read, intervention review/read, internal communication, and meeting management                                                                                            |
+| `case_manager`              | Student read, IEP/goal, progress, reporting finalize/read/draft, behavior/FBA, intervention, accommodations/services, communication/meetings, EF supports, checklists, and daily notes                                                                                          |
+| `paraprofessional`          | Student read, goal/progress entry/read, behavior observe/read, intervention evidence entry/read, accommodation implementation/read, service log entry/read, communication entry/read, classroom operations read, EF observe/read, checklist response, and daily note entry/read |
+| `read_only_reviewer`        | Student/goal/progress/analytics/report/behavior/FBA/intervention/accommodation/service/contact/communication/meeting/classroom/EF/daily-note read                                                                                                                               |
+| `platform_admin`            | Reserved; no blanket student access in the app matrix                                                                                                                                                                                                                           |
 
 ## Core Authorization Principle
 

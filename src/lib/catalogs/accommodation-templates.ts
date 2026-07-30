@@ -17,7 +17,10 @@ const presentation = [
   ["Enlarged print materials", "Student materials are provided in enlarged print."],
   ["Visual supports on worksheet", "Icons or color cues mark each section of the task."],
   ["Audio version of text", "Student accesses an audio version while following along in print."],
-  ["Simplified language directions", "Directions are rewritten in concise, student-friendly language."],
+  [
+    "Simplified language directions",
+    "Directions are rewritten in concise, student-friendly language.",
+  ],
   ["Preview of vocabulary", "Critical vocabulary is previewed before a reading or lesson."],
 ];
 
@@ -27,9 +30,18 @@ const response = [
   ["Oral response option", "Student may respond orally when writing is not the measured skill."],
   ["Word processor for writing", "Student completes written products on a word processor."],
   ["Answer on test booklet", "Student marks answers directly in the test booklet."],
-  ["Graphic organizer for writing", "Student plans responses with a graphic organizer before drafting."],
-  ["Reduced written output", "Student completes a reduced number of written items that still measure the skill."],
-  ["Calculator for calculation", "Student uses a calculator when calculation fluency is not the target skill."],
+  [
+    "Graphic organizer for writing",
+    "Student plans responses with a graphic organizer before drafting.",
+  ],
+  [
+    "Reduced written output",
+    "Student completes a reduced number of written items that still measure the skill.",
+  ],
+  [
+    "Calculator for calculation",
+    "Student uses a calculator when calculation fluency is not the target skill.",
+  ],
 ];
 
 const timing = [
@@ -42,18 +54,30 @@ const timing = [
 
 const setting = [
   ["Small-group setting", "Student completes designated work in a small-group environment."],
-  ["Preferential seating", "Student is seated to reduce distractions and increase access to instruction."],
+  [
+    "Preferential seating",
+    "Student is seated to reduce distractions and increase access to instruction.",
+  ],
   ["Separate quiet space", "Student may complete assessments in a quiet separate location."],
-  ["Proximity to instruction", "Student is positioned near the point of instruction for redirection."],
+  [
+    "Proximity to instruction",
+    "Student is positioned near the point of instruction for redirection.",
+  ],
   ["Reduced visual clutter workspace", "Student workspace is cleared of nonessential materials."],
 ];
 
 const scheduling = [
   ["Visual schedule", "Student follows a visual schedule for transitions and daily routines."],
-  ["Advance notice of changes", "Student receives advance notice before schedule or routine changes."],
+  [
+    "Advance notice of changes",
+    "Student receives advance notice before schedule or routine changes.",
+  ],
   ["First-then board", "Student uses a first-then board for nonpreferred to preferred sequences."],
   ["Transition warnings", "Student receives countdown warnings before transitions."],
-  ["Check-in before independent work", "Adult checks understanding before independent work begins."],
+  [
+    "Check-in before independent work",
+    "Adult checks understanding before independent work begins.",
+  ],
 ];
 
 const behavioral = [
@@ -64,11 +88,7 @@ const behavioral = [
   ["Self-monitoring sheet", "Student rates on-task behavior with adult review."],
 ];
 
-function expand(
-  prefix: string,
-  area: string,
-  rows: string[][],
-): AccommodationTemplate[] {
+function expand(prefix: string, area: string, rows: string[][]): AccommodationTemplate[] {
   return rows.map(([name, description], index) =>
     item(
       `${prefix}-${index + 1}`,

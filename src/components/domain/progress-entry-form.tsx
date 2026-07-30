@@ -104,7 +104,9 @@ export function ProgressEntryForm({
           </Select>
         </FormField>
         {selectedGoal ? (
-          <p className="text-muted text-sm">Selected measurement type suggestion: {selectedGoal.measurement_type}</p>
+          <p className="text-muted text-sm">
+            Selected measurement type suggestion: {selectedGoal.measurement_type}
+          </p>
         ) : null}
         <div className="grid gap-4 sm:grid-cols-3">
           <FormField id="sessionDate" label="Session date">
@@ -143,13 +145,25 @@ export function ProgressEntryForm({
             <Input id="correctCount" name="correctCount" type="number" min="0" defaultValue="0" />
           </FormField>
           <FormField id="totalOpportunities" label="Total opportunities">
-            <Input id="totalOpportunities" name="totalOpportunities" type="number" min="1" defaultValue="1" />
+            <Input
+              id="totalOpportunities"
+              name="totalOpportunities"
+              type="number"
+              min="1"
+              defaultValue="1"
+            />
           </FormField>
           <FormField id="countValue" label="Count value">
             <Input id="countValue" name="countValue" type="number" min="0" defaultValue="0" />
           </FormField>
           <FormField id="observationDurationSeconds" label="Duration seconds">
-            <Input id="observationDurationSeconds" name="observationDurationSeconds" type="number" min="1" defaultValue="60" />
+            <Input
+              id="observationDurationSeconds"
+              name="observationDurationSeconds"
+              type="number"
+              min="1"
+              defaultValue="60"
+            />
           </FormField>
         </div>
         <div className="grid gap-4 sm:grid-cols-4">
@@ -160,7 +174,13 @@ export function ProgressEntryForm({
             <Input id="errorCount" name="errorCount" type="number" min="0" defaultValue="0" />
           </FormField>
           <FormField id="readingTimeSeconds" label="Reading seconds">
-            <Input id="readingTimeSeconds" name="readingTimeSeconds" type="number" min="1" defaultValue="60" />
+            <Input
+              id="readingTimeSeconds"
+              name="readingTimeSeconds"
+              type="number"
+              min="1"
+              defaultValue="60"
+            />
           </FormField>
           <FormField id="rateUnit" label="Rate unit">
             <Select id="rateUnit" name="rateUnit" defaultValue="per_minute">
@@ -180,7 +200,13 @@ export function ProgressEntryForm({
             <Input id="rubricScore" name="rubricScore" type="number" min="0" defaultValue="0" />
           </FormField>
           <FormField id="independenceValue" label="Independence value">
-            <Input id="independenceValue" name="independenceValue" type="number" min="0" defaultValue="0" />
+            <Input
+              id="independenceValue"
+              name="independenceValue"
+              type="number"
+              min="0"
+              defaultValue="0"
+            />
           </FormField>
         </div>
         <div className="grid gap-4 sm:grid-cols-4">
@@ -188,7 +214,13 @@ export function ProgressEntryForm({
             <Input id="promptLevel" name="promptLevel" defaultValue="unspecified" />
           </FormField>
           <FormField id="customNumericValue" label="Custom numeric value">
-            <Input id="customNumericValue" name="customNumericValue" type="number" step="any" defaultValue="0" />
+            <Input
+              id="customNumericValue"
+              name="customNumericValue"
+              type="number"
+              step="any"
+              defaultValue="0"
+            />
           </FormField>
           <FormField id="customUnit" label="Custom unit">
             <Input id="customUnit" name="customUnit" defaultValue="units" />

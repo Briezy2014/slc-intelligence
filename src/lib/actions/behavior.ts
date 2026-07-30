@@ -19,7 +19,10 @@ import {
   fbaWorkspaceSchema,
 } from "@/lib/validation/behavior";
 
-async function behaviorSessionById(context: Awaited<ReturnType<typeof getActionContext>>, sessionId: string) {
+async function behaviorSessionById(
+  context: Awaited<ReturnType<typeof getActionContext>>,
+  sessionId: string,
+) {
   if (!("supabase" in context)) return null;
   const { data, error } = await context.supabase
     .from("behavior_observation_sessions")
@@ -60,14 +63,14 @@ export async function saveBehaviorDefinitionAction(formData: FormData): Promise<
 
   try {
     const studentId = values.behaviorId
-      ? (
+      ? ((
           await context.supabase
             .from("behavior_definitions")
             .select("student_id")
             .eq("organization_id", context.organizationId)
             .eq("id", values.behaviorId)
             .maybeSingle()
-        ).data?.student_id ?? values.studentId
+        ).data?.student_id ?? values.studentId)
       : values.studentId;
     if (!(await canBehavior(context, "can_define_behavior", studentId))) {
       return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
@@ -94,8 +97,14 @@ export async function saveBehaviorDefinitionAction(formData: FormData): Promise<
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
 
     if (values.behaviorId) {
-      await context.supabase.from("behavior_definition_examples").delete().eq("behavior_definition_id", result.data.id);
-      await context.supabase.from("behavior_definition_nonexamples").delete().eq("behavior_definition_id", result.data.id);
+      await context.supabase
+        .from("behavior_definition_examples")
+        .delete()
+        .eq("behavior_definition_id", result.data.id);
+      await context.supabase
+        .from("behavior_definition_nonexamples")
+        .delete()
+        .eq("behavior_definition_id", result.data.id);
     }
     const exampleRows = lines(values.examples).map((example, index) => ({
       behavior_definition_id: result.data.id,
@@ -107,8 +116,10 @@ export async function saveBehaviorDefinitionAction(formData: FormData): Promise<
       nonexample_text: nonexample,
       sort_order: index + 1,
     }));
-    if (exampleRows.length) await context.supabase.from("behavior_definition_examples").insert(exampleRows);
-    if (nonexampleRows.length) await context.supabase.from("behavior_definition_nonexamples").insert(nonexampleRows);
+    if (exampleRows.length)
+      await context.supabase.from("behavior_definition_examples").insert(exampleRows);
+    if (nonexampleRows.length)
+      await context.supabase.from("behavior_definition_nonexamples").insert(nonexampleRows);
 
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -117,7 +128,11 @@ export async function saveBehaviorDefinitionAction(formData: FormData): Promise<
       resourceType: "behavior_definition",
       resourceId: result.data.id,
       newState: payload,
-      paths: ["/behavior-detective", `/students/${studentId}/behavior`, `/students/${studentId}/behavior/definitions`],
+      paths: [
+        "/behavior-detective",
+        `/students/${studentId}/behavior`,
+        `/students/${studentId}/behavior/definitions`,
+      ],
     });
     return { status: "success", message: "Behavior definition saved." };
   } catch {
@@ -185,7 +200,9 @@ export async function saveBehaviorObservationAction(formData: FormData): Promise
         total_duration_seconds: values.totalDurationSeconds,
         episode_count: values.episodeCount,
         average_episode_seconds:
-          values.episodeCount > 0 ? Number((values.totalDurationSeconds / values.episodeCount).toFixed(4)) : null,
+          values.episodeCount > 0
+            ? Number((values.totalDurationSeconds / values.episodeCount).toFixed(4))
+            : null,
       });
     } else if (values.measurementMethod === "latency") {
       await context.supabase.from("latency_observations").insert({
@@ -201,7 +218,10 @@ export async function saveBehaviorObservationAction(formData: FormData): Promise
         interval_duration_seconds: values.intervalDurationSeconds,
         interval_count: values.intervalCount,
         intervals_positive: values.intervalsPositive,
-        percentage_of_intervals: calculateIntervalPercentage(values.intervalsPositive, values.intervalCount),
+        percentage_of_intervals: calculateIntervalPercentage(
+          values.intervalsPositive,
+          values.intervalCount,
+        ),
         interval_results: [],
       });
     } else {
@@ -279,7 +299,10 @@ async function updateBehaviorStatus(
       resourceId: session.id,
       previousState: { status: session.status },
       newState: { status: toStatus },
-      paths: [`/students/${session.student_id}/behavior/observations`, `/students/${session.student_id}/behavior/analytics`],
+      paths: [
+        `/students/${session.student_id}/behavior/observations`,
+        `/students/${session.student_id}/behavior/analytics`,
+      ],
     });
     return { status: "success", message: "Behavior observation updated." };
   } catch {
@@ -325,7 +348,11 @@ export async function saveFbaWorkspaceAction(formData: FormData): Promise<Action
           .eq("id", values.workspaceId)
           .select("id")
           .single()
-      : await context.supabase.from("fba_evidence_workspaces").insert(payload).select("id").single();
+      : await context.supabase
+          .from("fba_evidence_workspaces")
+          .insert(payload)
+          .select("id")
+          .single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -334,7 +361,10 @@ export async function saveFbaWorkspaceAction(formData: FormData): Promise<Action
       resourceType: "fba_evidence_workspace",
       resourceId: result.data.id,
       newState: payload,
-      paths: [`/students/${values.studentId}/behavior/fba-support`, `/students/${values.studentId}/behavior/analytics`],
+      paths: [
+        `/students/${values.studentId}/behavior/fba-support`,
+        `/students/${values.studentId}/behavior/analytics`,
+      ],
     });
     return { status: "success", message: "FBA workspace saved." };
   } catch {

@@ -44,7 +44,8 @@ export const ADMIN_METRIC_DEFINITIONS: AdminMetricDefinition[] = [
   {
     key: "active_staff",
     label: "Active staff memberships",
-    explanation: "Count of active organization memberships in the authorized scope. Not a performance ranking.",
+    explanation:
+      "Count of active organization memberships in the authorized scope. Not a performance ranking.",
     suppress: true,
   },
   {
@@ -204,11 +205,13 @@ export function presentMetrics(
 ): AdminMetricValue[] {
   return ADMIN_METRIC_DEFINITIONS.map((def) => {
     const value = raw[def.key] ?? null;
-    const result = def.suppress ? suppressCount(value, minGroupSize) : {
-      suppressed: false,
-      value,
-      display: value === null ? "No finalized record found" : String(value),
-    };
+    const result = def.suppress
+      ? suppressCount(value, minGroupSize)
+      : {
+          suppressed: false,
+          value,
+          display: value === null ? "No finalized record found" : String(value),
+        };
     return {
       key: def.key,
       label: def.label,

@@ -32,7 +32,10 @@ async function reportById(context: Awaited<ReturnType<typeof getActionContext>>,
   return data;
 }
 
-async function canDraftReport(context: Awaited<ReturnType<typeof getActionContext>>, studentId: string) {
+async function canDraftReport(
+  context: Awaited<ReturnType<typeof getActionContext>>,
+  studentId: string,
+) {
   if (!("supabase" in context)) return false;
   const { data, error } = await context.supabase.rpc("can_draft_report", {
     p_org_id: context.organizationId,
@@ -41,7 +44,10 @@ async function canDraftReport(context: Awaited<ReturnType<typeof getActionContex
   return !error && Boolean(data);
 }
 
-async function canFinalizeReport(context: Awaited<ReturnType<typeof getActionContext>>, studentId: string) {
+async function canFinalizeReport(
+  context: Awaited<ReturnType<typeof getActionContext>>,
+  studentId: string,
+) {
   if (!("supabase" in context)) return false;
   const { data, error } = await context.supabase.rpc("can_finalize_report", {
     p_org_id: context.organizationId,
@@ -152,7 +158,10 @@ export async function createProgressReportAction(formData: FormData): Promise<Ac
           goal_id: goal.id,
           goal_statement_snapshot: goal.goal_statement,
           baseline_snapshot: {},
-          target_snapshot: { target_value: goal.target_value, target_direction: goal.target_direction } as Json,
+          target_snapshot: {
+            target_value: goal.target_value,
+            target_direction: goal.target_direction,
+          } as Json,
           period_start: period.start_date,
           period_end: period.end_date,
           data_sufficiency_status: "not_reviewed",
@@ -252,7 +261,11 @@ async function updateReportStatus(
 
     const update =
       toStatus === "finalized"
-        ? { status: toStatus, finalized_at: new Date().toISOString(), finalized_by: context.user.id }
+        ? {
+            status: toStatus,
+            finalized_at: new Date().toISOString(),
+            finalized_by: context.user.id,
+          }
         : toStatus === "corrected"
           ? { status: toStatus, corrected_at: new Date().toISOString() }
           : { status: toStatus };
@@ -293,7 +306,12 @@ async function updateReportStatus(
       resourceId: report.id,
       previousState: { status: report.status },
       newState: { status: toStatus },
-      paths: ["/reports", `/reports/${report.id}`, `/reports/${report.id}/history`, `/students/${report.student_id}/reports`],
+      paths: [
+        "/reports",
+        `/reports/${report.id}`,
+        `/reports/${report.id}/history`,
+        `/students/${report.student_id}/reports`,
+      ],
     });
     return { status: "success", message: "Progress report updated." };
   } catch {
@@ -302,7 +320,12 @@ async function updateReportStatus(
 }
 
 export async function submitReportForReviewAction(formData: FormData): Promise<ActionState> {
-  return updateReportStatus(formData, "ready_for_review", "draft", "progress_report.submit_for_review");
+  return updateReportStatus(
+    formData,
+    "ready_for_review",
+    "draft",
+    "progress_report.submit_for_review",
+  );
 }
 
 export async function finalizeReportAction(formData: FormData): Promise<ActionState> {
@@ -382,4 +405,3 @@ export async function recordReportExportAction(formData: FormData): Promise<Acti
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
   }
 }
-
