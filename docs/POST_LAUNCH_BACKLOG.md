@@ -25,7 +25,7 @@ Categories:
 | Reporting improvement | Additional print/PDF layouts |
 | Administrative improvement | Optional dashboard personalization |
 | User-experience improvement | Richer onboarding guidance for first organization setup |
-| Future AI feature | Deferred pending product-owner Phase 19 authorization |
+| Future AI feature | Expand AI Assist with org-level disable controls and evidence-grounded report drafting |
 | High-priority defect | Track Next.js transitive postcss/sharp advisories for upgrade |
 
 Never include real student information in backlog tickets or screenshots.

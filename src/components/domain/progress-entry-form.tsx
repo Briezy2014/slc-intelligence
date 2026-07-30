@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/ui/alert";
+import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import { saveProgressSessionAction } from "@/lib/actions/progress";
 import type { IepGoal, Student } from "@/lib/supabase/types";
 
@@ -52,6 +53,11 @@ export function ProgressEntryForm({
           template or write a custom goal, then return here.
         </Alert>
       ) : null}
+      <AiAssistPanel
+        domain="progress"
+        title="AI Assist · Rapid progress"
+        description="Generate a reviewable progress-session checklist and note prompts for the focus you enter."
+      />
       <form action={submitAction(saveProgressSessionAction)} className="space-y-4">
         <input type="hidden" name="organizationId" value={organizationId} />
         <FormField id="studentId" label="Student">

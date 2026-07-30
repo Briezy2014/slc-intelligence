@@ -25,6 +25,7 @@ const PROTECTED_PREFIXES = [
   "/executive-function",
   "/classroom-operations",
   "/administrative-intelligence",
+  "/ai-assist",
 ];
 
 const AUTH_PREFIXES = ["/sign-in", "/forgot-password", "/reset-password", "/auth/callback"];

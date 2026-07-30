@@ -14,6 +14,7 @@ import {
   applyCommunicationTemplate,
   getCommunicationTemplate,
 } from "@/lib/catalogs";
+import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import type { Student, StudentContact } from "@/lib/supabase/types";
 
 function submitAction(action: (formData: FormData) => Promise<unknown>) {
@@ -82,6 +83,17 @@ export function ContactAndCommunicationForms({
           .
         </Alert>
       ) : null}
+      <AiAssistPanel
+        domain="communication"
+        title="AI Assist · Family communication"
+        description="Generate reviewable parent/guardian communication drafts from your focus area."
+        onApply={(suggestion) => {
+          setSubject(suggestion.fields?.subject ?? suggestion.title);
+          setSummary(suggestion.fields?.summary ?? suggestion.draftText);
+          if (suggestion.fields?.visibility) setVisibility(suggestion.fields.visibility);
+          if (suggestion.fields?.focusArea) setFocusArea(suggestion.fields.focusArea);
+        }}
+      />
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="border-border bg-background-elevated rounded-[var(--radius-lg)] border p-4">
           <h3 className="text-lg font-semibold">Contact</h3>
