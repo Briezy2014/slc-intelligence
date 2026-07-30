@@ -7,6 +7,7 @@ export const PUBLIC_NAV = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/privacy", label: "Privacy" },
+  { href: "/pilot-use", label: "Pilot use" },
   { href: "/terms", label: "Terms" },
   { href: "/accessibility", label: "Accessibility" },
   { href: "/support", label: "Support" },

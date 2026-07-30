@@ -22,8 +22,12 @@ export default function PrivacyPage() {
         </p>
         <p>
           Protected student, family, behavior, service, meeting, and narrative content must remain
-          inside authorized organization scopes. Development and demonstration environments use
-          fictional data only.
+          inside authorized organization scopes. Development, demonstration, and the current
+          classroom pilot use coded or fictional data only. See the{" "}
+          <a className="text-highlight underline-offset-4 hover:underline" href="/pilot-use">
+            pilot use rules
+          </a>
+          .
         </p>
         <p>
           Aggregate Administrative Intelligence values may be suppressed below a configured
