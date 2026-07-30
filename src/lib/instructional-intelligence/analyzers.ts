@@ -274,7 +274,7 @@ export function toParentFriendlySummary(technicalText: string): string {
   const text = technicalText.trim();
   if (!text) return "Paste technical IEP/ETR/progress language to create a parent-friendly summary.";
 
-  let summary = text
+  const summary = text
     .replace(/\bPLAAFP\b/gi, "present levels (how your child is doing now)")
     .replace(/\bETR\b/gi, "evaluation team report")
     .replace(/\bIEP\b/gi, "individualized education program (IEP)")
