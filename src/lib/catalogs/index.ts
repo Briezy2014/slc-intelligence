@@ -1,0 +1,28 @@
+import { ACCOMMODATION_TEMPLATES } from "@/lib/catalogs/accommodation-templates";
+import { COMMUNICATION_TEMPLATES } from "@/lib/catalogs/communication-templates";
+import { EF_SKILL_TEMPLATES } from "@/lib/catalogs/ef-skill-templates";
+import { GOAL_TEMPLATES } from "@/lib/catalogs/goal-templates";
+import { INTERVENTION_TEMPLATES } from "@/lib/catalogs/intervention-templates";
+
+export * from "@/lib/catalogs/types";
+export * from "@/lib/catalogs/goal-templates";
+export * from "@/lib/catalogs/intervention-templates";
+export * from "@/lib/catalogs/accommodation-templates";
+export * from "@/lib/catalogs/ef-skill-templates";
+export * from "@/lib/catalogs/communication-templates";
+
+export function getStarterCatalogCounts() {
+  return {
+    goals: GOAL_TEMPLATES.length,
+    interventions: INTERVENTION_TEMPLATES.length,
+    accommodations: ACCOMMODATION_TEMPLATES.length,
+    executiveFunctionSkills: EF_SKILL_TEMPLATES.length,
+    communicationTemplates: COMMUNICATION_TEMPLATES.length,
+    total:
+      GOAL_TEMPLATES.length +
+      INTERVENTION_TEMPLATES.length +
+      ACCOMMODATION_TEMPLATES.length +
+      EF_SKILL_TEMPLATES.length +
+      COMMUNICATION_TEMPLATES.length,
+  };
+}
