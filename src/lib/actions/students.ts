@@ -57,6 +57,12 @@ export async function saveStudentAction(formData: FormData): Promise<ActionState
       enrollment_status: values.enrollmentStatus,
       start_date: values.startDate ?? null,
       end_date: values.endDate ?? null,
+      has_iep: values.hasIep === "true",
+      has_section_504: values.hasSection504 === "true",
+      has_gifted: values.hasGifted === "true",
+      has_english_learner: values.hasEnglishLearner === "true",
+      home_language: values.homeLanguage ?? null,
+      support_plan_notes: values.supportPlanNotes ?? null,
       created_by: values.studentId ? undefined : context.user.id,
       updated_by: context.user.id,
     };

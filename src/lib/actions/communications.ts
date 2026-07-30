@@ -10,11 +10,16 @@ import {
   UNAUTHORIZED_ACTION_MESSAGE,
   validationError,
 } from "@/lib/actions/shared";
+import { translateCommunicationDraft } from "@/lib/ai/translate";
 import { familyVisibleCommunicationExport } from "@/lib/data/communications";
+import { isServerSupabaseConfigured } from "@/lib/env";
+import { requireActiveMembership } from "@/lib/org/context";
 import {
+  communicationAcknowledgementSchema,
   communicationLogSchema,
   communicationTemplateSchema,
   contactSchema,
+  translateCommunicationSchema,
 } from "@/lib/validation/communications";
 
 async function canCommunication(
@@ -106,6 +111,10 @@ export async function saveCommunicationLogAction(formData: FormData): Promise<Ac
       visibility: values.visibility,
       subject: values.subject,
       summary: values.summary,
+      language_code: values.languageCode,
+      source_language_code: values.sourceLanguageCode,
+      source_summary: values.sourceSummary || null,
+      acknowledgement_requested: Boolean(values.acknowledgementRequested),
       followup_needed: values.followupNeeded,
       status: values.status,
       finalized_at: values.status === "finalized" ? new Date().toISOString() : null,
@@ -230,6 +239,105 @@ export async function recordFamilyCommunicationExportAction(
       paths: ["/family-communication"],
     });
     return { status: "success", message: "Family-visible communication export recorded." };
+  } catch {
+    return { status: "error", message: GENERIC_ACTION_MESSAGE };
+  }
+}
+
+export async function translateCommunicationDraftAction(input: {
+  subject: string;
+  summary: string;
+  targetLanguageCode: string;
+}) {
+  const parsed = translateCommunicationSchema.safeParse(input);
+  if (!parsed.success) {
+    return {
+      ok: false as const,
+      mode: "disabled" as const,
+      subject: input.subject,
+      summary: input.summary,
+      languageCode: input.targetLanguageCode,
+      message: "Check subject, summary, and language before translating.",
+    };
+  }
+
+  if (isServerSupabaseConfigured()) {
+    try {
+      await requireActiveMembership();
+    } catch {
+      return {
+        ok: false as const,
+        mode: "disabled" as const,
+        subject: parsed.data.subject,
+        summary: parsed.data.summary,
+        languageCode: parsed.data.targetLanguageCode,
+        message: "Sign in with an active membership to translate drafts.",
+      };
+    }
+  }
+
+  return translateCommunicationDraft(parsed.data);
+}
+
+export async function recordCommunicationAcknowledgementAction(
+  formData: FormData,
+): Promise<ActionState> {
+  const parsed = communicationAcknowledgementSchema.safeParse(
+    emptyToUndefined(formDataToObject(formData)),
+  );
+  if (!parsed.success) return validationError(parsed.error);
+  const values = parsed.data;
+  const context = await getActionContext(values.organizationId);
+  if (!("supabase" in context)) return context;
+
+  try {
+    if (!(await canCommunication(context, "can_enter_communication", values.studentId))) {
+      return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
+    }
+
+    const payload = {
+      organization_id: context.organizationId,
+      communication_log_id: values.communicationLogId,
+      student_id: values.studentId,
+      signer_display_name: values.signerDisplayName,
+      signer_email: values.signerEmail || null,
+      method: values.method,
+      status: values.status,
+      typed_signature: values.typedSignature || values.signerDisplayName,
+      notes: values.notes || null,
+      recorded_by: context.user.id,
+      signed_at: new Date().toISOString(),
+    };
+
+    const { data, error } = await context.supabase
+      .from("communication_acknowledgements")
+      .insert(payload)
+      .select("id")
+      .single();
+    if (error || !data) return { status: "error", message: GENERIC_ACTION_MESSAGE };
+
+    await auditAndRevalidate({
+      organizationId: context.organizationId,
+      actorUserId: context.user.id,
+      actionType: "communication.esign_captured",
+      resourceType: "communication_acknowledgement",
+      resourceId: data.id,
+      newState: {
+        communication_log_id: values.communicationLogId,
+        method: values.method,
+        status: values.status,
+      },
+      paths: [
+        "/family-communication",
+        `/students/${values.studentId}/family-communication/communications`,
+      ],
+    });
+
+    return {
+      status: "success",
+      message:
+        "Parent/guardian acknowledgement recorded. This is receipt acknowledgement, not IDEA consent.",
+    };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
   }

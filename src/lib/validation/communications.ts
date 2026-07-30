@@ -30,10 +30,35 @@ export const communicationLogSchema = z.object({
   visibility: z.enum(["family_visible", "internal", "restricted_admin"]).default("family_visible"),
   subject: z.string().trim().min(1, "Subject is required.").max(180),
   summary: z.string().trim().min(1, "Summary is required.").max(4000),
+  languageCode: z.string().trim().min(2).max(16).default("en"),
+  sourceLanguageCode: z.string().trim().min(2).max(16).default("en"),
+  sourceSummary: z.string().trim().max(4000).optional().or(z.literal("")),
+  acknowledgementRequested: z.preprocess(
+    (value) => value === true || value === "true" || value === "on",
+    z.boolean(),
+  ),
   followupNeeded: z.coerce.boolean().default(false),
   followupDescription: z.string().trim().max(2000).optional(),
   followupDueDate: z.string().date().optional().or(z.literal("")),
   status: z.enum(["draft", "finalized", "corrected", "archived"]).default("draft"),
+});
+
+export const communicationAcknowledgementSchema = z.object({
+  organizationId: z.string().uuid(),
+  communicationLogId: z.string().uuid(),
+  studentId: z.string().uuid(),
+  signerDisplayName: z.string().trim().min(1, "Signer name is required.").max(180),
+  signerEmail: z.string().trim().email().optional().or(z.literal("")),
+  method: z.enum(["typed", "drawn", "staff_attested"]).default("typed"),
+  status: z.enum(["acknowledged", "reviewed", "requested_clarification"]).default("acknowledged"),
+  typedSignature: z.string().trim().max(180).optional().or(z.literal("")),
+  notes: z.string().trim().max(2000).optional().or(z.literal("")),
+});
+
+export const translateCommunicationSchema = z.object({
+  subject: z.string().trim().min(1).max(180),
+  summary: z.string().trim().min(1).max(4000),
+  targetLanguageCode: z.string().trim().min(2).max(16),
 });
 
 export const communicationTemplateSchema = z.object({
