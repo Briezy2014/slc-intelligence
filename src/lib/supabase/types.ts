@@ -226,6 +226,12 @@ export type Student = {
   enrollment_status: RecordStatus;
   start_date: Nullable<DateString>;
   end_date: Nullable<DateString>;
+  has_iep: boolean;
+  has_section_504: boolean;
+  has_gifted: boolean;
+  has_english_learner: boolean;
+  home_language: Nullable<string>;
+  support_plan_notes: Nullable<string>;
   created_by: Nullable<Uuid>;
   updated_by: Nullable<Uuid>;
   archived_at: Nullable<Timestamp>;
@@ -341,8 +347,32 @@ export type OrganizationAccessRequest = {
   updated_at: Timestamp;
 };
 
-export type EducationDocumentType = "iep" | "etr" | "progress_report";
+export type EducationDocumentType =
+  | "iep"
+  | "etr"
+  | "progress_report"
+  | "section_504"
+  | "gifted"
+  | "el";
 export type EducationDocumentStatus = "draft" | "in_review" | "finalized" | "archived";
+
+export type DistrictFormTemplate = {
+  id: Uuid;
+  organization_id: Uuid;
+  document_type: EducationDocumentType | "other";
+  name: string;
+  description: Nullable<string>;
+  file_name: Nullable<string>;
+  content_type: Nullable<string>;
+  byte_size: Nullable<number>;
+  storage_path: Nullable<string>;
+  extracted_text: Nullable<string>;
+  is_blank_master: boolean;
+  active: boolean;
+  created_by: Nullable<Uuid>;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
 
 export type EducationDocument = {
   id: Uuid;
@@ -1445,12 +1475,34 @@ export type CommunicationLog = {
   visibility: CommunicationVisibility;
   subject: string;
   summary: string;
+  language_code: string;
+  source_language_code: string;
+  source_summary: Nullable<string>;
+  acknowledgement_requested: boolean;
   followup_needed: boolean;
   status: BehaviorObservationStatus;
   finalized_at: Nullable<Timestamp>;
   finalized_by: Nullable<Uuid>;
   corrected_from_log_id: Nullable<Uuid>;
   created_by: Nullable<Uuid>;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
+export type CommunicationAcknowledgement = {
+  id: Uuid;
+  organization_id: Uuid;
+  communication_log_id: Uuid;
+  student_id: Uuid;
+  signer_display_name: string;
+  signer_email: Nullable<string>;
+  method: "typed" | "drawn" | "staff_attested";
+  status: "acknowledged" | "reviewed" | "requested_clarification";
+  typed_signature: Nullable<string>;
+  content_hash: Nullable<string>;
+  notes: Nullable<string>;
+  signed_at: Timestamp;
+  recorded_by: Nullable<Uuid>;
   created_at: Timestamp;
   updated_at: Timestamp;
 };
@@ -1904,6 +1956,11 @@ export type Database = {
         Partial<EducationDocumentUpload>,
         Partial<EducationDocumentUpload>
       >;
+      district_form_templates: RowDefinition<
+        DistrictFormTemplate,
+        Partial<DistrictFormTemplate>,
+        Partial<DistrictFormTemplate>
+      >;
       schools: RowDefinition<School, Partial<School>, Partial<School>>;
       programs: RowDefinition<Program, Partial<Program>, Partial<Program>>;
       classrooms: RowDefinition<Classroom, Partial<Classroom>, Partial<Classroom>>;
@@ -2279,6 +2336,11 @@ export type Database = {
         CommunicationLog,
         Partial<CommunicationLog>,
         Partial<CommunicationLog>
+      >;
+      communication_acknowledgements: RowDefinition<
+        CommunicationAcknowledgement,
+        Partial<CommunicationAcknowledgement>,
+        Partial<CommunicationAcknowledgement>
       >;
       communication_participants: RowDefinition<
         CommunicationParticipant,

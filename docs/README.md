@@ -92,6 +92,7 @@ When documents conflict, surface the conflict for product-owner resolution. Do n
 | `ISSUE_TEMPLATE.md`                  | Post-launch issue template                       |
 | `PRODUCTION_RELEASE_NOTES.md`        | Finished-product release notes                   |
 | `KNOWN_LIMITATIONS.md`               | Known limitations after launch                   |
+| `COMMUNICATION_TRANSLATION_AND_PLANS.md` | Template/language translate, ack, 504/Gifted/EL |
 
 Supporting documents refine these authorities and must remain consistent with them.
 

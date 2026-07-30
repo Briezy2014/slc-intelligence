@@ -1,6 +1,7 @@
 # Known Limitations
 
 1. Legal privacy/terms pages are placeholders pending counsel review.
+1b. Communication translation, parent acknowledgements, 504/Gifted/EL drafts, and district blank templates require SQL migration `202607300013_comms_translation_plans_district_forms.sql`. Translation needs AI Assist model config for automatic translate.
 2. No paid error-monitoring SaaS is configured (awaiting approval).
 3. Administrative Intelligence is documentation-oriented and does not assert legal sufficiency.
 4. Small-group suppression reduces but does not eliminate all inference risk.

@@ -280,6 +280,67 @@ export function StudentForm({
           <Input id="endDate" name="endDate" type="date" defaultValue={student?.end_date ?? ""} />
         </FormField>
       </div>
+      <div className="space-y-3 rounded-[var(--radius-md)] border border-border p-4">
+        <h3 className="font-semibold">Support plans</h3>
+        <p className="text-muted text-sm">
+          Staff caseload flags for IEP, Section 504, Gifted, and English learner (EL). These are
+          organizational indicators, not legal determinations.
+        </p>
+        <div className="grid gap-4 sm:grid-cols-2">
+          <FormField id="hasIep" label="IEP">
+            <Select id="hasIep" name="hasIep" defaultValue={student?.has_iep ? "true" : "false"}>
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </Select>
+          </FormField>
+          <FormField id="hasSection504" label="Section 504">
+            <Select
+              id="hasSection504"
+              name="hasSection504"
+              defaultValue={student?.has_section_504 ? "true" : "false"}
+            >
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </Select>
+          </FormField>
+          <FormField id="hasGifted" label="Gifted">
+            <Select
+              id="hasGifted"
+              name="hasGifted"
+              defaultValue={student?.has_gifted ? "true" : "false"}
+            >
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </Select>
+          </FormField>
+          <FormField id="hasEnglishLearner" label="English learner (EL)">
+            <Select
+              id="hasEnglishLearner"
+              name="hasEnglishLearner"
+              defaultValue={student?.has_english_learner ? "true" : "false"}
+            >
+              <option value="false">No</option>
+              <option value="true">Yes</option>
+            </Select>
+          </FormField>
+        </div>
+        <FormField id="homeLanguage" label="Home language (optional)">
+          <Input
+            id="homeLanguage"
+            name="homeLanguage"
+            defaultValue={student?.home_language ?? ""}
+            placeholder="Spanish, Arabic, etc."
+          />
+        </FormField>
+        <FormField id="supportPlanNotes" label="Support plan notes (optional)">
+          <Textarea
+            id="supportPlanNotes"
+            name="supportPlanNotes"
+            defaultValue={student?.support_plan_notes ?? ""}
+            placeholder="Brief caseload notes only — avoid unnecessary PII"
+          />
+        </FormField>
+      </div>
       <Button type="submit">{student ? "Save student" : "Create student"}</Button>
     </form>
   );

@@ -6,6 +6,7 @@ import {
   type DataState,
 } from "@/lib/data/shared";
 import type {
+  DistrictFormTemplate,
   EducationDocument,
   EducationDocumentType,
   EducationDocumentUpload,
@@ -17,6 +18,7 @@ export type EducationDocumentsData = {
   students: Student[];
   documents: EducationDocument[];
   uploads: EducationDocumentUpload[];
+  districtTemplates: DistrictFormTemplate[];
   permissions: {
     canManage: boolean;
     canRead: boolean;
@@ -28,6 +30,7 @@ const empty: EducationDocumentsData = {
   students: [],
   documents: [],
   uploads: [],
+  districtTemplates: [],
   permissions: { canManage: false, canRead: false },
 };
 
@@ -66,15 +69,22 @@ export async function listEducationDocuments(
       uploadsQuery = uploadsQuery.eq("document_type", options.documentType);
     }
 
-    const [studentsResult, documentsResult, uploadsResult] = await Promise.all([
-      context.supabase
-        .from("students")
-        .select("*")
-        .eq("organization_id", context.organizationId)
-        .order("last_name"),
-      documentsQuery,
-      uploadsQuery,
-    ]);
+    const [studentsResult, documentsResult, uploadsResult, districtTemplatesResult] =
+      await Promise.all([
+        context.supabase
+          .from("students")
+          .select("*")
+          .eq("organization_id", context.organizationId)
+          .order("last_name"),
+        documentsQuery,
+        uploadsQuery,
+        context.supabase
+          .from("district_form_templates")
+          .select("*")
+          .eq("organization_id", context.organizationId)
+          .eq("active", true)
+          .order("updated_at", { ascending: false }),
+      ]);
 
     if (studentsResult.error || documentsResult.error || uploadsResult.error) {
       return safeDataError(empty);
@@ -87,6 +97,10 @@ export async function listEducationDocuments(
         students: studentsResult.data ?? [],
         documents: (documentsResult.data ?? []) as EducationDocument[],
         uploads: (uploadsResult.data ?? []) as EducationDocumentUpload[],
+        // Empty until migration 202607300013 is applied.
+        districtTemplates: districtTemplatesResult.error
+          ? []
+          : ((districtTemplatesResult.data ?? []) as DistrictFormTemplate[]),
         permissions: {
           canManage: permissions["education_document.manage"],
           canRead:
