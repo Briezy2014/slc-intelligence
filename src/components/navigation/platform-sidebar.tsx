@@ -20,6 +20,7 @@ import {
   Settings2,
   Speech,
   ChartColumn,
+  Sparkles,
   Users,
   UsersRound,
 } from "lucide-react";
@@ -28,6 +29,7 @@ import { cn } from "@/lib/utilities";
 
 const ICONS = {
   "/command-center": Gauge,
+  "/ai-assist": Sparkles,
   "/students": Users,
   "/schools": School,
   "/programs": Layers3,

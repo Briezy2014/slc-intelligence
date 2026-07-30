@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/ui/alert";
+import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import { saveGoalAction } from "@/lib/actions/goals";
 import {
   GRADE_LEVELS,
@@ -89,7 +90,27 @@ export function GoalForm({
   }
 
   return (
-    <form action={submitAction(saveGoalAction)} className="space-y-4">
+    <div className="space-y-6">
+      <AiAssistPanel
+        domain="goal"
+        title="AI Assist · Goal drafting"
+        description="Suggest measurable goal language. Review and customize before saving."
+        onApply={(suggestion) => {
+          setProgressionId("");
+          setGoalArea(suggestion.fields?.goalArea ?? suggestion.title);
+          setGoalStatement(suggestion.fields?.goalStatement ?? suggestion.draftText);
+          if (suggestion.fields?.measurementType) {
+            setMeasurementType(suggestion.fields.measurementType as MeasurementTypeCode);
+          }
+          if (suggestion.fields?.targetDirection === "increase" || suggestion.fields?.targetDirection === "decrease") {
+            setTargetDirection(suggestion.fields.targetDirection);
+          }
+          if (suggestion.fields?.targetValue != null) {
+            setTargetValue(suggestion.fields.targetValue);
+          }
+        }}
+      />
+      <form action={submitAction(saveGoalAction)} className="space-y-4">
       <input type="hidden" name="organizationId" value={organizationId} />
       <input type="hidden" name="studentId" value={studentId} />
       {goal ? <input type="hidden" name="goalId" value={goal.id} /> : null}
@@ -279,5 +300,6 @@ export function GoalForm({
       </FormField>
       <Button type="submit">{goal ? "Save goal" : "Create goal"}</Button>
     </form>
+    </div>
   );
 }
