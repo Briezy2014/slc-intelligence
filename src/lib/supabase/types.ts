@@ -319,6 +319,26 @@ export type OrganizationInvitation = {
   updated_at: Timestamp;
 };
 
+export type AccessRequestStatus = "pending" | "approved" | "denied" | "cancelled";
+
+export type OrganizationAccessRequest = {
+  id: Uuid;
+  organization_id: Uuid;
+  requester_user_id: Nullable<Uuid>;
+  email: string;
+  full_name: string;
+  requested_role_codes: RoleCode[];
+  message: Nullable<string>;
+  status: AccessRequestStatus;
+  granted_role_code: Nullable<RoleCode>;
+  reviewed_by: Nullable<Uuid>;
+  reviewed_at: Nullable<Timestamp>;
+  review_note: Nullable<string>;
+  resulting_membership_id: Nullable<Uuid>;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
 export type SchoolStaffAssignment = {
   id: Uuid;
   organization_id: Uuid;
@@ -1820,6 +1840,11 @@ export type Database = {
         Partial<OrganizationInvitation>,
         Partial<OrganizationInvitation>
       >;
+      organization_access_requests: RowDefinition<
+        OrganizationAccessRequest,
+        Partial<OrganizationAccessRequest>,
+        Partial<OrganizationAccessRequest>
+      >;
       schools: RowDefinition<School, Partial<School>, Partial<School>>;
       programs: RowDefinition<Program, Partial<Program>, Partial<Program>>;
       classrooms: RowDefinition<Classroom, Partial<Classroom>, Partial<Classroom>>;
@@ -2463,6 +2488,20 @@ export type Database = {
       can_finalize_daily_note: {
         Args: { p_org_id: Uuid; p_student_id: Uuid };
         Returns: boolean;
+      };
+      resolve_organization_id_by_slug: {
+        Args: { p_slug: string };
+        Returns: Uuid;
+      };
+      submit_organization_access_request: {
+        Args: {
+          p_org_slug: string;
+          p_full_name: string;
+          p_email: string;
+          p_requested_role_codes: string[];
+          p_message?: string | null;
+        };
+        Returns: Uuid;
       };
     };
     Enums: Record<string, never>;
