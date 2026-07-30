@@ -22,6 +22,8 @@ AI Assist is authorized to help educators draft and rank suggestions for:
 4. Goal drafting language
 5. Executive function plan focuses
 6. Progress-monitoring session prompts
+7. Lesson / instructional plan drafts
+8. Instructional intelligence helpers (present levels structure, goal measurability flags, goal–need matching, document consistency prompts, parent-friendly rewrites, meeting prep, para-friendly supports)
 
 AI Assist may use:
 

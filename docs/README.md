@@ -93,6 +93,7 @@ When documents conflict, surface the conflict for product-owner resolution. Do n
 | `PRODUCTION_RELEASE_NOTES.md`        | Finished-product release notes                   |
 | `KNOWN_LIMITATIONS.md`               | Known limitations after launch                   |
 | `CAPABILITY_ROADMAP.md`              | Active vs future gated special education capabilities |
+| `INSTRUCTIONAL_INTELLIGENCE.md`      | Instructional differentiators toolkit (beyond paperwork-only systems) |
 | `COMMUNICATION_ESIGN.md`             | Parent receipt e-sign for family communications  |
 | `COMMUNICATION_TRANSLATION_AND_PLANS.md` | Template/language translate, ack, 504/Gifted/EL |
 | `SOP_BEHAVIOR_DETECTIVE.md`          | Behavior Detective SOP + full dropdown inventory |

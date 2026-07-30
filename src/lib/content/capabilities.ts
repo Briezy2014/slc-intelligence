@@ -1,3 +1,8 @@
+import {
+  INSTRUCTIONAL_CAPABILITIES,
+  INSTRUCTIONAL_POSITIONING,
+} from "@/lib/instructional-intelligence/matrix";
+
 export const ACTIVE_CAPABILITIES = [
   {
     title: "Daily data collection",
@@ -51,6 +56,10 @@ export const ACTIVE_CAPABILITIES = [
     title: "Deadline / timeline tracker",
     body: "Classroom reminders for IEP review windows, follow-ups, meetings, and reporting periods.",
   },
+  {
+    title: "Instructional intelligence toolkit",
+    body: "Present levels drafts, goal–need matching, measurability flags, consistency checks, meeting prep, and para-friendly supports.",
+  },
 ] as const;
 
 export const BENEFIT_POINTS = [
@@ -77,6 +86,10 @@ export const BENEFIT_POINTS = [
   {
     title: "Compliance reminders",
     body: "Timeline reminders for reviews, meetings, and reporting windows—not automated legal determinations.",
+  },
+  {
+    title: "Instructional usefulness",
+    body: INSTRUCTIONAL_POSITIONING,
   },
 ] as const;
 
@@ -106,6 +119,8 @@ export const FUTURE_GATED_CAPABILITIES = [
     body: "State reporting exports configured only after district and legal approval.",
   },
 ] as const;
+
+export { INSTRUCTIONAL_CAPABILITIES, INSTRUCTIONAL_POSITIONING };
 
 export const CAPABILITY_GUARDRAIL =
   "SLC Intelligence supports special education classroom operations and documentation. It does not replace the IEP team, make eligibility/placement decisions, or claim FERPA/IDEA certification. Identifiable student use and advanced district integrations remain inactive until district and legal counsel approve.";

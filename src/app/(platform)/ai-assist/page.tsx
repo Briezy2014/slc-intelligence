@@ -44,6 +44,16 @@ const MODULE_LINKS = [
     label: "Lesson planning",
     description: "Generate AI lesson ideas for specialized learning classrooms.",
   },
+  {
+    href: "/instructional-intelligence",
+    label: "Instructional intelligence",
+    description: "Present levels, goal checks, consistency review, meeting prep, and more.",
+  },
+  {
+    href: "/para-supports",
+    label: "Para supports",
+    description: "Plain-language approved supports for paraprofessionals.",
+  },
 ] as const;
 
 export default function AiAssistPage() {
