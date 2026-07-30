@@ -306,7 +306,10 @@ export function EducationDocumentsWorkspace({
                         `District blank ${tab.replaceAll("_", " ")} · ${blankTemplateFile.name}`,
                     );
                     formData.set("fileName", blankTemplateFile.name);
-                    formData.set("contentType", blankTemplateFile.type || "application/octet-stream");
+                    formData.set(
+                      "contentType",
+                      blankTemplateFile.type || "application/octet-stream",
+                    );
                     formData.set("byteSize", String(blankTemplateFile.size));
                     formData.set("extractedText", extraction.text.slice(0, 50000));
                     formData.set("file", blankTemplateFile);
@@ -354,7 +357,9 @@ export function EducationDocumentsWorkspace({
       </Card>
 
       <Card>
-        <CardTitle>Upload completed {tab.replaceAll("_", " ").toUpperCase()} · auto-fill fields</CardTitle>
+        <CardTitle>
+          Upload completed {tab.replaceAll("_", " ").toUpperCase()} · auto-fill fields
+        </CardTitle>
         <CardDescription>
           Upload a completed PDF, scanned image, or text export. The app extracts text (PDF text
           layer or OCR) and populates the draft fields automatically for your review.

@@ -10,9 +10,9 @@
 
 Behavior Detective is used to:
 
-1. Create clear behavior definitions  
-2. Log observations (ABC, frequency, duration, latency, interval, intensity)  
-3. Keep classroom behavior data consistent across staff  
+1. Create clear behavior definitions
+2. Log observations (ABC, frequency, duration, latency, interval, intensity)
+3. Keep classroom behavior data consistent across staff
 4. Support later team review (not diagnosis or eligibility decisions)
 
 ---
@@ -23,10 +23,10 @@ Behavior Detective is used to:
 2. Choose **Focus student** (use coded student during pilot).
 3. Optional: open **Suggested behavior definition** and choose a starter (full list below).
 4. Review/edit:
-   - Behavior name  
-   - Operational definition  
-   - Examples  
-   - Nonexamples  
+   - Behavior name
+   - Operational definition
+   - Examples
+   - Nonexamples
 5. Save the definition.
 6. Status is saved as **active** (default).
 
@@ -91,9 +91,9 @@ Displayed as `Category · Name`:
 5. Choose **Setting** (full list below).
 6. Choose **Activity** (full list below).
 7. For ABC method:
-   - Optional: insert an **Antecedent (A)** dropdown option, then edit free text  
-   - Enter Behavior (B)  
-   - Optional: insert a **Consequence (C)** dropdown option, then edit free text  
+   - Optional: insert an **Antecedent (A)** dropdown option, then edit free text
+   - Enter Behavior (B)
+   - Optional: insert a **Consequence (C)** dropdown option, then edit free text
 8. Complete any method-specific fields (frequency count, duration, latency, intervals, intensity).
 9. Review **Try next** suggestions (guidance list; not a required dropdown).
 10. Save observation.
@@ -104,17 +104,17 @@ Displayed as `Category · Name`:
 
 ### 1) Observation method (6 options)
 
-1. ABC  
-2. Frequency  
-3. Duration  
-4. Latency  
-5. Interval  
-6. Intensity  
+1. ABC
+2. Frequency
+3. Duration
+4. Latency
+5. Interval
+6. Intensity
 
 ### 2) Observation status (2 options in UI)
 
-1. Draft  
-2. Finalized  
+1. Draft
+2. Finalized
 
 ### 3) Setting (25 options)
 
@@ -230,17 +230,17 @@ Displayed as `Category · Name`:
 
 ### 7) Interval recording method (shown only if method = Interval) (3 options)
 
-1. Partial  
-2. Whole  
-3. Momentary  
+1. Partial
+2. Whole
+3. Momentary
 
 ### 8) Intensity level (shown only if method = Intensity)
 
 Organization-configured list. Demo/seed levels commonly include:
 
-1. Low  
-2. Moderate  
-3. High  
+1. Low
+2. Moderate
+3. High
 
 (Your organization may have different labels.)
 
@@ -276,19 +276,19 @@ Organization-configured list. Demo/seed levels commonly include:
 
 ## Paraprofessional quick checklist
 
-1. Select coded student (S1, S2, S3…).  
-2. Select the correct behavior definition.  
-3. Choose method (usually ABC for classroom support notes).  
-4. Choose Setting + Activity from the lists above.  
-5. Use Antecedent/Consequence dropdowns when helpful, then edit for accuracy.  
-6. Save as Draft unless your intervention specialist asks you to Finalize.  
+1. Select coded student (S1, S2, S3…).
+2. Select the correct behavior definition.
+3. Choose method (usually ABC for classroom support notes).
+4. Choose Setting + Activity from the lists above.
+5. Use Antecedent/Consequence dropdowns when helpful, then edit for accuracy.
+6. Save as Draft unless your intervention specialist asks you to Finalize.
 7. Never enter real student names or parent-identifying details during the pilot.
 
 ---
 
 ## Guardrails
 
-- Record observed facts, not diagnoses.  
-- For sexualized/boundary behaviors, follow district reporting and supervision policy immediately; the dropdown supports accurate documentation, not delayed reporting.  
-- Behavior Detective does not determine eligibility, placement, or manifestation outcomes.  
+- Record observed facts, not diagnoses.
+- For sexualized/boundary behaviors, follow district reporting and supervision policy immediately; the dropdown supports accurate documentation, not delayed reporting.
+- Behavior Detective does not determine eligibility, placement, or manifestation outcomes.
 - Final educational decisions remain with the authorized team.

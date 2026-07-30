@@ -58,7 +58,7 @@ export function ParaSupportsExplainerPanel() {
       {draft ? (
         <div className="mt-4">
           <Alert title="Para-friendly supports" tone="info">
-            <pre className="whitespace-pre-wrap text-sm">{draft}</pre>
+            <pre className="text-sm whitespace-pre-wrap">{draft}</pre>
           </Alert>
         </div>
       ) : null}

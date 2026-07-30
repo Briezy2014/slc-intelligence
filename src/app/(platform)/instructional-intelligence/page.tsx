@@ -12,7 +12,9 @@ export const metadata: Metadata = {
 export default function InstructionalIntelligencePage() {
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Instructional intelligence" }]} />
+      <Breadcrumbs
+        items={[{ href: "/", label: "Home" }, { label: "Instructional intelligence" }]}
+      />
       <PageHeader
         title="Instructional intelligence"
         description="Go beyond compliance paperwork: evidence-based drafting, goal quality checks, family-friendly language, instructional plans, and meeting prep — while educators keep decision authority."

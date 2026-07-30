@@ -16,8 +16,8 @@ This notice explains how information is handled when the Platform is used by a s
 
 Unless counsel specifies otherwise in a signed agreement:
 
-1. The **Organization** decides what student/staff information is entered and who may access it.  
-2. The **Platform operator** provides hosting and software under contract and processes information on the Organization’s instructions.  
+1. The **Organization** decides what student/staff information is entered and who may access it.
+2. The **Platform operator** provides hosting and software under contract and processes information on the Organization’s instructions.
 
 Staff users must follow their Organization’s policies.
 
@@ -25,11 +25,11 @@ Staff users must follow their Organization’s policies.
 
 Depending on what the Organization configures and enters, the Platform may process:
 
-1. **Account information** — name, work email, role, authentication data  
-2. **Organization structure** — schools, programs, classrooms, memberships  
-3. **Student records as entered by staff** — which may include local/coded identifiers, grade, enrollment status, goals, progress data, behavior observations, intervention/accommodation/service records, meeting notes, document drafts, and uploads  
-4. **Family communication records** — contacts, message drafts/logs, acknowledgments / e-sign artifacts (if enabled)  
-5. **Technical logs** — security/audit events, approximate usage metadata needed to operate the service  
+1. **Account information** — name, work email, role, authentication data
+2. **Organization structure** — schools, programs, classrooms, memberships
+3. **Student records as entered by staff** — which may include local/coded identifiers, grade, enrollment status, goals, progress data, behavior observations, intervention/accommodation/service records, meeting notes, document drafts, and uploads
+4. **Family communication records** — contacts, message drafts/logs, acknowledgments / e-sign artifacts (if enabled)
+5. **Technical logs** — security/audit events, approximate usage metadata needed to operate the service
 
 The Organization controls whether highly identifying fields (legal name, date of birth, home address, etc.) are stored.
 
@@ -37,11 +37,11 @@ The Organization controls whether highly identifying fields (legal name, date of
 
 Information is used to:
 
-1. Provide authorized users access to Organization-scoped workflows  
-2. Support classroom documentation, progress monitoring, and team coordination  
-3. Generate **assistive drafts** (including optional AI Assist) for educator review  
-4. Maintain security, auditability, and service reliability  
-5. Capture electronic acknowledgments / signatures on communications when that feature is enabled and used  
+1. Provide authorized users access to Organization-scoped workflows
+2. Support classroom documentation, progress monitoring, and team coordination
+3. Generate **assistive drafts** (including optional AI Assist) for educator review
+4. Maintain security, auditability, and service reliability
+5. Capture electronic acknowledgments / signatures on communications when that feature is enabled and used
 
 The Platform does **not** automatically determine disability eligibility, placement, discipline outcomes, or final legal IEP/ETR decisions.
 
@@ -49,10 +49,10 @@ The Platform does **not** automatically determine disability eligibility, placem
 
 Access is limited by:
 
-1. Authentication  
-2. Organization membership (admin approval for access requests)  
-3. Role-based permissions  
-4. Assignment / organization scope controls in the application and database policies  
+1. Authentication
+2. Organization membership (admin approval for access requests)
+3. Role-based permissions
+4. Assignment / organization scope controls in the application and database policies
 
 Users should access only records needed for their role.
 
@@ -60,9 +60,9 @@ Users should access only records needed for their role.
 
 Information may be shared with:
 
-1. Authorized Organization users  
-2. Subprocessors that host or operate the Platform (for example: infrastructure, authentication, optional AI model provider if configured)  
-3. Parties required by law, or with Organization instruction / valid consent  
+1. Authorized Organization users
+2. Subprocessors that host or operate the Platform (for example: infrastructure, authentication, optional AI model provider if configured)
+3. Parties required by law, or with Organization instruction / valid consent
 
 The Platform operator does not sell student personal information.
 
@@ -70,19 +70,19 @@ The Platform operator does not sell student personal information.
 
 If enabled by the Organization/operator:
 
-1. Local catalog assist may generate drafts without sending content to an external model  
-2. Optional model assist may send **minimized** prompt content to a contracted provider  
-3. Users must not paste unnecessary identifiers into AI prompts  
-4. All AI outputs require human review before use or sending  
+1. Local catalog assist may generate drafts without sending content to an external model
+2. Optional model assist may send **minimized** prompt content to a contracted provider
+3. Users must not paste unnecessary identifiers into AI prompts
+4. All AI outputs require human review before use or sending
 
 ## 8. Electronic acknowledgments / e-sign for communications
 
 If enabled, the Platform may collect electronic acknowledgment or signature on family-facing communications, including:
 
-1. Signer name (as provided)  
-2. Signature/acknowledgment artifact  
-3. Timestamp and related integrity metadata  
-4. Audit log of the event  
+1. Signer name (as provided)
+2. Signature/acknowledgment artifact
+3. Timestamp and related integrity metadata
+4. Audit log of the event
 
 Counsel must confirm the legal effect of these acknowledgments for the Organization’s use cases. Unless counsel approves otherwise, e-sign on communications is for **receipt/acknowledgment of messages**, not a substitute for formal IEP consent procedures.
 

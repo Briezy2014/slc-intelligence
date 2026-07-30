@@ -28,9 +28,14 @@ import {
 function ResultBlock({ result }: { result: InstructionalToolResult | null }) {
   if (!result) return null;
   return (
-    <Alert title={result.ok ? result.title : "Could not run tool"} tone={result.ok ? "info" : "warning"}>
+    <Alert
+      title={result.ok ? result.title : "Could not run tool"}
+      tone={result.ok ? "info" : "warning"}
+    >
       {result.message ? <p className="mb-2">{result.message}</p> : null}
-      {result.draftText ? <pre className="whitespace-pre-wrap text-sm">{result.draftText}</pre> : null}
+      {result.draftText ? (
+        <pre className="text-sm whitespace-pre-wrap">{result.draftText}</pre>
+      ) : null}
     </Alert>
   );
 }
@@ -47,8 +52,8 @@ export function InstructionalIntelligenceWorkspace() {
   return (
     <div className="space-y-8">
       <Alert title="Instructional intelligence — human decisions retained" tone="info">
-        {INSTRUCTIONAL_POSITIONING} These tools draft and flag for educator review. They do not determine
-        eligibility, placement, or legal compliance.
+        {INSTRUCTIONAL_POSITIONING} These tools draft and flag for educator review. They do not
+        determine eligibility, placement, or legal compliance.
       </Alert>
 
       <section className="space-y-3">
@@ -71,15 +76,32 @@ export function InstructionalIntelligenceWorkspace() {
         <h2 className="text-xl font-semibold">Coordinated programs (SPED · 504 · EL · MTSS)</h2>
         <Card>
           <CardDescription>
-            Keep special education as the primary workspace while coordinating adjacent supports in one
-            environment. Expanded 504 packaging and deeper MTSS automation can grow under district approval.
+            Keep special education as the primary workspace while coordinating adjacent supports in
+            one environment. Expanded 504 packaging and deeper MTSS automation can grow under
+            district approval.
           </CardDescription>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { href: "/education-documents", label: "Special education docs", body: "IEP / ETR / progress drafts" },
-              { href: "/education-documents", label: "504 / Gifted / EL drafts", body: "Assistive draft templates" },
-              { href: "/interventions", label: "MTSS / intervention tier work", body: "Fidelity, dosage, progress" },
-              { href: "/administrative-intelligence", label: "Admin readiness view", body: "Workflow dashboards" },
+              {
+                href: "/education-documents",
+                label: "Special education docs",
+                body: "IEP / ETR / progress drafts",
+              },
+              {
+                href: "/education-documents",
+                label: "504 / Gifted / EL drafts",
+                body: "Assistive draft templates",
+              },
+              {
+                href: "/interventions",
+                label: "MTSS / intervention tier work",
+                body: "Fidelity, dosage, progress",
+              },
+              {
+                href: "/administrative-intelligence",
+                label: "Admin readiness view",
+                body: "Workflow dashboards",
+              },
             ].map((item) => (
               <Link
                 key={item.label}
@@ -97,7 +119,9 @@ export function InstructionalIntelligenceWorkspace() {
       <div className="grid gap-6 xl:grid-cols-2">
         <Card>
           <CardTitle>Draft present levels from evidence</CardTitle>
-          <CardDescription>Paste district-approved notes/data. The draft will not invent scores.</CardDescription>
+          <CardDescription>
+            Paste district-approved notes/data. The draft will not invent scores.
+          </CardDescription>
           <form
             className="mt-4 space-y-3"
             action={(formData) =>
@@ -110,7 +134,11 @@ export function InstructionalIntelligenceWorkspace() {
             }
           >
             <FormField id="plaafp-focus" label="Focus area">
-              <Input id="plaafp-focus" name="focusArea" placeholder="reading fluency, self-regulation…" />
+              <Input
+                id="plaafp-focus"
+                name="focusArea"
+                placeholder="reading fluency, self-regulation…"
+              />
             </FormField>
             <FormField id="plaafp-evidence" label="Evidence notes">
               <Textarea
@@ -141,10 +169,19 @@ export function InstructionalIntelligenceWorkspace() {
             }
           >
             <FormField id="needs-text" label="Documented needs">
-              <Textarea id="needs-text" name="needsText" required placeholder="One need per line…" />
+              <Textarea
+                id="needs-text"
+                name="needsText"
+                required
+                placeholder="One need per line…"
+              />
             </FormField>
             <FormField id="goal-ideas" label="Existing goal ideas (optional)">
-              <Textarea id="goal-ideas" name="goalIdeasText" placeholder="Paste current goal statements…" />
+              <Textarea
+                id="goal-ideas"
+                name="goalIdeasText"
+                placeholder="Paste current goal statements…"
+              />
             </FormField>
             <Button type="submit" disabled={pending}>
               Match goals to needs
@@ -154,7 +191,9 @@ export function InstructionalIntelligenceWorkspace() {
 
         <Card>
           <CardTitle>Flag goals that are not measurable</CardTitle>
-          <CardDescription>Checks vague language, missing conditions, and missing criteria.</CardDescription>
+          <CardDescription>
+            Checks vague language, missing conditions, and missing criteria.
+          </CardDescription>
           <form
             className="mt-4 space-y-3"
             action={(formData) =>
@@ -176,7 +215,9 @@ export function InstructionalIntelligenceWorkspace() {
 
         <Card>
           <CardTitle>ETR · IEP · progress consistency check</CardTitle>
-          <CardDescription>Drafting aid only — not a legal compliance determination.</CardDescription>
+          <CardDescription>
+            Drafting aid only — not a legal compliance determination.
+          </CardDescription>
           <form
             className="mt-4 space-y-3"
             action={(formData) =>
@@ -254,7 +295,9 @@ export function InstructionalIntelligenceWorkspace() {
 
         <Card>
           <CardTitle>Para-friendly approved supports</CardTitle>
-          <CardDescription>Plain-language do/don’t guidance from approved supports.</CardDescription>
+          <CardDescription>
+            Plain-language do/don’t guidance from approved supports.
+          </CardDescription>
           <form
             className="mt-4 space-y-3"
             action={(formData) =>
@@ -266,7 +309,12 @@ export function InstructionalIntelligenceWorkspace() {
             }
           >
             <FormField id="supports-text" label="Approved accommodations / supports">
-              <Textarea id="supports-text" name="supportsText" required placeholder="One support per line…" />
+              <Textarea
+                id="supports-text"
+                name="supportsText"
+                required
+                placeholder="One support per line…"
+              />
             </FormField>
             <Button type="submit" disabled={pending}>
               Explain for paraprofessionals
@@ -276,7 +324,9 @@ export function InstructionalIntelligenceWorkspace() {
 
         <Card>
           <CardTitle>Meeting preparation summary</CardTitle>
-          <CardDescription>Organize strengths, needs, progress, and family questions.</CardDescription>
+          <CardDescription>
+            Organize strengths, needs, progress, and family questions.
+          </CardDescription>
           <form
             className="mt-4 space-y-3"
             action={(formData) =>

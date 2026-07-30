@@ -30,7 +30,9 @@ export default function ParaSupportsPage() {
             <p>1. Follow the written accommodation / behavior support as approved.</p>
             <p>2. Use the least help needed, then fade help when the plan says so.</p>
             <p>3. Record what happened; do not diagnose or invent new goals.</p>
-            <p>4. If safety is at risk, follow the crisis plan and get an adult lead immediately.</p>
+            <p>
+              4. If safety is at risk, follow the crisis plan and get an adult lead immediately.
+            </p>
           </CardDescription>
         </Card>
         <ParaSupportsExplainerPanel />

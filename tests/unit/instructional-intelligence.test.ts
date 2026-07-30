@@ -12,9 +12,9 @@ import { INSTRUCTIONAL_CAPABILITIES } from "@/lib/instructional-intelligence/mat
 describe("instructional intelligence analyzers", () => {
   it("flags non-measurable goals", () => {
     const flags = flagNonMeasurableGoal("Student will improve reading and do better in class.");
-    expect(flags.some((flag) => flag.code === "vague_phrase" || flag.code === "missing_criterion")).toBe(
-      true,
-    );
+    expect(
+      flags.some((flag) => flag.code === "vague_phrase" || flag.code === "missing_criterion"),
+    ).toBe(true);
   });
 
   it("accepts clearer measurable goals with info-level notes", () => {
@@ -46,19 +46,22 @@ describe("instructional intelligence analyzers", () => {
   it("detects possible uncovered needs across excerpts", () => {
     const findings = detectDocumentInconsistencies({
       etrText: "Student has difficulty with reading fluency and decoding multisyllabic words.",
-      iepText: "Present levels note classroom participation. Goal: student will raise hand to request help.",
+      iepText:
+        "Present levels note classroom participation. Goal: student will raise hand to request help.",
       progressText: "Student raised hand more often this quarter.",
     });
-    expect(findings.some((finding) => /uncovered need|coverage/i.test(finding.message + finding.area))).toBe(
-      true,
-    );
+    expect(
+      findings.some((finding) => /uncovered need|coverage/i.test(finding.message + finding.area)),
+    ).toBe(true);
   });
 
   it("creates parent-friendly and instructional plan drafts", () => {
     expect(toParentFriendlySummary("The PLAAFP shows baseline accuracy of 40%.")).toContain(
       "Parent-friendly summary",
     );
-    expect(instructionalPlanFromGoal("Student will request a break using a card.")).toContain("I do");
+    expect(instructionalPlanFromGoal("Student will request a break using a card.")).toContain(
+      "I do",
+    );
   });
 
   it("lists all instructional differentiator capabilities", () => {

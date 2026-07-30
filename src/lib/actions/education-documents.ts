@@ -184,9 +184,7 @@ export async function recordEducationDocumentUploadAction(
 }
 
 export async function recordDistrictFormTemplateAction(formData: FormData): Promise<ActionState> {
-  const parsed = districtFormTemplateSchema.safeParse(
-    emptyToUndefined(formDataToObject(formData)),
-  );
+  const parsed = districtFormTemplateSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
   if (!parsed.success) return validationError(parsed.error);
   const values = parsed.data;
   const context = await getActionContext(values.organizationId, "education_document.manage");

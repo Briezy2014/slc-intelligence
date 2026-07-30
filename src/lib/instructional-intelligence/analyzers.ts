@@ -80,14 +80,16 @@ export function flagNonMeasurableGoal(goalStatement: string): MeasurabilityFlag[
     flags.push({
       severity: "warning",
       code: "missing_condition",
-      message: "Add a condition (Given… / When… / During…) so the goal is teachable and observable.",
+      message:
+        "Add a condition (Given… / When… / During…) so the goal is teachable and observable.",
     });
   }
   if (!hasCriterion) {
     flags.push({
       severity: "critical",
       code: "missing_criterion",
-      message: "No clear numeric criterion found (for example %, trials correct, minutes, prompt level).",
+      message:
+        "No clear numeric criterion found (for example %, trials correct, minutes, prompt level).",
     });
   }
   if (!hasTimeframe) {
@@ -101,7 +103,8 @@ export function flagNonMeasurableGoal(goalStatement: string): MeasurabilityFlag[
     flags.push({
       severity: "critical",
       code: "not_measurable",
-      message: "Goal does not appear measurable as written. Draft a replacement with condition + skill + criterion.",
+      message:
+        "Goal does not appear measurable as written. Draft a replacement with condition + skill + criterion.",
     });
   }
 
@@ -109,7 +112,8 @@ export function flagNonMeasurableGoal(goalStatement: string): MeasurabilityFlag[
     flags.push({
       severity: "info",
       code: "looks_measurable",
-      message: "No major measurability gaps detected. Still review with the IEP team before finalizing.",
+      message:
+        "No major measurability gaps detected. Still review with the IEP team before finalizing.",
     });
   }
 
@@ -122,22 +126,34 @@ export function draftPresentLevelsFromEvidence(evidence: string, focusArea?: str
     .map((line) => line.trim())
     .filter(Boolean);
   const focus = focusArea?.trim() || "current instructional needs";
-  const strengths = lines.filter((line) => /strength|independ|success|master|can\b/i.test(line)).slice(0, 4);
-  const needs = lines.filter((line) => /need|deficit|struggle|difficulty|require|support/i.test(line)).slice(0, 4);
+  const strengths = lines
+    .filter((line) => /strength|independ|success|master|can\b/i.test(line))
+    .slice(0, 4);
+  const needs = lines
+    .filter((line) => /need|deficit|struggle|difficulty|require|support/i.test(line))
+    .slice(0, 4);
   const data = lines.filter((line) => /\d|%|trial|baseline|probe|accuracy/i.test(line)).slice(0, 4);
-  const other = lines.filter((line) => !strengths.includes(line) && !needs.includes(line) && !data.includes(line)).slice(0, 4);
+  const other = lines
+    .filter((line) => !strengths.includes(line) && !needs.includes(line) && !data.includes(line))
+    .slice(0, 4);
 
   return [
     `Present Levels draft (educator review required) — focus: ${focus}`,
     "",
     "Strengths:",
-    ...(strengths.length ? strengths.map((line) => `- ${line}`) : ["- [Add observed strengths from classroom/evidence]"]),
+    ...(strengths.length
+      ? strengths.map((line) => `- ${line}`)
+      : ["- [Add observed strengths from classroom/evidence]"]),
     "",
     "Needs related to the disability / support needs:",
-    ...(needs.length ? needs.map((line) => `- ${line}`) : ["- [Add documented needs tied to evidence]"]),
+    ...(needs.length
+      ? needs.map((line) => `- ${line}`)
+      : ["- [Add documented needs tied to evidence]"]),
     "",
     "Current performance / data points:",
-    ...(data.length ? data.map((line) => `- ${line}`) : ["- [Add recent probes, percentages, prompt levels, or observations]"]),
+    ...(data.length
+      ? data.map((line) => `- ${line}`)
+      : ["- [Add recent probes, percentages, prompt levels, or observations]"]),
     "",
     "How the need affects involvement and progress in the general curriculum:",
     ...(other.length
@@ -216,7 +232,8 @@ export function detectDocumentInconsistencies(input: {
     findings.push({
       severity: "warning",
       area: "ETR → IEP goals",
-      message: "ETR-like needs were found, but the IEP excerpt does not clearly show goal statements.",
+      message:
+        "ETR-like needs were found, but the IEP excerpt does not clearly show goal statements.",
     });
   }
 
@@ -250,11 +267,16 @@ export function detectDocumentInconsistencies(input: {
     }
   }
 
-  if (iep && /eligible|eligibility/i.test(etr) && !/present level|plaafp|current performance/i.test(iep)) {
+  if (
+    iep &&
+    /eligible|eligibility/i.test(etr) &&
+    !/present level|plaafp|current performance/i.test(iep)
+  ) {
     findings.push({
       severity: "warning",
       area: "Present levels",
-      message: "IEP excerpt may be missing present levels language while evaluation content is present.",
+      message:
+        "IEP excerpt may be missing present levels language while evaluation content is present.",
     });
   }
 
@@ -272,7 +294,8 @@ export function detectDocumentInconsistencies(input: {
 
 export function toParentFriendlySummary(technicalText: string): string {
   const text = technicalText.trim();
-  if (!text) return "Paste technical IEP/ETR/progress language to create a parent-friendly summary.";
+  if (!text)
+    return "Paste technical IEP/ETR/progress language to create a parent-friendly summary.";
 
   const summary = text
     .replace(/\bPLAAFP\b/gi, "present levels (how your child is doing now)")

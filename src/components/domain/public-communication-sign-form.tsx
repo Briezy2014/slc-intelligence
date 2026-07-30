@@ -64,13 +64,7 @@ export function PublicCommunicationSignForm({
       >
         <input type="hidden" name="token" value={token} />
         <label className="border-border flex items-start gap-3 rounded-[var(--radius-md)] border p-3 text-sm">
-          <input
-            type="checkbox"
-            name="receiptConfirmed"
-            value="true"
-            required
-            className="mt-1"
-          />
+          <input type="checkbox" name="receiptConfirmed" value="true" required className="mt-1" />
           <span>
             <strong>I have read this</strong> school communication and acknowledge receipt.
           </span>

@@ -2,6 +2,7 @@
 
 **Status:** Implemented for family-visible communications  
 **SQL:**
+
 - `supabase/migrations/202607300014_communication_esign.sql`
 - `supabase/migrations/202607300015_staff_notifications_parent_read.sql`
 

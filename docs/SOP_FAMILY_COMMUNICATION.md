@@ -11,11 +11,11 @@
 
 Family Communication is used to:
 
-1. Save contact records (when authorized)  
-2. Draft and log school-to-home communications  
-3. Choose a template + language  
-4. Translate English drafts into a selected family language  
-5. Request/capture parent **read receipt** (checkbox + typed name) with staff notification  
+1. Save contact records (when authorized)
+2. Draft and log school-to-home communications
+3. Choose a template + language
+4. Translate English drafts into a selected family language
+5. Request/capture parent **read receipt** (checkbox + typed name) with staff notification
 6. Optionally capture drawn signature
 
 The app logs communications; it does **not** auto-send email/SMS. Staff deliver the message (email, letter, phone, text, etc.).
@@ -24,9 +24,9 @@ The app logs communications; it does **not** auto-send email/SMS. Staff deliver 
 
 ## Part A — Add a contact (authorized roles)
 
-1. Open Family Communication.  
-2. Choose **Student**.  
-3. Enter First name, Last name, Relationship.  
+1. Open Family Communication.
+2. Choose **Student**.
+3. Enter First name, Last name, Relationship.
 4. Save contact.
 
 > During the pilot, skip real parent contact info. Use practice/coded placeholders only if needed for workflow testing.
@@ -35,42 +35,42 @@ The app logs communications; it does **not** auto-send email/SMS. Staff deliver 
 
 ## Part B — Draft with Template & language
 
-1. Open the **Template & language** tab.  
-2. Choose a **Communication template** (full list below).  
-3. Choose a **Language** (all 20 listed below).  
-4. Enter a **Focus area** (for example: reading fluency, calm-down routine).  
-5. Click **Insert template draft** (English draft inserts).  
-6. If language is not English, click **Translate draft**.  
-7. Always review the translated text (bilingual staff/interpreter review recommended).  
+1. Open the **Template & language** tab.
+2. Choose a **Communication template** (full list below).
+3. Choose a **Language** (all 20 listed below).
+4. Enter a **Focus area** (for example: reading fluency, calm-down routine).
+5. Click **Insert template draft** (English draft inserts).
+6. If language is not English, click **Translate draft**.
+7. Always review the translated text (bilingual staff/interpreter review recommended).
 8. Switch to **Compose & save**.
 
 ---
 
 ## Part C — Compose & save
 
-1. Confirm **Student** and optional **Contact**.  
-2. Choose **Method** (full list below).  
-3. Confirm **Language**.  
+1. Confirm **Student** and optional **Contact**.
+2. Choose **Method** (full list below).
+3. Confirm **Language**.
 4. Choose **Visibility**:
-   - Family visible (can go home / be shared)  
-   - Internal (staff only)  
-   - Restricted admin  
-5. If family visible: choose **Request parent e-signature** Yes/No.  
-6. Edit Subject and Message body.  
+   - Family visible (can go home / be shared)
+   - Internal (staff only)
+   - Restricted admin
+5. If family visible: choose **Request parent e-signature** Yes/No.
+6. Edit Subject and Message body.
 7. Save communication.
 
 ---
 
 ## Part D — Parent read acknowledgment + staff notification
 
-1. In the e-sign panel, select the family-visible communication.  
-2. Click **Create parent sign link** and send/print the link with the letter.  
+1. In the e-sign panel, select the family-visible communication.
+2. Click **Create parent sign link** and send/print the link with the letter.
 3. Parent opens the link and:
-   - Checks **I have read this**  
-   - Types their name  
-   - Clicks **Send acknowledgment to school**  
-   - Optional: add a drawn signature  
-4. Staff see an in-app notification under **Parent read / signature notifications**.  
+   - Checks **I have read this**
+   - Types their name
+   - Clicks **Send acknowledgment to school**
+   - Optional: add a drawn signature
+4. Staff see an in-app notification under **Parent read / signature notifications**.
 5. Status moves to **signed** (receipt acknowledged).
 
 This is **receipt acknowledgment only**, not IDEA/IEP consent.
@@ -122,8 +122,8 @@ This is **receipt acknowledgment only**, not IDEA/IEP consent.
 39. Extended school year / summer services info
 40. Weekly positive summary
 41. Please read and acknowledge receipt
-42. Internal team coordination note *(default: internal)*
-43. Internal behavior debrief *(default: internal)*
+42. Internal team coordination note _(default: internal)_
+43. Internal behavior debrief _(default: internal)_
 
 ### 2) Languages (20 options)
 
@@ -152,68 +152,68 @@ Displayed as `English name (native name)` in Template & language:
 
 ### 3) Method (8 options)
 
-1. Email  
-2. Phone  
-3. Text  
-4. Letter  
-5. In person  
-6. Portal  
-7. Video  
-8. Other  
+1. Email
+2. Phone
+3. Text
+4. Letter
+5. In person
+6. Portal
+7. Video
+8. Other
 
 ### 4) Visibility (3 options)
 
-1. Family visible  
-2. Internal  
-3. Restricted admin  
+1. Family visible
+2. Internal
+3. Restricted admin
 
 ### 5) Request parent e-signature (2 options; family-visible only)
 
-1. Yes — request read/signature acknowledgment  
-2. Not for this log  
+1. Yes — request read/signature acknowledgment
+2. Not for this log
 
 ### 6) Signature method — staff capture (3 options)
 
-1. Drawn signature  
-2. Typed acknowledgment  
-3. Staff attested (in person / phone)  
+1. Drawn signature
+2. Typed acknowledgment
+3. Staff attested (in person / phone)
 
 ### 7) Parent public acknowledgment options
 
-1. Required: **I have read this** checkbox  
-2. Required: type name + **Send acknowledgment to school**  
-3. Optional: drawn signature  
+1. Required: **I have read this** checkbox
+2. Required: type name + **Send acknowledgment to school**
+3. Optional: drawn signature
 
 ### 8) E-sign status values shown in the communications table (4 options)
 
-1. none  
-2. pending  
-3. signed  
-4. clarification_requested  
+1. none
+2. pending
+3. signed
+4. clarification_requested
 
 ### 9) Dynamic dropdowns (not fixed lists)
 
-- **Student:** all students in your authorized scope  
-- **Contact:** contacts saved for the selected student  
-- **Family-visible communication (e-sign panel):** saved family-visible logs  
+- **Student:** all students in your authorized scope
+- **Contact:** contacts saved for the selected student
+- **Family-visible communication (e-sign panel):** saved family-visible logs
 
 ---
 
 ## Multilingual workflow (para/teacher friendly)
 
-1. Write/select the message in English first.  
-2. Choose the family’s language from the 20-language list.  
-3. Click **Translate draft**.  
-4. Have a bilingual staff member or interpreter review before sending home.  
-5. Save the communication so it is trapped in the log.  
+1. Write/select the message in English first.
+2. Choose the family’s language from the 20-language list.
+3. Click **Translate draft**.
+4. Have a bilingual staff member or interpreter review before sending home.
+5. Save the communication so it is trapped in the log.
 6. Create a parent sign link so the family can check **I have read this**, type their name, and send.
 
 ---
 
 ## Guardrails
 
-- App records communications; staff deliver them.  
-- Translation requires human review.  
-- Parent read checkbox + typed name = receipt acknowledgment only (not IEP consent).  
-- Staff notification is in-app (not automatic email/SMS to staff unless district configures email elsewhere).  
+- App records communications; staff deliver them.
+- Translation requires human review.
+- Parent read checkbox + typed name = receipt acknowledgment only (not IEP consent).
+- Staff notification is in-app (not automatic email/SMS to staff unless district configures email elsewhere).
 - During pilot: no real student/parent PII.

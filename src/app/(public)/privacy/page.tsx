@@ -44,9 +44,9 @@ export default function PrivacyPage() {
           design notice only—not a final district privacy policy.
         </p>
         <p>
-          Family-visible communications can collect an electronic receipt acknowledgment / e-signature
-          (typed or drawn). That feature records receipt of a message only and is not IEP/IDEA
-          consent. Counsel should still confirm legal effect for district use.
+          Family-visible communications can collect an electronic receipt acknowledgment /
+          e-signature (typed or drawn). That feature records receipt of a message only and is not
+          IEP/IDEA consent. Counsel should still confirm legal effect for district use.
         </p>
         <p>
           For account deletion instructions, see{" "}

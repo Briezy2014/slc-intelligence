@@ -289,7 +289,7 @@ export function StudentForm({
           <Input id="endDate" name="endDate" type="date" defaultValue={student?.end_date ?? ""} />
         </FormField>
       </div>
-      <div className="space-y-3 rounded-[var(--radius-md)] border border-border p-4">
+      <div className="border-border space-y-3 rounded-[var(--radius-md)] border p-4">
         <h3 className="font-semibold">Support plans</h3>
         <p className="text-muted text-sm">
           Staff caseload flags for IEP, Section 504, Gifted, and English learner (EL). These are

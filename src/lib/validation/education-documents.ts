@@ -25,15 +25,7 @@ export const educationDocumentSchema = z.object({
 export const educationDocumentUploadSchema = z.object({
   organizationId: z.string().uuid(),
   studentId: z.string().uuid(),
-  documentType: z.enum([
-    "iep",
-    "etr",
-    "progress_report",
-    "section_504",
-    "gifted",
-    "el",
-    "other",
-  ]),
+  documentType: z.enum(["iep", "etr", "progress_report", "section_504", "gifted", "el", "other"]),
   educationDocumentId: z.string().uuid().optional().or(z.literal("")),
   fileName: z.string().trim().min(1).max(260),
   contentType: z.string().trim().max(120).optional().or(z.literal("")),
@@ -48,15 +40,7 @@ export const educationDocumentUploadSchema = z.object({
 
 export const districtFormTemplateSchema = z.object({
   organizationId: z.string().uuid(),
-  documentType: z.enum([
-    "iep",
-    "etr",
-    "progress_report",
-    "section_504",
-    "gifted",
-    "el",
-    "other",
-  ]),
+  documentType: z.enum(["iep", "etr", "progress_report", "section_504", "gifted", "el", "other"]),
   name: z.string().trim().min(2).max(200),
   description: z.string().trim().max(2000).optional().or(z.literal("")),
   fileName: z.string().trim().min(1).max(260),

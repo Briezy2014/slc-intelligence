@@ -45,8 +45,7 @@ export default function AboutPage() {
           The platform emphasizes time savings, better documentation, more consistent progress
           monitoring, AI assistance with educator review, clearer parent communication, and
           instructional intelligence tools, and practical compliance reminders—while keeping
-          educational decisions with qualified
-          professionals and the IEP team.
+          educational decisions with qualified professionals and the IEP team.
         </p>
         <div className="space-y-3">
           <h2 className="text-foreground text-xl font-semibold">Benefits for special education</h2>

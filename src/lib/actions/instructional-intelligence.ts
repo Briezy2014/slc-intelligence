@@ -23,7 +23,10 @@ async function requireAssistAccess(): Promise<{ ok: true } | { ok: false; messag
     await requireActiveMembership();
     return { ok: true };
   } catch {
-    return { ok: false, message: "Sign in with an active membership to use instructional intelligence tools." };
+    return {
+      ok: false,
+      message: "Sign in with an active membership to use instructional intelligence tools.",
+    };
   }
 }
 
@@ -42,7 +45,8 @@ export async function runPresentLevelsDraftAction(input: {
   focusArea?: string;
 }): Promise<InstructionalToolResult> {
   const access = await requireAssistAccess();
-  if (!access.ok) return { ok: false, title: "Present levels", draftText: "", message: access.message };
+  if (!access.ok)
+    return { ok: false, title: "Present levels", draftText: "", message: access.message };
   const parsed = z
     .object({
       evidence: z.string().trim().min(1).max(20000),
@@ -50,7 +54,12 @@ export async function runPresentLevelsDraftAction(input: {
     })
     .safeParse(input);
   if (!parsed.success) {
-    return { ok: false, title: "Present levels", draftText: "", message: "Paste evidence text to draft present levels." };
+    return {
+      ok: false,
+      title: "Present levels",
+      draftText: "",
+      message: "Paste evidence text to draft present levels.",
+    };
   }
   return {
     ok: true,
@@ -64,7 +73,8 @@ export async function runGoalNeedMatchAction(input: {
   goalIdeasText?: string;
 }): Promise<InstructionalToolResult> {
   const access = await requireAssistAccess();
-  if (!access.ok) return { ok: false, title: "Goal–need match", draftText: "", message: access.message };
+  if (!access.ok)
+    return { ok: false, title: "Goal–need match", draftText: "", message: access.message };
   const parsed = z
     .object({
       needsText: z.string().trim().min(1).max(12000),
@@ -72,7 +82,12 @@ export async function runGoalNeedMatchAction(input: {
     })
     .safeParse(input);
   if (!parsed.success) {
-    return { ok: false, title: "Goal–need match", draftText: "", message: "Paste documented needs to match goals." };
+    return {
+      ok: false,
+      title: "Goal–need match",
+      draftText: "",
+      message: "Paste documented needs to match goals.",
+    };
   }
   const matches = matchGoalsToNeeds(parsed.data.needsText, parsed.data.goalIdeasText);
   return {
@@ -92,10 +107,16 @@ export async function runMeasurableGoalCheckAction(input: {
   goalStatement: string;
 }): Promise<InstructionalToolResult> {
   const access = await requireAssistAccess();
-  if (!access.ok) return { ok: false, title: "Measurable goal check", draftText: "", message: access.message };
+  if (!access.ok)
+    return { ok: false, title: "Measurable goal check", draftText: "", message: access.message };
   const parsed = z.object({ goalStatement: z.string().trim().min(1).max(4000) }).safeParse(input);
   if (!parsed.success) {
-    return { ok: false, title: "Measurable goal check", draftText: "", message: "Enter a goal statement to check." };
+    return {
+      ok: false,
+      title: "Measurable goal check",
+      draftText: "",
+      message: "Enter a goal statement to check.",
+    };
   }
   const flags = flagNonMeasurableGoal(parsed.data.goalStatement);
   return {
@@ -112,7 +133,8 @@ export async function runConsistencyCheckAction(input: {
   progressText?: string;
 }): Promise<InstructionalToolResult> {
   const access = await requireAssistAccess();
-  if (!access.ok) return { ok: false, title: "Consistency check", draftText: "", message: access.message };
+  if (!access.ok)
+    return { ok: false, title: "Consistency check", draftText: "", message: access.message };
   const parsed = z
     .object({
       etrText: z.string().trim().max(12000).optional(),
@@ -121,14 +143,21 @@ export async function runConsistencyCheckAction(input: {
     })
     .safeParse(input);
   if (!parsed.success) {
-    return { ok: false, title: "Consistency check", draftText: "", message: "Paste at least one document excerpt." };
+    return {
+      ok: false,
+      title: "Consistency check",
+      draftText: "",
+      message: "Paste at least one document excerpt.",
+    };
   }
   const findings = detectDocumentInconsistencies(parsed.data);
   return {
     ok: true,
     title: "ETR / IEP / progress consistency check",
     findings,
-    draftText: findings.map((finding) => `[${finding.severity}] ${finding.area}: ${finding.message}`).join("\n"),
+    draftText: findings
+      .map((finding) => `[${finding.severity}] ${finding.area}: ${finding.message}`)
+      .join("\n"),
   };
 }
 
@@ -136,7 +165,8 @@ export async function runParentFriendlySummaryAction(input: {
   technicalText: string;
 }): Promise<InstructionalToolResult> {
   const access = await requireAssistAccess();
-  if (!access.ok) return { ok: false, title: "Parent-friendly summary", draftText: "", message: access.message };
+  if (!access.ok)
+    return { ok: false, title: "Parent-friendly summary", draftText: "", message: access.message };
   const parsed = z.object({ technicalText: z.string().trim().min(1).max(12000) }).safeParse(input);
   if (!parsed.success) {
     return {
@@ -158,7 +188,8 @@ export async function runInstructionalPlanAction(input: {
   setting?: string;
 }): Promise<InstructionalToolResult> {
   const access = await requireAssistAccess();
-  if (!access.ok) return { ok: false, title: "Instructional plan", draftText: "", message: access.message };
+  if (!access.ok)
+    return { ok: false, title: "Instructional plan", draftText: "", message: access.message };
   const parsed = z
     .object({
       goalStatement: z.string().trim().min(1).max(4000),
@@ -166,7 +197,12 @@ export async function runInstructionalPlanAction(input: {
     })
     .safeParse(input);
   if (!parsed.success) {
-    return { ok: false, title: "Instructional plan", draftText: "", message: "Enter an IEP goal to build a plan." };
+    return {
+      ok: false,
+      title: "Instructional plan",
+      draftText: "",
+      message: "Enter an IEP goal to build a plan.",
+    };
   }
   return {
     ok: true,
@@ -179,7 +215,8 @@ export async function runParaSupportsExplainerAction(input: {
   supportsText: string;
 }): Promise<InstructionalToolResult> {
   const access = await requireAssistAccess();
-  if (!access.ok) return { ok: false, title: "Para supports", draftText: "", message: access.message };
+  if (!access.ok)
+    return { ok: false, title: "Para supports", draftText: "", message: access.message };
   const parsed = z.object({ supportsText: z.string().trim().min(1).max(8000) }).safeParse(input);
   if (!parsed.success) {
     return {
@@ -204,7 +241,8 @@ export async function runMeetingPrepAction(input: {
   familyQuestions?: string;
 }): Promise<InstructionalToolResult> {
   const access = await requireAssistAccess();
-  if (!access.ok) return { ok: false, title: "Meeting prep", draftText: "", message: access.message };
+  if (!access.ok)
+    return { ok: false, title: "Meeting prep", draftText: "", message: access.message };
   const parsed = z
     .object({
       focusArea: z.string().trim().max(200).optional(),
@@ -215,7 +253,12 @@ export async function runMeetingPrepAction(input: {
     })
     .safeParse(input);
   if (!parsed.success) {
-    return { ok: false, title: "Meeting prep", draftText: "", message: "Add meeting context to generate a prep summary." };
+    return {
+      ok: false,
+      title: "Meeting prep",
+      draftText: "",
+      message: "Add meeting context to generate a prep summary.",
+    };
   }
   return {
     ok: true,

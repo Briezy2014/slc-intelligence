@@ -1,8 +1,5 @@
 export type InstructionalCapabilityStatus =
-  | "available_now"
-  | "assistive_draft"
-  | "workflow_ready"
-  | "gated_until_approval";
+  "available_now" | "assistive_draft" | "workflow_ready" | "gated_until_approval";
 
 export type InstructionalCapability = {
   title: string;
