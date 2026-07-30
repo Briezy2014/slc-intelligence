@@ -138,6 +138,34 @@ export type Organization = {
   updated_at: Timestamp;
 };
 
+export type OrganizationSubscriptionStatus =
+  | "inactive"
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "unpaid"
+  | "incomplete"
+  | "incomplete_expired"
+  | "paused";
+
+export type OrganizationSubscription = {
+  id: Uuid;
+  organization_id: Uuid;
+  stripe_customer_id: Nullable<string>;
+  stripe_subscription_id: Nullable<string>;
+  stripe_price_id: Nullable<string>;
+  status: OrganizationSubscriptionStatus;
+  current_period_start: Nullable<Timestamp>;
+  current_period_end: Nullable<Timestamp>;
+  cancel_at_period_end: boolean;
+  canceled_at: Nullable<Timestamp>;
+  latest_invoice_id: Nullable<string>;
+  raw_status: Nullable<string>;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
 export type OrganizationPrivacySettings = {
   organization_id: Uuid;
   small_group_threshold: number;
@@ -1965,6 +1993,11 @@ export type Database = {
   public: {
     Tables: {
       organizations: RowDefinition<Organization, Partial<Organization>, Partial<Organization>>;
+      organization_subscriptions: RowDefinition<
+        OrganizationSubscription,
+        Partial<OrganizationSubscription>,
+        Partial<OrganizationSubscription>
+      >;
       organization_memberships: RowDefinition<
         OrganizationMembership,
         Partial<OrganizationMembership>,

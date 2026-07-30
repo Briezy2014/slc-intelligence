@@ -81,6 +81,7 @@ When documents conflict, surface the conflict for product-owner resolution. Do n
 | `PERFORMANCE_REVIEW.md`                       | Phase 17 performance review                                           |
 | `PRODUCTION_ARCHITECTURE.md`                  | Phase 18 production architecture                                      |
 | `PRODUCTION_ENVIRONMENT.md`                   | Phase 18 environment guide                                            |
+| `BILLING.md`                                  | Single monthly Stripe subscription setup (no plan tiers)              |
 | `SUPABASE_PRODUCTION_SETUP.md`                | Phase 18 Supabase setup                                               |
 | `VERCEL_PRODUCTION_SETUP.md`                  | Phase 18 Vercel setup                                                 |
 | `GODADDY_DNS_SETUP.md`                        | Phase 18 DNS setup                                                    |
