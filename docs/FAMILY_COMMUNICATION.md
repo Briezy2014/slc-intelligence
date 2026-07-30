@@ -6,6 +6,7 @@ Phase 14 adds contact and communication logging workflows for authorized student
 
 - Student contacts and preferences.
 - Communication categories, templates, logs, participants, and follow-ups.
+- Parent/guardian **receipt e-signature** on family-visible communications (typed/drawn + secure sign link).
 - Family-visible export recording.
 
 ## Guardrails
@@ -14,6 +15,8 @@ Phase 14 adds contact and communication logging workflows for authorized student
 - `family_visible`, `internal`, and `restricted_admin` records remain separated.
 - Family-visible exports include only `family_visible` logs and omit internal/restricted records.
 - Internal/restricted records require `communication.internal.read` in addition to communication read scope.
+- E-sign captures receipt acknowledgment only — not IDEA/IEP consent. See `COMMUNICATION_ESIGN.md`.
+- Required SQL: `202607300014_communication_esign.sql`.
 
 ## Application layer
 

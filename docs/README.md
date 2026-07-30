@@ -92,6 +92,7 @@ When documents conflict, surface the conflict for product-owner resolution. Do n
 | `ISSUE_TEMPLATE.md`                  | Post-launch issue template                       |
 | `PRODUCTION_RELEASE_NOTES.md`        | Finished-product release notes                   |
 | `KNOWN_LIMITATIONS.md`               | Known limitations after launch                   |
+| `COMMUNICATION_ESIGN.md`             | Parent receipt e-sign for family communications  |
 | `legal/COUNSEL_PRIVACY_PACKAGE.md`   | Counsel-ready privacy package index (draft)      |
 | `legal/COUNSEL_REVIEW_CHECKLIST.md`  | Counsel sign-off checklist                       |
 | `legal/DRAFT_PRIVACY_NOTICE.md`      | Draft privacy notice for counsel edit            |

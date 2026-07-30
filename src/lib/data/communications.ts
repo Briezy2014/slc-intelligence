@@ -6,6 +6,7 @@ import {
   type DataState,
 } from "@/lib/data/shared";
 import type {
+  CommunicationAcknowledgement,
   CommunicationCategory,
   CommunicationFollowup,
   CommunicationLog,
@@ -28,6 +29,7 @@ export type CommunicationsData = {
   participants: CommunicationParticipant[];
   followups: CommunicationFollowup[];
   templates: CommunicationTemplate[];
+  acknowledgements: CommunicationAcknowledgement[];
   permissions: {
     canManageContacts: boolean;
     canReadContacts: boolean;
@@ -51,6 +53,7 @@ const emptyCommunicationsData: CommunicationsData = {
   participants: [],
   followups: [],
   templates: [],
+  acknowledgements: [],
   permissions: {
     canManageContacts: false,
     canReadContacts: false,
@@ -152,23 +155,31 @@ export async function listCommunications(
     const communicationIds = (communicationsResult.data ?? []).map(
       (communication) => communication.id,
     );
-    const [preferencesResult, participantsResult, followupsResult] = await Promise.all([
-      contactIds.length
-        ? context.supabase.from("contact_preferences").select("*").in("contact_id", contactIds)
-        : { data: [] as ContactPreference[], error: null },
-      communicationIds.length
-        ? context.supabase
-            .from("communication_participants")
-            .select("*")
-            .in("communication_log_id", communicationIds)
-        : { data: [] as CommunicationParticipant[], error: null },
-      communicationIds.length
-        ? context.supabase
-            .from("communication_followups")
-            .select("*")
-            .in("communication_log_id", communicationIds)
-        : { data: [] as CommunicationFollowup[], error: null },
-    ]);
+    const [preferencesResult, participantsResult, followupsResult, acknowledgementsResult] =
+      await Promise.all([
+        contactIds.length
+          ? context.supabase.from("contact_preferences").select("*").in("contact_id", contactIds)
+          : { data: [] as ContactPreference[], error: null },
+        communicationIds.length
+          ? context.supabase
+              .from("communication_participants")
+              .select("*")
+              .in("communication_log_id", communicationIds)
+          : { data: [] as CommunicationParticipant[], error: null },
+        communicationIds.length
+          ? context.supabase
+              .from("communication_followups")
+              .select("*")
+              .in("communication_log_id", communicationIds)
+          : { data: [] as CommunicationFollowup[], error: null },
+        communicationIds.length
+          ? context.supabase
+              .from("communication_acknowledgements")
+              .select("*")
+              .in("communication_log_id", communicationIds)
+              .order("signed_at", { ascending: false })
+          : { data: [] as CommunicationAcknowledgement[], error: null },
+      ]);
 
     if (preferencesResult.error || participantsResult.error || followupsResult.error) {
       return safeDataError(emptyCommunicationsData);
@@ -192,6 +203,9 @@ export async function listCommunications(
         participants: participantsResult.data ?? [],
         followups: followupsResult.data ?? [],
         templates: templatesResult.data ?? [],
+        acknowledgements: acknowledgementsResult.error
+          ? []
+          : ((acknowledgementsResult.data ?? []) as CommunicationAcknowledgement[]),
         permissions: {
           canManageContacts: permissions["contact.manage"],
           canReadContacts: permissions["contact.read"],

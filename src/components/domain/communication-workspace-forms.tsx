@@ -51,6 +51,8 @@ export function ContactAndCommunicationForms({
   const [subject, setSubject] = useState("");
   const [summary, setSummary] = useState("");
   const [visibility, setVisibility] = useState("family_visible");
+  const [acknowledgementRequested, setAcknowledgementRequested] = useState(true);
+  const [method, setMethod] = useState("email");
 
   const contactsForStudent = useMemo(
     () =>
@@ -73,6 +75,8 @@ export function ContactAndCommunicationForms({
     setSubject(draft.subject);
     setSummary(draft.summary);
     setVisibility(draft.visibility);
+    setMethod(draft.method);
+    if (draft.visibility === "family_visible") setAcknowledgementRequested(true);
   }
 
   return (
@@ -223,14 +227,52 @@ export function ContactAndCommunicationForms({
                   id="visibility"
                   name="visibility"
                   value={visibility}
-                  onChange={(event) => setVisibility(event.target.value)}
+                  onChange={(event) => {
+                    setVisibility(event.target.value);
+                    if (event.target.value === "family_visible") {
+                      setAcknowledgementRequested(true);
+                    }
+                  }}
                 >
                   <option value="family_visible">Family visible</option>
                   <option value="internal">Internal</option>
                   <option value="restricted_admin">Restricted admin</option>
                 </Select>
               </FormField>
-              <input type="hidden" name="method" value="phone" />
+              <FormField id="method" label="Method">
+                <Select
+                  id="method"
+                  name="method"
+                  value={method}
+                  onChange={(event) => setMethod(event.target.value)}
+                >
+                  <option value="email">Email</option>
+                  <option value="letter">Letter home</option>
+                  <option value="text">Text</option>
+                  <option value="phone">Phone</option>
+                  <option value="in_person">In person</option>
+                  <option value="portal">Portal</option>
+                  <option value="video">Video</option>
+                  <option value="other">Other</option>
+                </Select>
+              </FormField>
+              {visibility === "family_visible" ? (
+                <FormField id="acknowledgementRequested" label="Request parent e-signature">
+                  <Select
+                    id="acknowledgementRequested"
+                    name="acknowledgementRequested"
+                    value={acknowledgementRequested ? "true" : "false"}
+                    onChange={(event) =>
+                      setAcknowledgementRequested(event.target.value === "true")
+                    }
+                  >
+                    <option value="true">Yes — trap communication and collect receipt signature</option>
+                    <option value="false">Not for this log</option>
+                  </Select>
+                </FormField>
+              ) : (
+                <input type="hidden" name="acknowledgementRequested" value="false" />
+              )}
               <input type="hidden" name="direction" value="outbound" />
               <input type="hidden" name="status" value="draft" />
               <FormField id="subject" label="Subject">
@@ -242,7 +284,7 @@ export function ContactAndCommunicationForms({
                   onChange={(event) => setSubject(event.target.value)}
                 />
               </FormField>
-              <FormField id="summary" label="Summary">
+              <FormField id="summary" label="Message / letter body">
                 <Textarea
                   id="summary"
                   name="summary"
@@ -251,6 +293,10 @@ export function ContactAndCommunicationForms({
                   onChange={(event) => setSummary(event.target.value)}
                 />
               </FormField>
+              <p className="text-muted text-sm">
+                After saving a family-visible note, use Parent e-signature below to create a sign
+                link or capture a signature.
+              </p>
               <Button type="submit" disabled={students.length === 0}>
                 Save communication
               </Button>
