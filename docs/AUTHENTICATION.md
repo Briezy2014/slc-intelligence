@@ -13,7 +13,7 @@ Rules:
 
 ## Access requests (approval workflow)
 
-Educators can create an account at `/request-access` (email/password + role checkboxes + organization code).
+Educators can create an account at `/request-access` (email/password + role checkboxes + staff invite code).
 This does **not** grant platform access immediately.
 
 1. The requester account is created in Supabase Auth.
