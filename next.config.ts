@@ -17,6 +17,7 @@ const securityHeaders = [
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  serverExternalPackages: ["tesseract.js"],
   async headers() {
     return [
       {

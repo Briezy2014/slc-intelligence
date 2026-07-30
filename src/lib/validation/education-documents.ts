@@ -21,5 +21,10 @@ export const educationDocumentUploadSchema = z.object({
   fileName: z.string().trim().min(1).max(260),
   contentType: z.string().trim().max(120).optional().or(z.literal("")),
   byteSize: z.coerce.number().int().nonnegative().optional(),
-  notes: z.string().trim().max(1000).optional().or(z.literal("")),
+  notes: z.string().trim().max(2000).optional().or(z.literal("")),
+  extractionMethod: z
+    .enum(["pdf_text", "pdf_ocr", "image_ocr", "plain_text", "none"])
+    .optional()
+    .or(z.literal("")),
+  extractedTextPreview: z.string().trim().max(4000).optional().or(z.literal("")),
 });

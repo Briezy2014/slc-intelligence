@@ -106,6 +106,28 @@ export async function recordEducationDocumentUploadAction(
   if (!("supabase" in context)) return context;
 
   try {
+    const file = formData.get("file");
+    let storagePath: string | null = null;
+
+    if (file instanceof File && file.size > 0) {
+      const safeName = values.fileName.replace(/[^a-zA-Z0-9._-]+/g, "_");
+      const path = `${context.organizationId}/${values.studentId}/${Date.now()}-${safeName}`;
+      const upload = await context.supabase.storage.from("education-documents").upload(path, file, {
+        contentType: values.contentType || file.type || "application/octet-stream",
+        upsert: false,
+      });
+      if (!upload.error) {
+        storagePath = path;
+      }
+    }
+
+    const extractionNote = values.extractionMethod
+      ? `Extracted via ${values.extractionMethod.replaceAll("_", " ")}.`
+      : "";
+    const preview = values.extractedTextPreview
+      ? ` Preview: ${values.extractedTextPreview.slice(0, 280)}`
+      : "";
+
     const payload = {
       organization_id: context.organizationId,
       student_id: values.studentId,
@@ -114,10 +136,13 @@ export async function recordEducationDocumentUploadAction(
       file_name: values.fileName,
       content_type: values.contentType || null,
       byte_size: values.byteSize ?? null,
-      storage_path: null,
+      storage_path: storagePath,
       notes:
         values.notes ||
-        "Upload metadata recorded. Binary storage can be connected to Supabase Storage next.",
+        `${extractionNote}${preview}`.trim() ||
+        (storagePath
+          ? "Upload stored and linked for team review."
+          : "Upload recorded. Storage bucket optional; OCR/field fill still applied in workspace."),
       uploaded_by: context.user.id,
     };
 
@@ -135,7 +160,10 @@ export async function recordEducationDocumentUploadAction(
       actionType: "education_document.upload_recorded",
       resourceType: "education_document_upload",
       resourceId: data.id,
-      newState: payload,
+      newState: {
+        ...payload,
+        storage_connected: Boolean(storagePath),
+      },
       paths: [
         "/education-documents",
         `/students/${values.studentId}/iep`,
@@ -145,8 +173,9 @@ export async function recordEducationDocumentUploadAction(
 
     return {
       status: "success",
-      message:
-        "Upload recorded. File binary storage can be enabled next; metadata is saved for the team workspace.",
+      message: storagePath
+        ? "Upload stored. Extracted text was used to populate draft fields for review."
+        : "Upload recorded. Extracted text was used to populate draft fields for review.",
     };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };

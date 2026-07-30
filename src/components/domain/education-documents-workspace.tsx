@@ -10,22 +10,21 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { TableShell } from "@/components/data-display/table-shell";
+import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import {
   recordEducationDocumentUploadAction,
   saveEducationDocumentAction,
 } from "@/lib/actions/education-documents";
-import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
+import { generateAiAssistSuggestionsAction } from "@/lib/actions/ai-assist";
 import {
   EDUCATION_DOCUMENT_DISCLAIMER,
   buildPrefillFields,
   getEducationDocumentTemplate,
 } from "@/lib/catalogs/education-document-templates";
+import { extractDocumentText } from "@/lib/documents/extract-document-text";
+import { mapDocumentTextToFields } from "@/lib/documents/map-document-text";
 import type { EducationDocumentsData } from "@/lib/data/education-documents";
 import type { EducationDocumentType } from "@/lib/supabase/types";
-
-function submitAction(action: (formData: FormData) => Promise<unknown>) {
-  return action as unknown as (formData: FormData) => void;
-}
 
 function studentLabel(student: EducationDocumentsData["students"][number]) {
   return `${student.last_name}, ${student.preferred_name || student.first_name}`;
@@ -50,10 +49,14 @@ export function EducationDocumentsWorkspace({
   const [studentId, setStudentId] = useState(lockedStudentId ?? "");
   const [fields, setFields] = useState<Record<string, string>>({});
   const [message, setMessage] = useState<string | null>(null);
+  const [uploadFile, setUploadFile] = useState<File | null>(null);
+  const [uploadNotes, setUploadNotes] = useState("");
+  const [scanPending, setScanPending] = useState(false);
   const [pending, startTransition] = useTransition();
 
   const template = useMemo(() => getEducationDocumentTemplate(tab), [tab]);
   const selectedStudent = data.students.find((student) => student.id === studentId);
+  const effectiveStudentId = lockedStudentId || studentId;
   const documents = data.documents.filter(
     (document) =>
       document.document_type === tab &&
@@ -83,6 +86,118 @@ export function EducationDocumentsWorkspace({
     );
   }
 
+  async function uploadAndPopulate() {
+    if (!data.organizationId) {
+      setMessage("Organization context is missing.");
+      return;
+    }
+    if (!effectiveStudentId) {
+      setMessage("Choose a student before uploading.");
+      return;
+    }
+    if (!uploadFile) {
+      setMessage("Choose a PDF, image, or text file to upload.");
+      return;
+    }
+
+    setScanPending(true);
+    setMessage("Reading document and extracting text…");
+
+    try {
+      const extraction = await extractDocumentText(uploadFile);
+      if (!extraction.text || extraction.text.length < 20) {
+        setMessage(
+          extraction.warning ||
+            "Could not extract enough text from that file. Try a clearer PDF/scan.",
+        );
+        setScanPending(false);
+        return;
+      }
+
+      setMessage(
+        `Extracted text via ${extraction.method.replaceAll("_", " ")} (${extraction.pageCount} page${extraction.pageCount === 1 ? "" : "s"}). Mapping fields…`,
+      );
+
+      const localFields = mapDocumentTextToFields(tab, extraction.text);
+      const aiResult = await generateAiAssistSuggestionsAction({
+        domain: "education_document",
+        focusArea: tab,
+        studentContext: selectedStudent
+          ? `${selectedStudent.first_name} ${selectedStudent.last_name}, grade ${selectedStudent.grade_level ?? "n/a"}`
+          : "",
+        extraNotes: extraction.text.slice(0, 20000),
+      });
+      const aiFields = aiResult.suggestions[0]?.fields ?? {};
+      const mergedFields = {
+        ...buildPrefillFields({
+          template,
+          studentName: selectedStudent
+            ? `${selectedStudent.first_name} ${selectedStudent.last_name}`
+            : "",
+          gradeLevel: selectedStudent?.grade_level,
+          localId: selectedStudent?.local_identifier,
+        }),
+        ...localFields,
+        ...aiFields,
+      };
+      setFields(mergedFields);
+
+      const formData = new FormData();
+      formData.set("organizationId", data.organizationId);
+      formData.set("studentId", effectiveStudentId);
+      formData.set("documentType", tab);
+      formData.set("fileName", uploadFile.name);
+      formData.set("contentType", uploadFile.type || "application/octet-stream");
+      formData.set("byteSize", String(uploadFile.size));
+      formData.set("extractionMethod", extraction.method);
+      formData.set("extractedTextPreview", extraction.text.slice(0, 1500));
+      formData.set(
+        "notes",
+        [uploadNotes.trim(), `Auto-extracted via ${extraction.method}.`, extraction.warning ?? ""]
+          .filter(Boolean)
+          .join(" "),
+      );
+      formData.set("file", uploadFile);
+
+      const uploadResult = await recordEducationDocumentUploadAction(formData);
+
+      const draftData = new FormData();
+      draftData.set("organizationId", data.organizationId);
+      draftData.set("studentId", effectiveStudentId);
+      draftData.set("documentType", tab);
+      draftData.set("templateKey", template.key);
+      draftData.set("status", "draft");
+      draftData.set(
+        "title",
+        `${template.title} · ${selectedStudent ? studentLabel(selectedStudent) : "student"} · from upload`,
+      );
+      draftData.set("gradeLevel", selectedStudent?.grade_level ?? "");
+      draftData.set("fieldsJson", JSON.stringify(mergedFields));
+      const draftResult = await saveEducationDocumentAction(draftData);
+
+      const fieldCount = Object.keys(mergedFields).length;
+      setMessage(
+        [
+          uploadResult.message,
+          draftResult.message,
+          `Populated ${fieldCount} draft field${fieldCount === 1 ? "" : "s"} from the uploaded file.`,
+          extraction.warning,
+          "Review every section before team use — this is assistive drafting only.",
+        ]
+          .filter(Boolean)
+          .join(" "),
+      );
+    } catch (error) {
+      setMessage(
+        error instanceof Error
+          ? `Upload/OCR failed: ${error.message}`
+          : "Upload/OCR failed. Try another file or paste text in AI scan.",
+      );
+    } finally {
+      setScanPending(false);
+    }
+  }
+
   return (
     <div className="space-y-6">
       <Alert title="Educator / team review required" tone="warning">
@@ -105,6 +220,70 @@ export function EducationDocumentsWorkspace({
           </Button>
         ))}
       </div>
+
+      <Card>
+        <CardTitle>Upload {tab.toUpperCase()} / ETR file · auto-fill fields</CardTitle>
+        <CardDescription>
+          Upload a PDF, scanned image, or text export. The app extracts text (PDF text layer or OCR)
+          and populates the draft fields automatically for your review.
+        </CardDescription>
+        {!data.permissions.canManage ? (
+          <div className="mt-4">
+            <Alert title="Permission needed" tone="warning">
+              Your role can view this area but cannot upload or edit document drafts.
+            </Alert>
+          </div>
+        ) : (
+          <div className="mt-4 space-y-3">
+            {!lockedStudentId ? (
+              <FormField id="uploadStudentId" label="Student">
+                <Select
+                  id="uploadStudentId"
+                  value={studentId}
+                  onChange={(event) => setStudentId(event.target.value)}
+                  required
+                >
+                  <option value="">Choose student</option>
+                  {data.students.map((student) => (
+                    <option key={student.id} value={student.id}>
+                      {studentLabel(student)}
+                    </option>
+                  ))}
+                </Select>
+              </FormField>
+            ) : null}
+            <FormField id="sourceFile" label="Choose PDF, image, or text file">
+              <Input
+                id="sourceFile"
+                type="file"
+                accept=".pdf,.png,.jpg,.jpeg,.webp,.txt,.md,application/pdf,image/*,text/plain"
+                onChange={(event) => setUploadFile(event.target.files?.[0] ?? null)}
+              />
+            </FormField>
+            <FormField id="uploadNotes" label="Notes (optional)">
+              <Textarea
+                id="uploadNotes"
+                value={uploadNotes}
+                onChange={(event) => setUploadNotes(event.target.value)}
+                placeholder="Source, meeting date, version notes"
+              />
+            </FormField>
+            <Button
+              type="button"
+              disabled={scanPending || !uploadFile || !effectiveStudentId}
+              onClick={() => {
+                void uploadAndPopulate();
+              }}
+            >
+              {scanPending ? "Scanning & filling fields…" : "Upload & populate fields"}
+            </Button>
+            <p className="text-muted text-xs">
+              Text PDFs extract instantly. Scanned PDFs/images use OCR (first 8 pages). Optional
+              Supabase Storage bucket keeps the binary when configured.
+            </p>
+          </div>
+        )}
+      </Card>
 
       <Card>
         <CardTitle>{template.title}</CardTitle>
@@ -228,7 +407,7 @@ export function EducationDocumentsWorkspace({
               </div>
             ))}
 
-            <Button type="submit" disabled={pending}>
+            <Button type="submit" disabled={pending || scanPending}>
               {pending ? "Saving…" : "Save draft for team review"}
             </Button>
           </form>
@@ -236,24 +415,22 @@ export function EducationDocumentsWorkspace({
       </Card>
 
       <Card>
-        <CardTitle>AI scan · populate fields from IEP/ETR text</CardTitle>
+        <CardTitle>Optional · paste text if OCR misses something</CardTitle>
         <CardDescription>
-          Paste text from an existing IEP/ETR (or OCR export). Local + optional model assist maps
-          content into the draft fields below. Always review — this does not finalize legal
-          documents. PDF binary auto-OCR storage can be connected next.
+          Use this only if a section did not extract cleanly from the uploaded file.
         </CardDescription>
         {data.permissions.canManage ? (
           <div className="mt-4">
             <AiAssistPanel
               domain="education_document"
-              title="Scan document text into fields"
-              description="Paste source text in Extra notes. Focus area can be iep, etr, or progress_report."
+              title="Paste leftover text into fields"
+              description="Paste additional source text in Extra notes. Focus area can be iep, etr, or progress_report."
               defaultFocusArea={tab}
               onApply={(suggestion) => {
                 if (suggestion.fields && Object.keys(suggestion.fields).length > 0) {
                   setFields((current) => ({ ...current, ...suggestion.fields }));
                   setMessage(
-                    "AI mapped fields into the draft. Review every section before saving or team use.",
+                    "AI mapped additional fields into the draft. Review every section before saving.",
                   );
                 } else {
                   setMessage(suggestion.draftText || "No fields were mapped from that text.");
@@ -261,81 +438,6 @@ export function EducationDocumentsWorkspace({
               }}
             />
           </div>
-        ) : null}
-      </Card>
-
-      <Card>
-        <CardTitle>Upload existing {tab.toUpperCase()} / related file</CardTitle>
-        <CardDescription>
-          Records file metadata now. For field population, paste document text into AI scan above
-          (full PDF OCR storage can be connected next).
-        </CardDescription>
-        {data.permissions.canManage ? (
-          <form
-            action={submitAction(recordEducationDocumentUploadAction)}
-            className="mt-4 space-y-3"
-          >
-            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-            <input type="hidden" name="documentType" value={tab} />
-            {lockedStudentId ? (
-              <input type="hidden" name="studentId" value={lockedStudentId} />
-            ) : (
-              <FormField id="uploadStudentId" label="Student">
-                <Select id="uploadStudentId" name="studentId" required defaultValue={studentId}>
-                  <option value="">Choose student</option>
-                  {data.students.map((student) => (
-                    <option key={student.id} value={student.id}>
-                      {studentLabel(student)}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-            )}
-            <FormField id="fileName" label="File name">
-              <Input
-                id="fileName"
-                name="fileName"
-                required
-                placeholder="StudentLast_IEP_2026.pdf"
-                onChange={(event) => {
-                  const fileInput = document.getElementById(
-                    "sourceFile",
-                  ) as HTMLInputElement | null;
-                  if (fileInput?.files?.[0] && !event.target.value) {
-                    event.target.value = fileInput.files[0].name;
-                  }
-                }}
-              />
-            </FormField>
-            <FormField id="sourceFile" label="Choose file (local reference)">
-              <Input
-                id="sourceFile"
-                type="file"
-                onChange={(event) => {
-                  const file = event.target.files?.[0];
-                  if (!file) return;
-                  const nameInput = document.getElementById("fileName") as HTMLInputElement | null;
-                  const typeInput = document.getElementById(
-                    "contentType",
-                  ) as HTMLInputElement | null;
-                  const sizeInput = document.getElementById("byteSize") as HTMLInputElement | null;
-                  if (nameInput) nameInput.value = file.name;
-                  if (typeInput) typeInput.value = file.type;
-                  if (sizeInput) sizeInput.value = String(file.size);
-                }}
-              />
-            </FormField>
-            <input type="hidden" id="contentType" name="contentType" />
-            <input type="hidden" id="byteSize" name="byteSize" />
-            <FormField id="uploadNotes" label="Notes">
-              <Textarea
-                id="uploadNotes"
-                name="notes"
-                placeholder="Source, meeting date, version notes"
-              />
-            </FormField>
-            <Button type="submit">Record upload</Button>
-          </form>
         ) : null}
       </Card>
 
@@ -377,7 +479,6 @@ export function EducationDocumentsWorkspace({
         <Link href="/reports" className="text-accent font-semibold hover:underline">
           Progress reporting
         </Link>
-        .
       </p>
     </div>
   );
