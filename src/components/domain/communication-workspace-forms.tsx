@@ -18,11 +18,14 @@ import {
   applyCommunicationTemplate,
   getCommunicationTemplate,
 } from "@/lib/catalogs";
+import { enrichCommunicationDraftContext } from "@/lib/catalogs/behavior-communication";
+import { getBehaviorDefinitionTemplate } from "@/lib/catalogs/behavior-templates";
 import {
   COMMUNICATION_LANGUAGES,
   communicationLanguageLabel,
 } from "@/lib/catalogs/communication-languages";
 import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
+import { SpecificBehaviorSelect } from "@/components/domain/specific-behavior-select";
 import type { Student, StudentContact } from "@/lib/supabase/types";
 
 function submitAction(action: (formData: FormData) => Promise<unknown>) {
@@ -57,6 +60,7 @@ export function ContactAndCommunicationForms({
   const [logStudentId, setLogStudentId] = useState(studentId ?? "");
   const [contactId, setContactId] = useState("");
   const [templateId, setTemplateId] = useState("");
+  const [behaviorTemplateId, setBehaviorTemplateId] = useState("");
   const [focusArea, setFocusArea] = useState("");
   const [subject, setSubject] = useState("");
   const [summary, setSummary] = useState("");
@@ -78,15 +82,35 @@ export function ContactAndCommunicationForms({
   const selectedStudent = visibleStudents.find((student) => student.id === logStudentId);
   const selectedContact = contactsForStudent.find((contact) => contact.id === contactId);
 
+  function selectBehavior(id: string) {
+    setBehaviorTemplateId(id);
+    const behavior = getBehaviorDefinitionTemplate(id);
+    if (behavior) setFocusArea(behavior.name);
+  }
+
   function insertDraft() {
     const template = getCommunicationTemplate(templateId);
     if (!template) return;
-    const draft = applyCommunicationTemplate(template, {
-      studentFirstName: selectedStudent?.preferred_name || selectedStudent?.first_name,
-      contactFirstName: selectedContact?.first_name,
-      focusArea: focusArea || undefined,
-      staffName: "SLC Intelligence team",
-    });
+    const isBehaviorLetter =
+      template.id.startsWith("behavior") ||
+      template.id === "bus-behavior" ||
+      template.id === "bullying-followup" ||
+      template.id === "discipline-conference" ||
+      template.id === "internal-behavior-debrief";
+    if (isBehaviorLetter && !behaviorTemplateId && !focusArea.trim()) {
+      setTranslateMessage("Select a specific behavior before inserting this letter draft.");
+      return;
+    }
+    const draftContext = enrichCommunicationDraftContext(
+      {
+        studentFirstName: selectedStudent?.preferred_name || selectedStudent?.first_name,
+        contactFirstName: selectedContact?.first_name,
+        focusArea: focusArea || undefined,
+        staffName: "SLC Intelligence team",
+      },
+      behaviorTemplateId || undefined,
+    );
+    const draft = applyCommunicationTemplate(template, draftContext);
     setSubject(draft.subject);
     setSummary(draft.summary);
     setSourceSummary(draft.summary);
@@ -136,13 +160,16 @@ export function ContactAndCommunicationForms({
       <AiAssistPanel
         domain="communication"
         title="AI Assist · Family communication"
-        description="Generate reviewable parent/guardian communication drafts from your focus area."
+        description="Select a specific behavior from the dropdown, then generate a reviewable parent/guardian letter. Edit before saving or sending."
         onApply={(suggestion) => {
           setSubject(suggestion.fields?.subject ?? suggestion.title);
           setSummary(suggestion.fields?.summary ?? suggestion.draftText);
           setSourceSummary(suggestion.fields?.summary ?? suggestion.draftText);
           if (suggestion.fields?.visibility) setVisibility(suggestion.fields.visibility);
           if (suggestion.fields?.focusArea) setFocusArea(suggestion.fields.focusArea);
+          if (suggestion.fields?.behaviorTemplateId) {
+            setBehaviorTemplateId(suggestion.fields.behaviorTemplateId);
+          }
           if (suggestion.fields?.method) setMethod(suggestion.fields.method);
           setComposeTab("compose");
         }}
@@ -219,9 +246,10 @@ export function ContactAndCommunicationForms({
 
               {composeTab === "template_language" ? (
                 <div className="space-y-3">
-                  <Alert title="Choose template and language" tone="info">
-                    Select a communication template (expanded school letter library) and a family
-                    language (20 options). Insert the English draft, then translate before saving.
+                  <Alert title="Choose template, behavior, and language" tone="info">
+                    For behavior letters, pick a specific behavior from the dropdown (no typing
+                    needed). Then choose a template and language, insert the English draft, and
+                    translate before saving.
                   </Alert>
                   <FormField id="draftTemplateId" label="Communication template">
                     <Select
@@ -237,6 +265,12 @@ export function ContactAndCommunicationForms({
                       ))}
                     </Select>
                   </FormField>
+                  <SpecificBehaviorSelect
+                    id="draftSpecificBehavior"
+                    value={behaviorTemplateId}
+                    onChange={selectBehavior}
+                    helperText="Use this for behavior, safety, bus, boundary, and peer-conflict letters."
+                  />
                   <FormField id="languageCodePicker" label="Language">
                     <Select
                       id="languageCodePicker"
@@ -250,12 +284,18 @@ export function ContactAndCommunicationForms({
                       ))}
                     </Select>
                   </FormField>
-                  <FormField id="focusArea" label="Focus area for draft">
+                  <FormField
+                    id="focusArea"
+                    label="Focus area for draft (auto-filled from behavior, or custom)"
+                  >
                     <Input
                       id="focusArea"
                       value={focusArea}
-                      onChange={(event) => setFocusArea(event.target.value)}
-                      placeholder="reading fluency, calm-down routine, etc."
+                      onChange={(event) => {
+                        setFocusArea(event.target.value);
+                        setBehaviorTemplateId("");
+                      }}
+                      placeholder="Select a specific behavior above, or type reading fluency, etc."
                     />
                   </FormField>
                   <div className="flex flex-wrap gap-2">

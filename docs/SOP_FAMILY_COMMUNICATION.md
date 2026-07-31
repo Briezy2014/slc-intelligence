@@ -37,12 +37,15 @@ The app logs communications; it does **not** auto-send email/SMS. Staff deliver 
 
 1. Open the **Template & language** tab.
 2. Choose a **Communication template** (full list below).
-3. Choose a **Language** (all 20 listed below).
-4. Enter a **Focus area** (for example: reading fluency, calm-down routine).
-5. Click **Insert template draft** (English draft inserts).
-6. If language is not English, click **Translate draft**.
-7. Always review the translated text (bilingual staff/interpreter review recommended).
-8. Switch to **Compose & save**.
+3. For behavior / safety / bus / peer-conflict letters: choose a **Specific behavior** from the dropdown (same inventory as Behavior Detective — no manual typing required). This auto-fills the focus area and inserts parent-friendly supports into the letter.
+4. Choose a **Language** (all 20 listed below).
+5. For non-behavior letters, enter a custom **Focus area** if needed (for example: reading fluency).
+6. Click **Insert template draft** (English draft inserts).
+7. If language is not English, click **Translate draft**.
+8. Always review the translated text (bilingual staff/interpreter review recommended).
+9. Switch to **Compose & save**.
+
+AI Assist on this page also includes the **Specific behavior** dropdown. Select the behavior first, then **Generate draft**.
 
 ---
 
