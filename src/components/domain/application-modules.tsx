@@ -36,15 +36,8 @@ import {
   saveExecutiveFunctionPlanAction,
 } from "@/lib/actions/executive-function";
 import {
-  addClassroomScheduleBlockAction,
-  saveClassroomAnnouncementAction,
-  saveClassroomScheduleAction,
-  saveDailyStudentNoteAction,
-} from "@/lib/actions/classroom-operations";
-import {
   independencePercent,
   promptDistribution,
-  scheduleBlockDurationMinutes,
 } from "@/lib/analytics/executive-function-calculations";
 import {
   describeDocumentationGap,
@@ -52,11 +45,13 @@ import {
   summarizePlannedVsRecordedMinutes,
 } from "@/lib/analytics/service-calculations";
 import type { AccommodationsData } from "@/lib/data/accommodations";
-import type { ClassroomOperationsData } from "@/lib/data/classroom-operations";
 import type { CommunicationsData } from "@/lib/data/communications";
 import type { ExecutiveFunctionData } from "@/lib/data/executive-function";
 import type { MeetingsData } from "@/lib/data/meetings";
 import type { ServicesData } from "@/lib/data/services";
+
+export { ClassroomOperationsWorkspace } from "@/components/domain/classroom-operations-workspace";
+export type { ClassroomOpsSection } from "@/components/domain/classroom-operations-workspace";
 
 function submitAction(action: (formData: FormData) => Promise<unknown>) {
   return action as unknown as (formData: FormData) => void;
@@ -760,168 +755,6 @@ export function ExecutiveFunctionWorkspace({
         rows={data.plans.map((plan) => {
           const student = data.students.find((entry) => entry.id === plan.student_id);
           return [plan.title, student ? studentName(student) : "Authorized student", plan.status];
-        })}
-      />
-    </div>
-  );
-}
-
-export function ClassroomOperationsWorkspace({
-  data,
-  classroomId,
-  daily = false,
-}: {
-  data: ClassroomOperationsData;
-  classroomId?: string;
-  daily?: boolean;
-}) {
-  const today = new Date().toISOString().slice(0, 10);
-  const visibleClassrooms = classroomId
-    ? data.classrooms.filter((classroom) => classroom.id === classroomId)
-    : data.classrooms;
-  const firstSchedule = data.schedules[0];
-  const firstStudent = data.students[0];
-  return (
-    <div className="space-y-6">
-      <Alert title={daily ? "Daily Command Center" : "Classroom operations"} tone="info">
-        Role-aware views show authorized schedules, routines, notes, and announcements.
-        Reinforcement records must not be used for punitive ranking.
-      </Alert>
-      <div className="grid gap-4 md:grid-cols-4">
-        <Card>
-          <CardTitle>{data.schedules.length}</CardTitle>
-          <CardDescription>Schedules</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{data.routines.length}</CardTitle>
-          <CardDescription>Routines</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{data.dailyNotes.length}</CardTitle>
-          <CardDescription>Daily notes</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{data.announcements.length}</CardTitle>
-          <CardDescription>Announcements</CardDescription>
-        </Card>
-      </div>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardTitle>Schedule</CardTitle>
-          {data.permissions.canManageSchedules ? (
-            <form action={submitAction(saveClassroomScheduleAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <FormField id="opsClassroomId" label="Classroom">
-                <Select
-                  id="opsClassroomId"
-                  name="classroomId"
-                  defaultValue={classroomId ?? ""}
-                  required
-                >
-                  <option value="">Choose classroom</option>
-                  {visibleClassrooms.map((classroom) => (
-                    <option key={classroom.id} value={classroom.id}>
-                      {classroom.name}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-              <FormField id="scheduleName" label="Name">
-                <Input id="scheduleName" name="name" required />
-              </FormField>
-              <Button type="submit">Save schedule</Button>
-            </form>
-          ) : (
-            <PermissionNote />
-          )}
-        </Card>
-        <Card>
-          <CardTitle>Daily student note</CardTitle>
-          {data.permissions.canEnterDailyNotes && firstStudent ? (
-            <form action={submitAction(saveDailyStudentNoteAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <input type="hidden" name="studentId" value={firstStudent.id} />
-              <FormField id="noteDate" label="Date">
-                <Input id="noteDate" name="noteDate" type="date" defaultValue={today} required />
-              </FormField>
-              <FormField id="noteText" label="Note">
-                <Textarea id="noteText" name="noteText" required />
-              </FormField>
-              <input type="hidden" name="status" value="draft" />
-              <Button type="submit">Save daily note</Button>
-            </form>
-          ) : (
-            <PermissionNote>
-              Daily note entry is limited to authorized roles and student scopes.
-            </PermissionNote>
-          )}
-        </Card>
-      </div>
-      {firstSchedule ? (
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Card>
-            <CardTitle>Schedule block</CardTitle>
-            <form action={submitAction(addClassroomScheduleBlockAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <input type="hidden" name="scheduleId" value={firstSchedule.id} />
-              <input type="hidden" name="classroomId" value={firstSchedule.classroom_id} />
-              <FormField id="blockLabel" label="Label">
-                <Input id="blockLabel" name="label" required />
-              </FormField>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <FormField id="blockStart" label="Start">
-                  <Input id="blockStart" name="startTime" type="time" required />
-                </FormField>
-                <FormField id="blockEnd" label="End">
-                  <Input id="blockEnd" name="endTime" type="time" required />
-                </FormField>
-              </div>
-              <Button type="submit" variant="secondary">
-                Add block
-              </Button>
-            </form>
-          </Card>
-          <Card>
-            <CardTitle>Announcement</CardTitle>
-            <form action={submitAction(saveClassroomAnnouncementAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <input type="hidden" name="classroomId" value={firstSchedule.classroom_id} />
-              <FormField id="announcementTitle" label="Title">
-                <Input id="announcementTitle" name="title" required />
-              </FormField>
-              <FormField id="announcementBody" label="Body">
-                <Textarea id="announcementBody" name="body" required />
-              </FormField>
-              <input type="hidden" name="containsStudentPii" value="false" />
-              <input type="hidden" name="audience" value="staff" />
-              <input type="hidden" name="status" value="draft" />
-              <Button type="submit" variant="secondary">
-                Save announcement
-              </Button>
-            </form>
-          </Card>
-        </div>
-      ) : null}
-      <TableShell
-        caption="Schedule blocks"
-        headers={["Label", "Day", "Time", "Minutes"]}
-        rows={data.scheduleBlocks.map((block) => [
-          block.label,
-          block.day_of_week == null ? "All" : String(block.day_of_week),
-          `${block.start_time} to ${block.end_time}`,
-          String(scheduleBlockDurationMinutes(block.start_time, block.end_time) ?? "Unavailable"),
-        ])}
-      />
-      <TableShell
-        caption="Daily notes"
-        headers={["Student", "Date", "Status"]}
-        rows={data.dailyNotes.map((note) => {
-          const student = data.students.find((entry) => entry.id === note.student_id);
-          return [
-            student ? studentName(student) : "Authorized student",
-            note.note_date,
-            note.status,
-          ];
         })}
       />
     </div>
