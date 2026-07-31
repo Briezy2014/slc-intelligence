@@ -23,10 +23,20 @@ import {
   selectRecommendedWorksheetTypes,
   type WorksheetType,
 } from "@/lib/worksheet-generator/options";
+import { downloadPrintableHtmlFile, openPrintablePacket } from "@/lib/worksheet-generator/print";
+import { hasVisualMarkers, replaceVisualMarkersWithSvg } from "@/lib/worksheet-generator/visuals";
 
 function toggleValue(list: string[], value: string, checked: boolean): string[] {
   if (checked) return list.includes(value) ? list : [...list, value];
   return list.filter((item) => item !== value);
+}
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
 }
 
 export function WorksheetGeneratorForm() {
@@ -69,6 +79,7 @@ export function WorksheetGeneratorForm() {
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const [disclaimer, setDisclaimer] = useState<string | null>(null);
+  const [printMessage, setPrintMessage] = useState<string | null>(null);
   const [resultTitle, setResultTitle] = useState("");
   const [resultContent, setResultContent] = useState("");
   const [showResults, setShowResults] = useState(false);
@@ -84,9 +95,21 @@ export function WorksheetGeneratorForm() {
     [subject, learningGoal, instructionalLevel, differentiationLevel],
   );
 
+  const previewHtml = useMemo(() => {
+    if (!resultContent) return "";
+    const firstPages = resultContent.split("---------- PAGE BREAK ----------").slice(0, 2);
+    return firstPages
+      .map((page) => {
+        const escaped = escapeHtml(page.trim());
+        return replaceVisualMarkersWithSvg(escaped).replaceAll("\n", "<br/>");
+      })
+      .join('<hr style="margin:16px 0;border-color:#444"/>');
+  }, [resultContent]);
+
   function runGenerate() {
     setError(null);
     setMessage(null);
+    setPrintMessage(null);
     startTransition(async () => {
       const result = await generateWorksheetPacketAction({
         packetTitle,
@@ -120,29 +143,39 @@ export function WorksheetGeneratorForm() {
     });
   }
 
-  function printPacket() {
-    const printWindow = window.open("", "_blank", "noopener,noreferrer,width=900,height=700");
-    if (!printWindow) return;
-    const safeTitle = resultTitle.replaceAll("<", "&lt;");
-    const safeBody = resultContent
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll("\n", "<br/>");
-    printWindow.document.write(`<!doctype html><html><head><title>${safeTitle}</title>
-<style>
-  body{font-family:Georgia,serif;margin:24px;line-height:1.45;color:#111}
-  h1{font-size:20px}
-  @media print{body{margin:12mm}}
-</style></head><body><h1>${safeTitle}</h1><div>${safeBody}</div></body></html>`);
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
+  function printPacket(autoPrint = true) {
+    setPrintMessage(null);
+    const result = openPrintablePacket({
+      title: resultTitle,
+      content: resultContent,
+      printingFormat,
+      autoPrint,
+    });
+    if (!result.ok) {
+      setPrintMessage(result.message);
+      return;
+    }
+    setPrintMessage(
+      autoPrint
+        ? "Print dialog opened. Choose “Save as PDF” (or your PDF printer) to download the packet with visuals."
+        : "Printable packet opened in a new tab. Use Print → Save as PDF.",
+    );
   }
 
   function downloadPdf() {
-    // Uses the browser print dialog (Save as PDF). No client-side API key; no new PDF library.
-    printPacket();
+    printPacket(true);
+  }
+
+  function downloadHtml() {
+    setPrintMessage(null);
+    downloadPrintableHtmlFile({
+      title: resultTitle,
+      content: resultContent,
+      printingFormat,
+    });
+    setPrintMessage(
+      "Downloaded a printable HTML file with visuals. Open it, then Print → Save as PDF if needed.",
+    );
   }
 
   return (
@@ -155,8 +188,8 @@ export function WorksheetGeneratorForm() {
         <Card>
           <CardTitle>Worksheet packet options</CardTitle>
           <CardDescription>
-            Enter a learning goal and select options. Generate a customized printable packet for
-            educator review.
+            Enter a learning goal and select options. Generate a customized printable packet with
+            real visuals for educator review, then Print or Save as PDF.
           </CardDescription>
 
           <div className="mt-4 space-y-4">
@@ -379,7 +412,7 @@ export function WorksheetGeneratorForm() {
             <FormField
               id="studentInterestOrTheme"
               label="Student interest or theme (optional)"
-              description="Examples: Space, Swimming, Sports, Animals, Cooking. Keep materials age-respectful."
+              description="Examples: Space, Swimming, Sports, Animals, Cooking. Keep materials age-respectful. Theme visuals are included in Print/PDF."
             >
               <Input
                 id="studentInterestOrTheme"
@@ -414,7 +447,8 @@ export function WorksheetGeneratorForm() {
         <Card>
           <CardTitle>Generated worksheet packet</CardTitle>
           <CardDescription>
-            Preview and edit below. Regenerate, print, or download as PDF (browser Save as PDF).
+            Preview visuals below, edit text if needed, then Print or Save as PDF. Visual markers
+            like [[VISUAL:coin-penny]] become drawings in the printable packet.
           </CardDescription>
           <div className="mt-4 space-y-3">
             <FormField id="resultTitle" label="Packet title">
@@ -424,6 +458,26 @@ export function WorksheetGeneratorForm() {
                 onChange={(event) => setResultTitle(event.target.value)}
               />
             </FormField>
+
+            {hasVisualMarkers(resultContent) ? (
+              <div className="border-border rounded-[var(--radius-md)] border p-3">
+                <p className="text-sm font-semibold">Visual preview (first pages)</p>
+                <p className="text-muted mt-1 text-xs">
+                  These drawings are included when you print or save as PDF.
+                </p>
+                <div
+                  className="bg-background mt-3 max-h-80 overflow-auto rounded-[var(--radius-md)] p-3 text-sm text-black [&_figcaption]:text-xs [&_figure]:mr-3 [&_figure]:inline-block [&_svg]:max-w-full"
+                  style={{ background: "#fff" }}
+                  dangerouslySetInnerHTML={{ __html: previewHtml }}
+                />
+              </div>
+            ) : (
+              <Alert title="No visual markers found" tone="warning">
+                This packet text has no [[VISUAL:...]] markers. Regenerate to include printable
+                drawings, or keep the text-only version.
+              </Alert>
+            )}
+
             <FormField id="resultContent" label="Packet content (editable)">
               <Textarea
                 id="resultContent"
@@ -439,13 +493,20 @@ export function WorksheetGeneratorForm() {
               <Button type="button" disabled={pending} onClick={runGenerate}>
                 {pending ? "Regenerating…" : "Regenerate the packet"}
               </Button>
-              <Button type="button" variant="secondary" onClick={printPacket}>
+              <Button type="button" variant="secondary" onClick={() => printPacket(true)}>
                 Print the packet
               </Button>
-              <Button type="button" variant="secondary" onClick={downloadPdf}>
+              <Button type="button" onClick={downloadPdf}>
                 Download as PDF
               </Button>
+              <Button type="button" variant="ghost" onClick={downloadHtml}>
+                Download printable HTML
+              </Button>
             </div>
+            <p className="text-muted text-xs">
+              “Download as PDF” opens the print dialog — choose Destination: Save as PDF. Visuals
+              print with the pages.
+            </p>
           </div>
         </Card>
       )}
@@ -458,6 +519,11 @@ export function WorksheetGeneratorForm() {
       {message ? (
         <Alert title="Generation status" tone="info">
           {message}
+        </Alert>
+      ) : null}
+      {printMessage ? (
+        <Alert title="Print / PDF" tone="info">
+          {printMessage}
         </Alert>
       ) : null}
       {error ? (
