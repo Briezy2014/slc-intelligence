@@ -15,7 +15,7 @@ export default function WorksheetGeneratorPage() {
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Worksheet Generator" }]} />
       <PageHeader
         title="Worksheet Generator"
-        description="Enter a learning goal, choose options, and generate a printable worksheet packet for educator review."
+        description="Enter a learning goal, choose options, and generate a printable packet with real visuals. Print or Save as PDF after review."
       />
       <WorksheetGeneratorForm />
     </main>

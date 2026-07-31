@@ -4,6 +4,11 @@ import {
   parsePacketPageCount,
   type WorksheetType,
 } from "@/lib/worksheet-generator/options";
+import {
+  hasVisualMarkers,
+  selectVisualIdsForContext,
+  visualMarker,
+} from "@/lib/worksheet-generator/visuals";
 
 export type WorksheetGeneratorInput = {
   packetTitle: string;
@@ -24,6 +29,16 @@ export type WorksheetGeneratorInput = {
   includeAnswerKey: boolean;
   includeProgressMonitoring: boolean;
 };
+
+function visualsForPage(input: WorksheetGeneratorInput, pageIndex: number): string {
+  const ids = selectVisualIdsForContext({
+    topicOrSkill: input.topicOrSkill,
+    studentInterestOrTheme: input.studentInterestOrTheme,
+    subject: input.subject,
+    pageIndex,
+  });
+  return ids.map((id) => visualMarker(id)).join("\n");
+}
 
 export type WorksheetGeneratorResult = {
   title: string;
@@ -83,12 +98,33 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
       "Learning goal:",
       input.learningGoal,
       "",
+      "Cover visuals (print/PDF includes drawings):",
+      visualsForPage(input, 0),
+      "",
       "Teacher directions:",
       "1. Preview vocabulary and visuals.",
       "2. Model one item.",
       "3. Complete guided items together.",
       "4. Assign independent items.",
       "5. Collect data on the goal criterion.",
+      footerBlock(),
+    ].join("\n"),
+  );
+
+  // Dedicated visual support page so packets always include printable drawings.
+  pages.push(
+    [
+      `${title} · Visual supports`,
+      "Worksheet type: Visual supports",
+      "",
+      "Directions: Look at each picture. Name it. Point to or circle the matching item when prompted.",
+      "",
+      visualsForPage(input, 1),
+      "",
+      visualsForPage(input, 2),
+      "",
+      `Theme cue: ${theme}`,
+      `Goal check: ${input.learningGoal}`,
       footerBlock(),
     ].join("\n"),
   );
@@ -107,6 +143,9 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
           `Worksheet type: ${type}`,
           "",
           `Directions: ${isMax ? "Point to or paste the correct answer. Use the pictures." : "Match each item to the correct answer."}`,
+          "",
+          "Pictures for this page:",
+          visualsForPage(input, n),
           "",
           `Theme cue: ${theme}`,
           "",
@@ -238,6 +277,8 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
         "",
         `Directions: Practice ${input.topicOrSkill || "the skill"} using clear, simple steps.`,
         "",
+        visualsForPage(input, n),
+        "",
         "Warm-up: ______________________________________________",
         "1. ___________________________________________________",
         "2. ___________________________________________________",
@@ -326,6 +367,8 @@ async function generateModelPacket(
     `Every page must end with this footer line: ${WORKSHEET_PACKET_FOOTER}`,
     "If answer key is requested, include a final answer key section.",
     "If progress monitoring is requested, include a progress-monitoring page.",
+    "Include printable visual markers on student pages using exactly this syntax: [[VISUAL:coin-penny]], [[VISUAL:coin-nickel]], [[VISUAL:coin-dime]], [[VISUAL:coin-quarter]], [[VISUAL:coins-set]], [[VISUAL:space-rocket]], [[VISUAL:space-planet]], [[VISUAL:space-stars]], [[VISUAL:animal-dog]], [[VISUAL:animal-cat]], [[VISUAL:sports-ball]], [[VISUAL:cooking-apple]], [[VISUAL:number-card]], [[VISUAL:shape-set]], [[VISUAL:theme-banner]].",
+    "Choose visuals that match the topic and theme. Include a Visual supports page near the beginning.",
   ].join(" ");
 
   const user = [
@@ -390,10 +433,37 @@ async function generateModelPacket(
   }
 }
 
+function ensureVisualMarkers(
+  packet: WorksheetGeneratorResult,
+  input: WorksheetGeneratorInput,
+): WorksheetGeneratorResult {
+  if (hasVisualMarkers(packet.content)) return packet;
+  const visualPage = [
+    `${packet.title} · Visual supports`,
+    "Worksheet type: Visual supports",
+    "",
+    "Directions: Look at each picture. Name it. Point to or circle the matching item when prompted.",
+    "",
+    visualsForPage(input, 0),
+    "",
+    visualsForPage(input, 1),
+    "",
+    `Theme cue: ${input.studentInterestOrTheme?.trim() || "classroom examples"}`,
+    footerBlock(),
+  ].join("\n");
+  const parts = packet.content.split(pageBreak());
+  const next = [parts[0] ?? packet.content, visualPage, ...parts.slice(1)].join(pageBreak());
+  return {
+    ...packet,
+    content: next,
+    pageCount: packet.pageCount + 1,
+  };
+}
+
 export async function generateWorksheetPacket(
   input: WorksheetGeneratorInput,
 ): Promise<WorksheetGeneratorResult> {
   const model = await generateModelPacket(input);
-  if (model) return model;
-  return buildLocalPacket(input);
+  const packet = model ?? buildLocalPacket(input);
+  return ensureVisualMarkers(packet, input);
 }
