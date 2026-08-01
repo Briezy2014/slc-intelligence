@@ -57,7 +57,7 @@ export const PLATFORM_NAV_GROUPS: Array<{
     items: [
       { href: "/education-documents", label: "IEP / ETR Docs" },
       { href: "/meetings", label: "Meetings" },
-      { href: "/parent-share", label: "Parent Share" },
+      { href: "/parent-share", label: "Messages for families" },
       { href: "/deadlines", label: "Deadline Tracker" },
       { href: "/reports", label: "Reports" },
     ],

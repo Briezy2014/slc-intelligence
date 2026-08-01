@@ -101,7 +101,7 @@ export default function CapabilityRoadmapPage() {
             Deadline tracker
           </Link>
           <Link href="/parent-share" className="text-highlight underline">
-            Parent share
+            Messages for families
           </Link>
           <Link href="/family-communication" className="text-highlight underline">
             Parent communication + signatures

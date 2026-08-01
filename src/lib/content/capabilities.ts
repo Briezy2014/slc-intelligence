@@ -49,8 +49,8 @@ export const ACTIVE_CAPABILITIES = [
     body: "Receipt acknowledgment / e-signature pathways for family communications (receipt only).",
   },
   {
-    title: "Parent share packets",
-    body: "Prepare family-visible communication and progress packets for authorized home sharing.",
+    title: "Messages for families",
+    body: "Review school-to-home notes marked okay for parents after you write them in Family Communication.",
   },
   {
     title: "Deadline / timeline tracker",

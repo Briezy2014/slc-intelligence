@@ -210,6 +210,7 @@ export async function saveCommunicationLogAction(formData: FormData): Promise<Ac
       },
       paths: [
         "/family-communication",
+        "/parent-share",
         `/students/${values.studentId}/family-communication/communications`,
       ],
     });
