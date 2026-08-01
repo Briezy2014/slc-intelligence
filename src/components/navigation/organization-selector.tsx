@@ -50,9 +50,7 @@ export async function OrganizationSelector() {
     activeMemberships.find((membership) => membership.organization_id === selectedOrganizationId) ??
     activeMemberships[0];
   const personName =
-    profile?.display_name?.trim() ||
-    profile?.preferred_name?.trim() ||
-    "Name not set";
+    profile?.display_name?.trim() || profile?.preferred_name?.trim() || "Name not set";
 
   return (
     <form action={setSelectedOrganizationIdAction} className="flex items-end gap-2">

@@ -35,9 +35,9 @@ describe("behavior templates", () => {
     for (const id of COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS) {
       expect(getBehaviorDefinitionTemplate(id)).toBeTruthy();
     }
-    expect(OBSERVATION_METHOD_OPTIONS.some((option) => option.value === "abc" && option.primary)).toBe(
-      true,
-    );
+    expect(
+      OBSERVATION_METHOD_OPTIONS.some((option) => option.value === "abc" && option.primary),
+    ).toBe(true);
     expect(observationMethodLabel("frequency")).toMatch(/how many times/i);
   });
 });

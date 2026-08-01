@@ -416,11 +416,7 @@ export function BehaviorDashboard({ data, studentId }: { data: BehaviorData; stu
         emptyMessage="No saved behaviors yet."
         rows={filteredDefinitions.map((definition) => {
           const student = data.students.find((entry) => entry.id === definition.student_id);
-          return [
-            definition.name,
-            student ? studentName(student) : "Student",
-            definition.status,
-          ];
+          return [definition.name, student ? studentName(student) : "Student", definition.status];
         })}
       />
       <TableShell

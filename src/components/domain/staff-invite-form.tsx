@@ -62,11 +62,7 @@ export function StaffInviteForm({ organizationId }: { organizationId: string }) 
         />
       </FormField>
       <FormField id="staff-invite-role" label="Role">
-        <Select
-          id="staff-invite-role"
-          name="roleCode"
-          defaultValue="special_education_teacher"
-        >
+        <Select id="staff-invite-role" name="roleCode" defaultValue="special_education_teacher">
           {INVITE_ROLES.map((code) => (
             <option key={code} value={code}>
               {ROLE_LABELS[code]}
@@ -78,7 +74,10 @@ export function StaffInviteForm({ organizationId }: { organizationId: string }) 
         {pending ? "Saving…" : "Add staff invitation"}
       </Button>
       {message ? (
-        <Alert title={message.tone === "info" ? "Invitation saved" : "Could not invite"} tone={message.tone}>
+        <Alert
+          title={message.tone === "info" ? "Invitation saved" : "Could not invite"}
+          tone={message.tone}
+        >
           {message.text}
         </Alert>
       ) : null}

@@ -127,9 +127,6 @@ export async function generateWorksheetPacketAction(
     ok: true,
     disclaimer: AI_DRAFT_DISCLAIMER,
     packet,
-    message:
-      packet.mode === "model_assist"
-        ? "Packet generated with secure model assist for educator review."
-        : "Packet generated with SLC local intelligence for educator review. Add AI_API_KEY for model-enriched packets.",
+    message: packet.mode === "model_assist" ? "Packet generated." : "Packet generated.",
   };
 }

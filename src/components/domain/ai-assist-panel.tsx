@@ -31,8 +31,6 @@ export function AiAssistPanel({
   const [extraNotes, setExtraNotes] = useState("");
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [modeLabel, setModeLabel] = useState<string | null>(null);
-  const [disclaimer, setDisclaimer] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<AiSuggestion[]>([]);
 
   const isCommunication = domain === "communication";
@@ -107,19 +105,9 @@ export function AiAssistPanel({
                 extraNotes,
                 behaviorTemplateId: behaviorTemplateId || undefined,
               });
-              setDisclaimer(result.disclaimer);
-              setModeLabel(
-                result.mode === "model_assist"
-                  ? "Model-assisted draft"
-                  : result.mode === "local_intelligence"
-                    ? "Catalog-assisted draft"
-                    : null,
-              );
               setSuggestions(result.suggestions);
               if (!result.enabled) {
                 setError(result.message ?? "Draft assistant is unavailable.");
-              } else if (result.message) {
-                setError(result.message);
               }
             });
           }}
@@ -128,18 +116,9 @@ export function AiAssistPanel({
         </Button>
       </div>
 
-      {disclaimer ? (
-        <div className="mt-4">
-          <Alert title="Educator review required" tone="info">
-            {disclaimer}
-            {modeLabel ? ` Mode: ${modeLabel}.` : ""}
-          </Alert>
-        </div>
-      ) : null}
-
       {error ? (
         <div className="mt-3">
-          <Alert title="AI Assist note" tone="warning">
+          <Alert title="Could not generate" tone="warning">
             {error}
           </Alert>
         </div>

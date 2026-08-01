@@ -51,9 +51,7 @@ export function BehaviorDefinitionForm({
   const [nonexamples, setNonexamples] = useState("");
 
   if (!data.permissions.canDefine) {
-    return (
-      <PermissionDeniedState message="You need permission to save behavior definitions." />
-    );
+    return <PermissionDeniedState message="You need permission to save behavior definitions." />;
   }
 
   function applyTemplate(id: string) {

@@ -51,16 +51,16 @@ export default async function StaffPage() {
         <div className="space-y-6">
           {nameLooksWrong ? (
             <Alert title="Set your staff name" tone="warning">
-              Staff should show your real name (for example Kara Williams), not a product/role label.
-              Save your name in the card below.
+              Staff should show your real name (for example Kara Williams), not a product/role
+              label. Save your name in the card below.
             </Alert>
           ) : null}
 
           <Card>
             <CardTitle>My display name</CardTitle>
             <CardDescription>
-              This is the name shown on the Staff list. Role stays separate (for example Organization
-              administrator).
+              This is the name shown on the Staff list. Role stays separate (for example
+              Organization administrator).
             </CardDescription>
             <div className="mt-4">
               <ProfileNameForm
@@ -127,19 +127,22 @@ export default async function StaffPage() {
                   <TableShell
                     caption="Recent invitations"
                     headers={["Email", "Role", "Status", "Expires"]}
-                    rows={membersState.data.invitations.slice(0, 8).map((invitation) => [
-                      invitation.email,
-                      ROLE_LABELS[invitation.role_code],
-                      invitation.status,
-                      new Date(invitation.expires_at).toLocaleDateString(),
-                    ])}
+                    rows={membersState.data.invitations
+                      .slice(0, 8)
+                      .map((invitation) => [
+                        invitation.email,
+                        ROLE_LABELS[invitation.role_code],
+                        invitation.status,
+                        new Date(invitation.expires_at).toLocaleDateString(),
+                      ])}
                   />
                 ) : null}
               </div>
             </Card>
           ) : (
             <Alert title="Staff invites are managed by an organization administrator" tone="info">
-              Ask your organization administrator for the staff invite code, then use Request access.
+              Ask your organization administrator for the staff invite code, then use Request
+              access.
             </Alert>
           )}
 

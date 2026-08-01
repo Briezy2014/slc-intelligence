@@ -12,11 +12,11 @@
 
 ### What are you recording today?
 
-| Choice | Meaning |
-| --- | --- |
+| Choice                                  | Meaning                                 |
+| --------------------------------------- | --------------------------------------- |
 | What happened before, during, and after | Everyday notes: before → during → after |
-| How many times it happened | Count while you watched |
-| How long it lasted | Total minutes / episodes |
+| How many times it happened              | Count while you watched                 |
+| How long it lasted                      | Total minutes / episodes                |
 
 Advanced options (timer intervals, intensity scales, latency) stay hidden unless you open them.
 

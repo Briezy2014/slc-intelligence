@@ -15,11 +15,7 @@ import { createClient } from "@/lib/supabase/server";
 import { revalidatePath } from "next/cache";
 
 const profileSchema = z.object({
-  displayName: z
-    .string()
-    .trim()
-    .min(2, "Enter your full name.")
-    .max(120, "Name is too long."),
+  displayName: z.string().trim().min(2, "Enter your full name.").max(120, "Name is too long."),
   preferredName: z.string().trim().max(80).optional(),
 });
 

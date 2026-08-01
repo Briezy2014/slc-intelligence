@@ -78,7 +78,6 @@ export function WorksheetGeneratorForm() {
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [disclaimer, setDisclaimer] = useState<string | null>(null);
   const [printMessage, setPrintMessage] = useState<string | null>(null);
   const [resultTitle, setResultTitle] = useState("");
   const [resultContent, setResultContent] = useState("");
@@ -130,7 +129,6 @@ export function WorksheetGeneratorForm() {
         includeAnswerKey,
         includeProgressMonitoring,
       });
-      setDisclaimer(result.disclaimer);
       if (!result.ok || !result.packet) {
         setError(result.message ?? "Could not generate the worksheet packet.");
         setShowResults(false);
@@ -511,13 +509,8 @@ export function WorksheetGeneratorForm() {
         </Card>
       )}
 
-      {disclaimer ? (
-        <Alert title="Educator review required" tone="info">
-          {disclaimer}
-        </Alert>
-      ) : null}
       {message ? (
-        <Alert title="Generation status" tone="info">
+        <Alert title="Ready" tone="info">
           {message}
         </Alert>
       ) : null}
