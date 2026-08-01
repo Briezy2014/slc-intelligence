@@ -81,6 +81,32 @@ export async function restoreOwnerMembershipAction(): Promise<ActionState> {
       return { status: "error", message: VALIDATION_ACTION_MESSAGE };
     }
 
+    // Ensure a staff display name exists (do not overwrite a good existing name).
+    const { data: existingProfile } = await supabase
+      .from("user_profiles")
+      .select("display_name,preferred_name")
+      .eq("id", user.id)
+      .maybeSingle();
+    const existingName = existingProfile?.display_name?.trim() ?? "";
+    const looksLikeRole =
+      !existingName ||
+      /product owner|organization administrator|platform administrator/i.test(existingName);
+    if (looksLikeRole) {
+      const metadataName =
+        typeof user.user_metadata?.full_name === "string"
+          ? user.user_metadata.full_name.trim()
+          : "";
+      const displayName = metadataName || "Kara Williams";
+      const preferredName =
+        existingProfile?.preferred_name?.trim() || displayName.split(/\s+/)[0] || "Kara";
+      await supabase.from("user_profiles").upsert({
+        id: user.id,
+        display_name: displayName,
+        preferred_name: preferredName,
+        status: "active",
+      });
+    }
+
     await setOrgCookie(primary.organization_id);
     redirect("/command-center");
   } catch (error) {

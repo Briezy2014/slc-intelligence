@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { ConfigurationState } from "@/components/domain/page-states";
+import { CopyInviteCodeButton } from "@/components/domain/copy-invite-code-button";
 import { StarterLibrariesCard } from "@/components/domain/starter-libraries-card";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
@@ -38,15 +39,24 @@ export default async function OrganizationSettingsPage() {
       <div className="space-y-6">
         <Card>
           <CardTitle>{organization?.name ?? "Selected organization"}</CardTitle>
-          <CardDescription>
-            Your role: {ROLE_LABELS[membership.role_code]}.
-            {organization?.slug ? (
-              <>
-                {" "}
-                Staff invite code: <span className="font-semibold">{organization.slug}</span>
-              </>
-            ) : null}
-          </CardDescription>
+          <CardDescription>Your role: {ROLE_LABELS[membership.role_code]}.</CardDescription>
+          {organization?.slug ? (
+            <div className="mt-4 space-y-2">
+              <p className="text-sm font-semibold">Staff invite code</p>
+              <CopyInviteCodeButton code={organization.slug} />
+              <p className="text-muted text-sm">
+                Copy this code and share it. New staff use{" "}
+                <Link href="/request-access" className="text-highlight underline">
+                  Request access
+                </Link>
+                , then you approve them. You can also manage this from{" "}
+                <Link href="/staff" className="text-highlight underline">
+                  Staff
+                </Link>
+                .
+              </p>
+            </div>
+          ) : null}
         </Card>
         {accessState.data.canManage ? (
           <Card>
