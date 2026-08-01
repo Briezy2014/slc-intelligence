@@ -38,4 +38,24 @@ describe("starter catalogs", () => {
     expect(draft.summary).toContain("Ms. Rivera");
     expect(draft.summary).not.toContain("{{");
   });
+
+  it("fills enriched behavior letter placeholders with parent-friendly supports", () => {
+    const template = COMMUNICATION_TEMPLATES.find((item) => item.id === "behavior-incident-notice");
+    expect(template).toBeTruthy();
+    const draft = applyCommunicationTemplate(template!, {
+      studentFirstName: "Alex",
+      contactFirstName: "Jordan",
+      staffName: "Ms. Rivera",
+      focusArea: "task refusal",
+      behaviorDescription:
+        "We are supporting task refusal at school. We respond with a calm, planned approach.",
+      classroomSupports: "precorrection; break/help card; task chunking",
+      homePartnership: "Please share what is working at home.",
+    });
+    expect(draft.summary).toContain("task refusal");
+    expect(draft.summary).toContain("break/help card");
+    expect(draft.summary).toContain("calm, planned approach");
+    expect(draft.summary).not.toContain("{{");
+    expect(draft.summary.toLowerCase()).not.toContain("related to behavior");
+  });
 });

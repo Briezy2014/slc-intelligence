@@ -26,6 +26,8 @@ export type AiSuggestInput = {
   focusArea?: string;
   studentContext?: string;
   extraNotes?: string;
+  /** Optional Behavior Detective definition id for richer family letters. */
+  behaviorTemplateId?: string;
 };
 
 export type AiSuggestResult = {

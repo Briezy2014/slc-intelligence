@@ -7,7 +7,9 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { FormField } from "@/components/forms/form-field";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { SpecificBehaviorSelect } from "@/components/domain/specific-behavior-select";
 import { generateAiAssistSuggestionsAction } from "@/lib/actions/ai-assist";
+import { getBehaviorDefinitionTemplate } from "@/lib/catalogs/behavior-templates";
 import type { AiAssistDomain, AiSuggestion } from "@/lib/ai/types";
 
 export function AiAssistPanel({
@@ -23,6 +25,7 @@ export function AiAssistPanel({
   defaultFocusArea?: string;
   onApply?: (suggestion: AiSuggestion) => void;
 }) {
+  const [behaviorTemplateId, setBehaviorTemplateId] = useState("");
   const [focusArea, setFocusArea] = useState(defaultFocusArea);
   const [studentContext, setStudentContext] = useState("");
   const [extraNotes, setExtraNotes] = useState("");
@@ -32,17 +35,47 @@ export function AiAssistPanel({
   const [disclaimer, setDisclaimer] = useState<string | null>(null);
   const [suggestions, setSuggestions] = useState<AiSuggestion[]>([]);
 
+  const isCommunication = domain === "communication";
+
+  function selectBehavior(id: string) {
+    setBehaviorTemplateId(id);
+    const template = getBehaviorDefinitionTemplate(id);
+    if (template) {
+      setFocusArea(template.name);
+    }
+  }
+
   return (
     <Card>
       <CardTitle>{title}</CardTitle>
       <CardDescription>{description}</CardDescription>
       <div className="mt-4 space-y-3">
-        <FormField id={`${domain}-focus`} label="Focus area">
+        {isCommunication ? (
+          <SpecificBehaviorSelect
+            id={`${domain}-specific-behavior`}
+            value={behaviorTemplateId}
+            onChange={selectBehavior}
+            helperText="Select the exact behavior for clearer family letters. This fills the focus area for you."
+          />
+        ) : null}
+        <FormField
+          id={`${domain}-focus`}
+          label={
+            isCommunication ? "Focus area (auto-filled from behavior, or custom)" : "Focus area"
+          }
+        >
           <Input
             id={`${domain}-focus`}
             value={focusArea}
-            onChange={(event) => setFocusArea(event.target.value)}
-            placeholder="reading fluency, transitions, calm-down routine…"
+            onChange={(event) => {
+              setFocusArea(event.target.value);
+              if (isCommunication) setBehaviorTemplateId("");
+            }}
+            placeholder={
+              isCommunication
+                ? "Select a specific behavior above, or type a non-behavior focus"
+                : "reading fluency, transitions, calm-down routine…"
+            }
           />
         </FormField>
         <FormField id={`${domain}-context`} label="Student context (optional)">
@@ -63,7 +96,7 @@ export function AiAssistPanel({
         </FormField>
         <Button
           type="button"
-          disabled={pending}
+          disabled={pending || (isCommunication && !focusArea.trim() && !behaviorTemplateId)}
           onClick={() => {
             setError(null);
             startTransition(async () => {
@@ -72,6 +105,7 @@ export function AiAssistPanel({
                 focusArea,
                 studentContext,
                 extraNotes,
+                behaviorTemplateId: behaviorTemplateId || undefined,
               });
               setDisclaimer(result.disclaimer);
               setModeLabel(

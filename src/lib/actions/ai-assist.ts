@@ -21,6 +21,7 @@ const suggestSchema = z.object({
   focusArea: z.string().trim().max(200).optional().or(z.literal("")),
   studentContext: z.string().trim().max(400).optional().or(z.literal("")),
   extraNotes: z.string().trim().max(20000).optional().or(z.literal("")),
+  behaviorTemplateId: z.string().trim().max(120).optional().or(z.literal("")),
 });
 
 export async function generateAiAssistSuggestionsAction(
@@ -57,5 +58,6 @@ export async function generateAiAssistSuggestionsAction(
     focusArea: parsed.data.focusArea || undefined,
     studentContext: parsed.data.studentContext || undefined,
     extraNotes: parsed.data.extraNotes || undefined,
+    behaviorTemplateId: parsed.data.behaviorTemplateId || undefined,
   });
 }

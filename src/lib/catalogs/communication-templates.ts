@@ -82,36 +82,36 @@ export const COMMUNICATION_TEMPLATES: CommunicationTemplateCatalogItem[] = [
   item(
     "behavior-support-update",
     "Behavior support update",
-    "Support plan update for {{studentFirstName}}",
-    "Hello {{contactFirstName}},\n\nI wanted to update you on {{studentFirstName}}'s support plan. Today we practiced {{focusArea}} and used agreed classroom supports. Please let us know what is working at home so we can stay consistent.\n\nThank you,\n{{staffName}}",
+    "Support plan update for {{studentFirstName}} · {{focusArea}}",
+    "Hello {{contactFirstName}},\n\nI wanted to share a clear update on how we are supporting {{studentFirstName}} at school around {{focusArea}}.\n\n{{behaviorDescription}}\n\nToday we practiced replacement skills and used classroom supports such as {{classroomSupports}}. Our goal is to help {{studentFirstName}} stay safe, regulated, and ready to learn.\n\n{{homePartnership}} Reply to this message if you would like to talk through the plan together.\n\nThank you,\n{{staffName}}",
     "phone",
   ),
   item(
     "behavior-incident-notice",
     "Behavior incident notice (family)",
-    "Behavior incident notice for {{studentFirstName}}",
-    "Hello {{contactFirstName}},\n\nI am writing to inform you about a behavior incident involving {{studentFirstName}} related to {{focusArea}}. Staff followed the classroom/safety plan, and we are documenting what happened so we can support better next steps. Please reply so we can discuss supports together.\n\nThank you,\n{{staffName}}",
+    "Behavior incident notice for {{studentFirstName}} · {{focusArea}}",
+    "Hello {{contactFirstName}},\n\nI am writing to let you know about a behavior incident at school involving {{studentFirstName}}. The concern was {{focusArea}}.\n\n{{behaviorDescription}}\n\nStaff followed the classroom/safety plan, kept {{studentFirstName}} and others safe, and documented what happened so we can choose better next supports. Supports we are using include {{classroomSupports}}.\n\nPlease reply so we can discuss what happened and how we can partner on next steps. {{homePartnership}}\n\nThank you,\n{{staffName}}",
     "letter",
   ),
   item(
     "behavior-safety-followup",
     "Safety / crisis follow-up",
-    "Safety follow-up for {{studentFirstName}}",
-    "Hello {{contactFirstName}},\n\nI am following up after a safety-related situation involving {{studentFirstName}} connected to {{focusArea}}. Student and staff safety remain our priority. Please contact us so we can review supports and next steps.\n\nThank you,\n{{staffName}}",
+    "Safety follow-up for {{studentFirstName}} · {{focusArea}}",
+    "Hello {{contactFirstName}},\n\nI am following up after a safety-related situation involving {{studentFirstName}} connected to {{focusArea}}.\n\n{{behaviorDescription}}\n\nStudent and staff safety remain our priority. We used planned supports ({{classroomSupports}}) and will continue teaching safer replacement skills. Please contact us so we can review supports and next steps together.\n\n{{homePartnership}}\n\nThank you,\n{{staffName}}",
     "phone",
   ),
   item(
     "behavior-boundary-notice",
     "Body boundary / safe touch follow-up",
-    "Important follow-up about {{studentFirstName}}",
-    "Hello {{contactFirstName}},\n\nWe need to discuss a body-boundary / safe-touch concern involving {{studentFirstName}} related to {{focusArea}}. We are teaching clear expectations and supervision supports at school. Please reply so we can partner on consistent language at home and school.\n\nThank you,\n{{staffName}}",
+    "Important follow-up about {{studentFirstName}} · {{focusArea}}",
+    "Hello {{contactFirstName}},\n\nWe need to partner with you about a body-boundary / safe-touch concern involving {{studentFirstName}}. The focus area is {{focusArea}}.\n\n{{behaviorDescription}}\n\nAt school we are teaching clear body-boundary expectations, increasing supervision as needed, and practicing safer replacement skills. Supports include {{classroomSupports}}.\n\nPlease reply so we can use consistent language and expectations at home and school. {{homePartnership}}\n\nThank you,\n{{staffName}}",
     "letter",
   ),
   item(
     "bus-behavior",
     "Bus / transportation behavior note",
-    "Transportation update for {{studentFirstName}}",
-    "Hello {{contactFirstName}},\n\nThis is an update about {{studentFirstName}}'s bus/transportation behavior related to {{focusArea}}. Please talk with {{studentFirstName}} about safe riding expectations. Reply if you have information that would help.\n\nThank you,\n{{staffName}}",
+    "Transportation update for {{studentFirstName}} · {{focusArea}}",
+    "Hello {{contactFirstName}},\n\nThis is an update about {{studentFirstName}}'s bus/transportation behavior. The concern was {{focusArea}}.\n\n{{behaviorDescription}}\n\nPlease review safe riding expectations with {{studentFirstName}}. At school/transportation we are using supports such as {{classroomSupports}}. Reply if you have information that would help us support a safer ride.\n\n{{homePartnership}}\n\nThank you,\n{{staffName}}",
     "phone",
   ),
   item(
@@ -229,8 +229,8 @@ export const COMMUNICATION_TEMPLATES: CommunicationTemplateCatalogItem[] = [
   item(
     "bullying-followup",
     "Bullying / peer conflict follow-up",
-    "Peer conflict follow-up for {{studentFirstName}}",
-    "Hello {{contactFirstName}},\n\nI am following up about a peer conflict/bullying concern involving {{studentFirstName}} related to {{focusArea}}. We are supporting safety and skills at school. Please share any home observations and reply so we can coordinate.\n\nThank you,\n{{staffName}}",
+    "Peer conflict follow-up for {{studentFirstName}} · {{focusArea}}",
+    "Hello {{contactFirstName}},\n\nI am following up about a peer conflict/bullying concern involving {{studentFirstName}}. The focus area is {{focusArea}}.\n\n{{behaviorDescription}}\n\nWe are supporting safety and social skills at school with supports such as {{classroomSupports}}. Please share any home observations and reply so we can coordinate. {{homePartnership}}\n\nThank you,\n{{staffName}}",
   ),
   item(
     "technology-home",
@@ -299,6 +299,9 @@ export type CommunicationDraftContext = {
   contactFirstName?: string;
   staffName?: string;
   focusArea?: string;
+  behaviorDescription?: string;
+  classroomSupports?: string;
+  homePartnership?: string;
 };
 
 export function applyCommunicationTemplate(
@@ -313,9 +316,24 @@ export function applyCommunicationTemplate(
   const replace = (value: string) =>
     value
       .replaceAll("{{studentFirstName}}", context.studentFirstName?.trim() || "your student")
-      .replaceAll("{{contactFirstName}}", context.contactFirstName?.trim() || "there")
+      .replaceAll("{{contactFirstName}}", context.contactFirstName?.trim() || "family")
       .replaceAll("{{staffName}}", context.staffName?.trim() || "SLC Intelligence team")
-      .replaceAll("{{focusArea}}", context.focusArea?.trim() || "the current instructional focus");
+      .replaceAll("{{focusArea}}", context.focusArea?.trim() || "the current support focus")
+      .replaceAll(
+        "{{behaviorDescription}}",
+        context.behaviorDescription?.trim() ||
+          "We are teaching expected skills, practicing replacement behaviors, and using agreed classroom supports.",
+      )
+      .replaceAll(
+        "{{classroomSupports}}",
+        context.classroomSupports?.trim() ||
+          "planned prompts, visual supports, practice of replacement skills, and adult check-ins",
+      )
+      .replaceAll(
+        "{{homePartnership}}",
+        context.homePartnership?.trim() ||
+          "Please share what is working at home so we can stay consistent with language, expectations, and supports.",
+      );
 
   return {
     subject: replace(template.subjectTemplate),
