@@ -3,7 +3,6 @@ import Link from "next/link";
 import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
-import { Alert } from "@/components/ui/alert";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 
 export const metadata: Metadata = { title: "AI Assist" };
@@ -67,13 +66,9 @@ export default function AiAssistPage() {
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "AI Assist" }]} />
       <PageHeader
         title="AI Assist"
-        description="Create reviewable drafts for classroom workflows. You approve every final version."
+        description="Create starting drafts for classroom workflows, then edit and save in the matching module."
       />
       <div className="space-y-6">
-        <Alert title="Review before use" tone="info">
-          Suggestions support educator drafting only. They do not diagnose, determine eligibility or
-          placement, or finalize IEP decisions.
-        </Alert>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {MODULE_LINKS.map((link) => (
             <Link

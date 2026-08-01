@@ -31,9 +31,5 @@ export async function suggestWithAiAssist(input: AiSuggestInput): Promise<AiSugg
     mode: "local_intelligence",
     disclaimer: AI_DRAFT_DISCLAIMER,
     suggestions: local,
-    message:
-      model === null
-        ? "Using SLC local intelligence. Add AI_API_KEY for optional model-enriched drafts."
-        : undefined,
   };
 }
