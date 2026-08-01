@@ -3,10 +3,11 @@ import {
   EXAMPLE_COIN_SPACE_PROFILE,
   generateInstructionalPacket,
   packetToPlainText,
+  packetToPrintableContent,
 } from "@/lib/instructional-packets/generator";
 
 describe("instructional packet generator", () => {
-  it("builds a ~40 page differentiated coin/space packet from the example profile", () => {
+  it("builds a ~40 page student-facing coin/space packet with visuals", () => {
     const packet = generateInstructionalPacket({
       profile: EXAMPLE_COIN_SPACE_PROFILE,
       difficulty: "moderate",
@@ -20,12 +21,18 @@ describe("instructional packet generator", () => {
     expect(packet.sections.some((section) => section.sectionType === "cut_and_paste")).toBe(true);
     expect(packet.sections.some((section) => section.sectionType === "game")).toBe(true);
     expect(packet.sections.some((section) => section.sectionType === "assessment")).toBe(true);
+    expect(packet.sections.some((section) => section.sectionType === "overview")).toBe(false);
+    expect(packet.sections.some((section) => section.sectionType === "answer_key")).toBe(false);
     expect(packet.sections.some((section) => section.sectionType === "progress_monitoring")).toBe(
-      true,
+      false,
     );
-    expect(packet.sections.some((section) => section.sectionType === "data_collection")).toBe(true);
-    expect(packet.sections.some((section) => section.sectionType === "answer_key")).toBe(true);
-    expect(packet.answerKey).toContain("penny");
+
+    const text = packetToPlainText(packet);
+    expect(text).toContain("[[VISUAL:coin-");
+    expect(text).toContain("[[VISUAL:space-");
+    expect(text).not.toContain("How to use this packet");
+    expect(text).not.toContain("Educator review required");
+    expect(packetToPrintableContent(packet)).toContain("---------- PAGE BREAK ----------");
   });
 
   it("supports errorless, ABA, UDL, and task-analysis styles", () => {

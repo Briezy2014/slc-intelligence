@@ -90,7 +90,7 @@ export async function generateInstructionalPacketAction(
     disclaimer: AI_DRAFT_DISCLAIMER,
     packet,
     plainText: packetToPlainText(packet),
-    message: `Generated about ${packet.estimatedPages} pages for educator review.`,
+    message: `Generated about ${packet.estimatedPages} student pages ready to print as PDF.`,
   };
 }
 

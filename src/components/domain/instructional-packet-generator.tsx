@@ -17,6 +17,8 @@ import {
   type PacketDifficulty,
   type PacketSizeTarget,
 } from "@/lib/instructional-packets/types";
+import { openPrintablePacket } from "@/lib/worksheet-generator/print";
+import { hasVisualMarkers, replaceVisualMarkersWithSvg } from "@/lib/worksheet-generator/visuals";
 
 const DIFFICULTY_LABELS: Record<PacketDifficulty, string> = {
   easy: "Easy",
@@ -27,6 +29,14 @@ const DIFFICULTY_LABELS: Record<PacketDifficulty, string> = {
   aba: "ABA style",
   udl: "UDL style",
 };
+
+function escapeHtml(value: string): string {
+  return value
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
 
 export function InstructionalPacketGenerator() {
   const example = EXAMPLE_COIN_SPACE_PROFILE;
@@ -41,9 +51,9 @@ export function InstructionalPacketGenerator() {
   const [targetPages, setTargetPages] = useState<PacketSizeTarget>(40);
   const [pending, startTransition] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [disclaimer, setDisclaimer] = useState<string | null>(null);
   const [packet, setPacket] = useState<GeneratedInstructionalPacket | null>(null);
-  const [plainText, setPlainText] = useState<string | null>(null);
+  const [printContent, setPrintContent] = useState<string | null>(null);
+  const [printMessage, setPrintMessage] = useState<string | null>(null);
   const [previewFilter, setPreviewFilter] = useState<string>("all");
 
   const sectionTypes = useMemo(() => {
@@ -57,11 +67,35 @@ export function InstructionalPacketGenerator() {
     return packet.sections.filter((section) => section.sectionType === previewFilter);
   }, [packet, previewFilter]);
 
+  const visualPreviewHtml = useMemo(() => {
+    if (!printContent) return "";
+    const sample = printContent.split("---------- PAGE BREAK ----------").slice(0, 3).join("\n\n");
+    return replaceVisualMarkersWithSvg(escapeHtml(sample)).replaceAll("\n", "<br/>");
+  }, [printContent]);
+
+  function downloadAsPdf() {
+    if (!packet || !printContent) return;
+    setPrintMessage(null);
+    const result = openPrintablePacket({
+      title: packet.title,
+      content: printContent,
+      printingFormat: "Standard",
+      autoPrint: true,
+    });
+    if (!result.ok) {
+      setPrintMessage(result.message);
+      return;
+    }
+    setPrintMessage(
+      "Print dialog opened. Choose Destination: Save as PDF (or Microsoft Print to PDF), then save.",
+    );
+  }
+
   return (
     <div className="space-y-6">
-      <Alert title="How this works" tone="info">
-        Enter a learner profile, choose difficulty/style and length (30–100 pages), then generate.
-        Review before printing or assigning.
+      <Alert title="Student packet → printable PDF" tone="info">
+        Generate student pages with real coin/theme drawings, then use{" "}
+        <strong>Download as PDF</strong> to print. Teacher how-to pages are not included.
       </Alert>
 
       <Card>
@@ -125,8 +159,10 @@ export function InstructionalPacketGenerator() {
       </Card>
 
       <Card>
-        <CardTitle>Difficulty / instructional style</CardTitle>
-        <CardDescription>Choose one primary track for this generation run.</CardDescription>
+        <CardTitle>Difficulty / length</CardTitle>
+        <CardDescription>
+          Choose the track and about how many student pages to generate.
+        </CardDescription>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
           <FormField id="difficulty" label="Level or style">
             <Select
@@ -161,6 +197,7 @@ export function InstructionalPacketGenerator() {
             disabled={pending}
             onClick={() => {
               setError(null);
+              setPrintMessage(null);
               startTransition(async () => {
                 const result = await generateInstructionalPacketAction({
                   gradeLevel,
@@ -173,15 +210,14 @@ export function InstructionalPacketGenerator() {
                   difficulty,
                   targetPages,
                 });
-                setDisclaimer(result.disclaimer);
                 if (!result.ok || !result.packet) {
                   setError(result.message ?? "Could not generate packet.");
                   setPacket(null);
-                  setPlainText(null);
+                  setPrintContent(null);
                   return;
                 }
                 setPacket(result.packet);
-                setPlainText(result.plainText ?? null);
+                setPrintContent(result.plainText ?? null);
                 setPreviewFilter("all");
               });
             }}
@@ -209,55 +245,66 @@ export function InstructionalPacketGenerator() {
         </div>
       </Card>
 
-      {disclaimer ? (
-        <Alert title="Review before use" tone="info">
-          {disclaimer}
-        </Alert>
-      ) : null}
       {error ? (
         <Alert title="Generation note" tone="warning">
           {error}
         </Alert>
       ) : null}
+      {printMessage ? (
+        <Alert title="Print / PDF" tone="info">
+          {printMessage}
+        </Alert>
+      ) : null}
 
-      {packet ? (
+      {packet && printContent ? (
         <Card>
           <CardTitle>
             {packet.title} · {packet.estimatedPages} pages
           </CardTitle>
           <CardDescription className="whitespace-pre-wrap">{packet.overview}</CardDescription>
           <div className="mt-4 flex flex-wrap gap-2">
+            <Button type="button" onClick={downloadAsPdf}>
+              Download as PDF
+            </Button>
             <Button
               type="button"
               variant="secondary"
-              onClick={async () => {
-                if (!plainText) return;
-                try {
-                  await navigator.clipboard.writeText(plainText);
-                } catch {
-                  // ignore clipboard failures
-                }
-              }}
-            >
-              Copy full packet text
-            </Button>
-            <Button
-              type="button"
-              variant="ghost"
               onClick={() => {
-                if (!plainText) return;
-                const blob = new Blob([plainText], { type: "text/plain;charset=utf-8" });
-                const url = URL.createObjectURL(blob);
-                const anchor = document.createElement("a");
-                anchor.href = url;
-                anchor.download = `${packet.title.replaceAll(" ", "-").toLowerCase()}-packet.txt`;
-                anchor.click();
-                URL.revokeObjectURL(url);
+                setPrintMessage(null);
+                const result = openPrintablePacket({
+                  title: packet.title,
+                  content: printContent,
+                  printingFormat: "Standard",
+                  autoPrint: false,
+                });
+                setPrintMessage(
+                  result.ok
+                    ? "Printable packet opened. Use Print → Save as PDF when ready."
+                    : result.message,
+                );
               }}
             >
-              Download .txt
+              Open printable preview
             </Button>
           </div>
+          <p className="text-muted mt-2 text-xs">
+            “Download as PDF” opens the print dialog — choose Destination: Save as PDF. Drawings
+            print with the pages.
+          </p>
+
+          {hasVisualMarkers(printContent) ? (
+            <div className="border-border mt-4 rounded-[var(--radius-md)] border p-3">
+              <p className="text-sm font-semibold">Visual preview (first pages)</p>
+              <p className="text-muted mt-1 text-xs">
+                These drawings are included when you save as PDF.
+              </p>
+              <div
+                className="mt-3 max-h-80 overflow-auto rounded-[var(--radius-md)] p-3 text-sm text-black [&_figcaption]:text-xs [&_figure]:mr-3 [&_figure]:inline-block [&_svg]:max-w-full"
+                style={{ background: "#fff" }}
+                dangerouslySetInnerHTML={{ __html: visualPreviewHtml }}
+              />
+            </div>
+          ) : null}
 
           <div className="mt-4">
             <FormField id="previewFilter" label="Preview section filter">
@@ -269,7 +316,7 @@ export function InstructionalPacketGenerator() {
                 <option value="all">All pages ({packet.sections.length})</option>
                 {sectionTypes.map((type) => (
                   <option key={type} value={type}>
-                    {type} (
+                    {type.replaceAll("_", " ")} (
                     {packet.sections.filter((section) => section.sectionType === type).length})
                   </option>
                 ))}
@@ -295,11 +342,12 @@ export function InstructionalPacketGenerator() {
       ) : null}
 
       <Card>
-        <CardTitle>What this packet includes</CardTitle>
+        <CardTitle>What you get</CardTitle>
         <CardDescription>
-          Differentiated levels · visual supports · cut-and-paste · games · assessments · progress
-          monitoring sheets · data collection forms · answer keys — with Easy / Moderate /
-          Challenging / Errorless / Task analysis / ABA / UDL generation modes.
+          Student cover · coin/theme visuals · cut-and-paste · games · practice · check-ups — ready
+          to print as PDF. For stronger AI-written worksheet pages, also use Worksheet Generator
+          with an OpenAI API key (see docs/AI_API_KEY_SETUP.md). A ChatGPT Plus login cannot be
+          synced here.
         </CardDescription>
       </Card>
     </div>
