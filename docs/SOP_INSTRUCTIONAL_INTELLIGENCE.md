@@ -18,16 +18,16 @@ Use this page for IEP/instruction drafting aids. Every output needs educator rev
 
 ## Tools on this page
 
-| Tool | What it does | How to run |
-| --- | --- | --- |
-| Present levels | Drafts PLAAFP structure from evidence | Paste coded evidence → Draft |
-| Goal–need match | Surfaces coverage gaps | Needs (one per line) → Match |
-| Measurable goal check | Flags vague / incomplete goals | Paste goal → Check |
-| Consistency check | Compares ETR / IEP / progress excerpts | Paste excerpts → Run |
-| Parent-friendly | Rewrites jargon for families | Paste technical text → Generate |
-| Instructional plan | I do / We do / You do from a goal | Paste goal → Create |
-| Para supports | Do/don’t language for approved supports | One support per line → Explain |
-| Meeting prep | Strengths, needs, progress, family questions | Fill fields → Generate |
+| Tool                  | What it does                                 | How to run                      |
+| --------------------- | -------------------------------------------- | ------------------------------- |
+| Present levels        | Drafts PLAAFP structure from evidence        | Paste coded evidence → Draft    |
+| Goal–need match       | Surfaces coverage gaps                       | Needs (one per line) → Match    |
+| Measurable goal check | Flags vague / incomplete goals               | Paste goal → Check              |
+| Consistency check     | Compares ETR / IEP / progress excerpts       | Paste excerpts → Run            |
+| Parent-friendly       | Rewrites jargon for families                 | Paste technical text → Generate |
+| Instructional plan    | I do / We do / You do from a goal            | Paste goal → Create             |
+| Para supports         | Do/don’t language for approved supports      | One support per line → Explain  |
+| Meeting prep          | Strengths, needs, progress, family questions | Fill fields → Generate          |
 
 Each tool also has a **Fill demo sample** button for district walkthroughs.
 

@@ -79,9 +79,7 @@ export default function CapabilitiesPage() {
         </section>
 
         <section className="space-y-4">
-          <h2 className="text-foreground font-serif text-2xl font-semibold">
-            Not activated yet
-          </h2>
+          <h2 className="text-foreground font-serif text-2xl font-semibold">Not activated yet</h2>
           <p className="text-muted text-sm">
             Also summarized on the{" "}
             <Link href="/" className="text-highlight underline">

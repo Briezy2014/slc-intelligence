@@ -1,8 +1,5 @@
 export type InstructionalCapabilityStatus =
-  | "available_now"
-  | "assistive_draft"
-  | "workflow_ready"
-  | "gated_until_approval";
+  "available_now" | "assistive_draft" | "workflow_ready" | "gated_until_approval";
 
 export type InstructionalToolId =
   | "present-levels"
@@ -112,8 +109,7 @@ export const INSTRUCTIONAL_CAPABILITIES: InstructionalCapability[] = [
     body: "Fidelity checklists, dosage, phase comparison, and progress monitoring analytics are live.",
     status: "available_now",
     href: "/interventions",
-    howTo:
-      "Open Interventions to log fidelity/dosage, and Rapid Progress / Goals for monitoring.",
+    howTo: "Open Interventions to log fidelity/dosage, and Rapid Progress / Goals for monitoring.",
   },
   {
     id: "meeting-prep",

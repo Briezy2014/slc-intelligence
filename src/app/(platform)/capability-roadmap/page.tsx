@@ -28,7 +28,10 @@ export default function CapabilityRoadmapPage() {
             {INSTRUCTIONAL_CAPABILITIES.map((item) => (
               <Card key={item.id}>
                 <CardTitle className="text-base">
-                  <Link href={item.href} className="hover:text-highlight underline-offset-2 hover:underline">
+                  <Link
+                    href={item.href}
+                    className="hover:text-highlight underline-offset-2 hover:underline"
+                  >
                     {item.title}
                   </Link>
                 </CardTitle>

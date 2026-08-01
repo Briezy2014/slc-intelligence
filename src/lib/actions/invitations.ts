@@ -59,7 +59,12 @@ export async function createInvitationAction(formData: FormData): Promise<Action
         status: payload.status,
         expires_at: payload.expires_at,
       },
-      paths: ["/organization/invitations", "/organization/members", "/staff", "/organization/settings"],
+      paths: [
+        "/organization/invitations",
+        "/organization/members",
+        "/staff",
+        "/organization/settings",
+      ],
     });
 
     return {
@@ -102,7 +107,12 @@ export async function updateInvitationStatusAction(formData: FormData): Promise<
       resourceType: "organization_invitation",
       resourceId: values.invitationId,
       newState: { status: values.status },
-      paths: ["/organization/invitations", "/organization/members", "/staff", "/organization/settings"],
+      paths: [
+        "/organization/invitations",
+        "/organization/members",
+        "/staff",
+        "/organization/settings",
+      ],
     });
 
     return { status: "success", message: "Invitation updated." };

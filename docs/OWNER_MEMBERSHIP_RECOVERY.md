@@ -82,7 +82,6 @@ SET
   updated_at = now();
 ```
 
-
 ## App recovery (after migration deploy)
 
 1. Apply `supabase/migrations/202608010001_owner_membership_recovery.sql`.

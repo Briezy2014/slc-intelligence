@@ -1,12 +1,6 @@
 "use client";
 
-import {
-  useEffect,
-  useMemo,
-  useState,
-  useTransition,
-  type ChangeEvent,
-} from "react";
+import { useEffect, useMemo, useState, useTransition, type ChangeEvent } from "react";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Alert } from "@/components/ui/alert";
@@ -36,10 +30,7 @@ import { cn } from "@/lib/utilities";
 
 const TOOL_IDS = new Set<string>(INSTRUCTIONAL_TOOLS.map((tool) => tool.id));
 
-const DEMO_SAMPLES: Record<
-  InstructionalToolId,
-  Record<string, string>
-> = {
+const DEMO_SAMPLES: Record<InstructionalToolId, Record<string, string>> = {
   "present-levels": {
     focusArea: "reading fluency",
     evidence:
@@ -150,9 +141,8 @@ export function InstructionalIntelligenceWorkspace() {
   };
 
   const field = (name: string) => fields[name] ?? "";
-  const onField =
-    (name: string) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-      setFields((prev) => ({ ...prev, [name]: event.target.value }));
+  const onField = (name: string) => (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+    setFields((prev) => ({ ...prev, [name]: event.target.value }));
 
   return (
     <div className="space-y-6">
@@ -190,7 +180,9 @@ export function InstructionalIntelligenceWorkspace() {
           <Card>
             <CardTitle>Daily workflow</CardTitle>
             <CardDescription className="mt-2 space-y-2 text-sm">
-              <p>1. Start in Command Center for the day&apos;s schedule and missing-data signals.</p>
+              <p>
+                1. Start in Command Center for the day&apos;s schedule and missing-data signals.
+              </p>
               <p>2. Enter progress under Rapid Progress; keep Goals current.</p>
               <p>
                 3. Use Instructional Intelligence tools (this page) when drafting or checking IEP
@@ -232,7 +224,9 @@ export function InstructionalIntelligenceWorkspace() {
         </section>
       ) : (
         <section className="space-y-4" role="tabpanel">
-          <p className="text-muted text-sm">Pick a tool, paste your notes, run it, then review the draft.</p>
+          <p className="text-muted text-sm">
+            Pick a tool, paste your notes, run it, then review the draft.
+          </p>
 
           <div className="grid gap-4 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
             <nav aria-label="Instructional tools" className="space-y-1">

@@ -864,12 +864,7 @@ export const COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS = [
 ] as const;
 
 export type ObservationMethodCode =
-  | "abc"
-  | "frequency"
-  | "duration"
-  | "latency"
-  | "interval"
-  | "intensity";
+  "abc" | "frequency" | "duration" | "latency" | "interval" | "intensity";
 
 /** Plain-language labels for teachers who are not behavior analysts. */
 export const OBSERVATION_METHOD_OPTIONS: Array<{
