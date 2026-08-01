@@ -18,7 +18,7 @@ export default function InstructionalIntelligencePage() {
       />
       <PageHeader
         title="Instructional intelligence"
-        description="Click a tool, paste coded evidence, review the draft. Educators keep decision authority."
+        description="Click a tool, paste your notes, and review the draft."
       />
       <Suspense fallback={<p className="text-muted text-sm">Loading tools…</p>}>
         <InstructionalIntelligenceWorkspace />

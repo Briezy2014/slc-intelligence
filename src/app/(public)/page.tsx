@@ -3,7 +3,12 @@ import Image from "next/image";
 import { ArrowRight, Clock3, FileCheck2, Sparkles } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { APP_NAME, APP_TAGLINE } from "@/lib/constants";
-import { ACTIVE_CAPABILITIES, BENEFIT_POINTS } from "@/lib/content/capabilities";
+import {
+  ACTIVE_CAPABILITIES,
+  BENEFIT_POINTS,
+  FUTURE_GATED_CAPABILITIES,
+} from "@/lib/content/capabilities";
+import { PILOT_DEIDENTIFIED_USE_SUMMARY } from "@/lib/content/pilot-deidentified-use";
 
 export default function HomePage() {
   return (
@@ -115,7 +120,7 @@ export default function HomePage() {
         </Link>
       </section>
 
-      <section className="relative mx-auto max-w-6xl space-y-4 px-4 pb-16 sm:px-6">
+      <section className="relative mx-auto max-w-6xl space-y-4 px-4 pb-10 sm:px-6">
         <h2 className="text-foreground font-serif text-2xl font-semibold">
           Benefits for intervention specialists and teams
         </h2>
@@ -127,6 +132,42 @@ export default function HomePage() {
             >
               <h3 className="text-foreground text-sm font-semibold">{item.title}</h3>
               <p className="text-muted mt-2 text-sm">{item.body}</p>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="relative mx-auto max-w-6xl space-y-4 px-4 pb-10 sm:px-6">
+        <h2 className="text-foreground font-serif text-2xl font-semibold">Current pilot rule</h2>
+        <article className="border-border bg-background-elevated/90 rounded-[var(--radius-xl)] border p-5">
+          <p className="text-muted text-sm sm:text-base">{PILOT_DEIDENTIFIED_USE_SUMMARY}</p>
+          <p className="mt-4">
+            <Link href="/pilot-use" className="text-highlight text-sm font-semibold underline">
+              Read full pilot use rules
+            </Link>
+          </p>
+        </article>
+      </section>
+
+      <section className="relative mx-auto max-w-6xl space-y-4 px-4 pb-16 sm:px-6">
+        <h2 className="text-foreground font-serif text-2xl font-semibold">
+          Not activated for general use yet
+        </h2>
+        <p className="text-muted max-w-3xl text-sm sm:text-base">
+          These stay off until district and legal approval. Everyday classroom tools above are
+          available now for practice.
+        </p>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          {FUTURE_GATED_CAPABILITIES.map((item) => (
+            <article
+              key={item.title}
+              className="border-border rounded-[var(--radius-lg)] border border-dashed p-4"
+            >
+              <h3 className="text-foreground text-sm font-semibold">{item.title}</h3>
+              <p className="text-muted mt-2 text-sm">{item.body}</p>
+              <p className="text-highlight mt-3 text-xs font-semibold tracking-wide uppercase">
+                Not activated yet
+              </p>
             </article>
           ))}
         </div>

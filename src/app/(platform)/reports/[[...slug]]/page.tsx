@@ -30,7 +30,7 @@ export default async function ReportsPage({ params }: { params: Promise<{ slug?:
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Reports" }]} />
       <PageHeader
         title="Progress reports"
-        description="Reporting periods, educator-reviewed draft reports, evidence links, print export records, and status history."
+        description="Reporting periods, draft reports, evidence links, print exports, and status history."
       />
       {!state.configured ? (
         <ConfigurationState />

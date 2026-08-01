@@ -187,10 +187,6 @@ export function InstructionalIntelligenceWorkspace() {
 
       {activeTab === "howto" ? (
         <section className="space-y-4" role="tabpanel">
-          <Alert title="Pilot SOP — coded / de-identified data only" tone="warning">
-            Use student codes (S1–S7) only. Do not paste real names, birthdates, addresses, or other
-            PII. Every draft requires educator review before use in an IEP or family letter.
-          </Alert>
           <Card>
             <CardTitle>Daily workflow</CardTitle>
             <CardDescription className="mt-2 space-y-2 text-sm">
@@ -236,10 +232,7 @@ export function InstructionalIntelligenceWorkspace() {
         </section>
       ) : (
         <section className="space-y-4" role="tabpanel">
-          <p className="text-muted text-sm">
-            Pick a tool, paste coded evidence, run it, then review the draft. Humans keep decision
-            authority.
-          </p>
+          <p className="text-muted text-sm">Pick a tool, paste your notes, run it, then review the draft.</p>
 
           <div className="grid gap-4 lg:grid-cols-[minmax(0,14rem)_minmax(0,1fr)]">
             <nav aria-label="Instructional tools" className="space-y-1">

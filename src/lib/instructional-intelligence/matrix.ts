@@ -35,7 +35,7 @@ export const INSTRUCTIONAL_CAPABILITIES: InstructionalCapability[] = [
     href: "/instructional-intelligence?tool=present-levels",
     toolId: "present-levels",
     howTo:
-      "1) Open Tools → Present levels. 2) Enter a focus area. 3) Paste coded evidence only (no real names). 4) Click Draft present levels. 5) Copy/edit into the IEP draft after educator review.",
+      "1) Open Tools → Present levels. 2) Enter a focus area. 3) Paste evidence notes. 4) Click Draft present levels. 5) Review before using in an IEP draft.",
   },
   {
     id: "goal-need-match",
@@ -65,7 +65,7 @@ export const INSTRUCTIONAL_CAPABILITIES: InstructionalCapability[] = [
     href: "/instructional-intelligence?tool=consistency-check",
     toolId: "consistency-check",
     howTo:
-      "1) Open Tools → Consistency check. 2) Paste short ETR, IEP, and progress excerpts (coded). 3) Run the check. 4) Review flags with the team — this is not a legal compliance finding.",
+      "1) Open Tools → Consistency check. 2) Paste short ETR, IEP, and progress excerpts. 3) Run the check. 4) Review flags with the team.",
   },
   {
     id: "parent-friendly",
@@ -94,7 +94,7 @@ export const INSTRUCTIONAL_CAPABILITIES: InstructionalCapability[] = [
     status: "available_now",
     href: "/instructional-packets",
     howTo:
-      "Open Instructional Packets from the nav (or here). Enter a coded learner profile, choose difficulty and length, generate, then review before printing.",
+      "Open Instructional Packets from the nav (or here). Enter a learner profile, choose difficulty and length, generate, then review before printing.",
   },
   {
     id: "para-supports",
@@ -113,7 +113,7 @@ export const INSTRUCTIONAL_CAPABILITIES: InstructionalCapability[] = [
     status: "available_now",
     href: "/interventions",
     howTo:
-      "Open Interventions to log fidelity/dosage, and Rapid Progress / Goals for monitoring. Use coded student IDs only during the pilot.",
+      "Open Interventions to log fidelity/dosage, and Rapid Progress / Goals for monitoring.",
   },
   {
     id: "meeting-prep",
@@ -141,7 +141,7 @@ export const INSTRUCTIONAL_CAPABILITIES: InstructionalCapability[] = [
     status: "gated_until_approval",
     href: "/administrative-intelligence",
     howTo:
-      "Open Administrative Intelligence for readiness views. Full legal compliance packaging remains gated until district/legal approval (see Capability Roadmap).",
+      "Open Administrative Intelligence for readiness views. Full compliance packaging is listed as not activated on the homepage.",
   },
   {
     id: "coordinated-programs",
@@ -150,7 +150,7 @@ export const INSTRUCTIONAL_CAPABILITIES: InstructionalCapability[] = [
     status: "workflow_ready",
     href: "/education-documents",
     howTo:
-      "Use IEP / ETR Docs for special education and related draft templates; use Interventions for MTSS-tier work. Keep data coded during the pilot.",
+      "Use IEP / ETR Docs for special education and related draft templates; use Interventions for MTSS-tier work.",
   },
   {
     id: "reduce-writing",
@@ -183,7 +183,7 @@ export const INSTRUCTIONAL_TOOLS: Array<{
     id: "present-levels",
     title: "Draft present levels from evidence",
     shortLabel: "Present levels",
-    description: "Paste coded evidence. Draft present-levels structure without inventing scores.",
+    description: "Paste evidence notes. Draft present-levels structure without inventing scores.",
   },
   {
     id: "goal-need-match",

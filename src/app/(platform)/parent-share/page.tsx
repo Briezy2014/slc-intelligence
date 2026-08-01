@@ -23,13 +23,10 @@ export default async function ParentSharePage() {
         <SafeErrorState message={state.error} />
       ) : (
         <div className="space-y-6">
-          <Alert title="Authorized family-visible content only" tone="info">
-            This packet lists communications marked family_visible. Internal and restricted records
-            are excluded. During the coded pilot, do not include identifiable student or family PII.
-          </Alert>
-          <Alert title="Signature workflows" tone="info">
-            To collect a parent/guardian receipt signature, open Family Communication, select the
-            family-visible note, and create a sign link or capture a signature on a staff device.
+          <Alert title="Family-visible notes only" tone="info">
+            This list shows communications marked for families. Internal notes stay out. For
+            signatures, open Family Communication and create a sign link or capture on a staff
+            device.
           </Alert>
           <TableShell
             caption="Family-visible share candidates"

@@ -5,10 +5,8 @@ import { PageHeader } from "@/components/layout/page-header";
 import {
   ACTIVE_CAPABILITIES,
   BENEFIT_POINTS,
-  CAPABILITY_GUARDRAIL,
   FUTURE_GATED_CAPABILITIES,
   INSTRUCTIONAL_CAPABILITIES,
-  INSTRUCTIONAL_POSITIONING,
 } from "@/lib/content/capabilities";
 import { INSTRUCTIONAL_STATUS_LABEL } from "@/lib/instructional-intelligence/matrix";
 
@@ -28,12 +26,9 @@ export default function CapabilitiesPage() {
       />
 
       <div className="space-y-10">
-        <p className="text-muted">{CAPABILITY_GUARDRAIL}</p>
-        <p className="text-foreground font-medium">{INSTRUCTIONAL_POSITIONING}</p>
-
         <section className="space-y-4">
           <h2 className="text-foreground font-serif text-2xl font-semibold">
-            Instructional intelligence (beyond paperwork-only systems)
+            Instructional intelligence
           </h2>
           <div className="grid gap-4 sm:grid-cols-2">
             {INSTRUCTIONAL_CAPABILITIES.map((item) => (
@@ -85,11 +80,14 @@ export default function CapabilitiesPage() {
 
         <section className="space-y-4">
           <h2 className="text-foreground font-serif text-2xl font-semibold">
-            Built for later — not activated yet
+            Not activated yet
           </h2>
           <p className="text-muted text-sm">
-            These district-scale capabilities are on the product roadmap and remain inactive until
-            district and legal counsel approve identifiable student use and integrations.
+            Also summarized on the{" "}
+            <Link href="/" className="text-highlight underline">
+              homepage
+            </Link>
+            .
           </p>
           <div className="grid gap-4 sm:grid-cols-2">
             {FUTURE_GATED_CAPABILITIES.map((item) => (

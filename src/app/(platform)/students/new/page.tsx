@@ -22,7 +22,7 @@ export default async function NewStudentPage() {
       />
       <PageHeader
         title="New student"
-        description="During the pilot, create coded practice records only (example: S1). Do not enter real student names or SIS IDs."
+        description="Add a student record for classroom practice (example code: S1)."
       />
       {!state.configured ? (
         <ConfigurationState />
