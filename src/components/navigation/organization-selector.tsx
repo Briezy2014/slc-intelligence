@@ -8,6 +8,8 @@ import {
   setSelectedOrganizationIdAction,
 } from "@/lib/org/context";
 import { ROLE_LABELS } from "@/lib/permissions/matrix";
+import { isServerSupabaseConfigured } from "@/lib/env";
+import { createClient } from "@/lib/supabase/server";
 
 export async function OrganizationSelector() {
   const user = await getUser();
@@ -16,9 +18,17 @@ export async function OrganizationSelector() {
     return null;
   }
 
-  const [memberships, selectedOrganizationId] = await Promise.all([
+  const [memberships, selectedOrganizationId, profile] = await Promise.all([
     listMembershipsForUser(user.id),
     getSelectedOrganizationId(),
+    isServerSupabaseConfigured()
+      ? (await createClient())
+          .from("user_profiles")
+          .select("display_name,preferred_name")
+          .eq("id", user.id)
+          .maybeSingle()
+          .then((result) => result.data)
+      : Promise.resolve(null),
   ]);
   const activeMemberships = memberships.filter(
     (membership) => membership.status === "active" && membership.organization?.status === "active",
@@ -39,6 +49,10 @@ export async function OrganizationSelector() {
   const selected =
     activeMemberships.find((membership) => membership.organization_id === selectedOrganizationId) ??
     activeMemberships[0];
+  const personName =
+    profile?.display_name?.trim() ||
+    profile?.preferred_name?.trim() ||
+    "Name not set";
 
   return (
     <form action={setSelectedOrganizationIdAction} className="flex items-end gap-2">
@@ -64,6 +78,7 @@ export async function OrganizationSelector() {
               </option>
             ))}
           </Select>
+          <Badge tone="info">{personName}</Badge>
           <Badge tone="neutral">{ROLE_LABELS[selected.role_code]}</Badge>
         </div>
       </div>

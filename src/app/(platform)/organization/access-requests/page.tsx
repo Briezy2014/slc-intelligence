@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { AccessRequestReviewCards } from "@/components/domain/access-request-review";
+import { CopyInviteCodeButton } from "@/components/domain/copy-invite-code-button";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
@@ -52,8 +53,14 @@ export default async function AccessRequestsPage() {
           ) : null}
           {state.data.organizationSlug ? (
             <Alert title="Staff invite code" tone="info">
-              Share this code with new educators when they request access:{" "}
-              <span className="font-semibold">{state.data.organizationSlug}</span>
+              <p className="mb-3">
+                Share this code with new educators when they request access at{" "}
+                <Link href="/request-access" className="underline">
+                  /request-access
+                </Link>
+                .
+              </p>
+              <CopyInviteCodeButton code={state.data.organizationSlug} />
             </Alert>
           ) : null}
           <AccessRequestReviewCards

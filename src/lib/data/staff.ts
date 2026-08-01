@@ -28,9 +28,11 @@ export type StaffAssignments = {
 export type StaffData = {
   organizationId: string | null;
   organizationName: string | null;
+  organizationSlug: string | null;
   rows: StaffRow[];
   assignments: StaffAssignments;
   canAssign: boolean;
+  canManageMembers: boolean;
 };
 
 const emptyAssignments: StaffAssignments = {
@@ -43,9 +45,11 @@ const emptyAssignments: StaffAssignments = {
 const emptyStaff: StaffData = {
   organizationId: null,
   organizationName: null,
+  organizationSlug: null,
   rows: [],
   assignments: emptyAssignments,
   canAssign: false,
+  canManageMembers: false,
 };
 
 export async function listStaff(): Promise<DataState<StaffData>> {
@@ -53,14 +57,19 @@ export async function listStaff(): Promise<DataState<StaffData>> {
   if (!context) return emptyDataState(emptyStaff);
 
   try {
-    const [permissions, membershipsResult] = await Promise.all([
-      getPermissionFlags(context, ["staff.assign"]),
+    const [permissions, membershipsResult, organizationResult] = await Promise.all([
+      getPermissionFlags(context, ["staff.assign", "org.members.manage"]),
       context.supabase
         .from("organization_memberships")
         .select("*")
         .eq("organization_id", context.organizationId)
         .neq("status", "inactive")
         .order("created_at", { ascending: false }),
+      context.supabase
+        .from("organizations")
+        .select("id,name,slug")
+        .eq("id", context.organizationId)
+        .maybeSingle(),
     ]);
 
     if (membershipsResult.error) return safeDataError(emptyStaff);
@@ -82,13 +91,15 @@ export async function listStaff(): Promise<DataState<StaffData>> {
       configured: true,
       data: {
         organizationId: context.organizationId,
-        organizationName: context.organizationName,
+        organizationName: organizationResult.data?.name ?? context.organizationName,
+        organizationSlug: organizationResult.data?.slug ?? null,
         rows: memberships.map((membership) => ({
           ...membership,
           profile: profiles?.find((profile) => profile.id === membership.user_id) ?? null,
         })),
         assignments: emptyAssignments,
         canAssign: permissions["staff.assign"],
+        canManageMembers: permissions["org.members.manage"],
       },
     };
   } catch {
@@ -114,7 +125,7 @@ export async function getStaffMember(staffId: string): Promise<DataState<StaffDe
       classroomAssignments,
       studentAssignments,
     ] = await Promise.all([
-      getPermissionFlags(context, ["staff.assign"]),
+      getPermissionFlags(context, ["staff.assign", "org.members.manage"]),
       context.supabase
         .from("organization_memberships")
         .select("*")
@@ -168,6 +179,7 @@ export async function getStaffMember(staffId: string): Promise<DataState<StaffDe
       data: {
         organizationId: context.organizationId,
         organizationName: context.organizationName,
+        organizationSlug: null,
         rows: staff ? [staff] : [],
         staff,
         assignments: {
@@ -177,6 +189,7 @@ export async function getStaffMember(staffId: string): Promise<DataState<StaffDe
           students: studentAssignments.data ?? [],
         },
         canAssign: permissions["staff.assign"],
+        canManageMembers: permissions["org.members.manage"],
       },
     };
   } catch {

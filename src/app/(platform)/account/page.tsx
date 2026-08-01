@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { ConfigurationState } from "@/components/domain/page-states";
+import { ProfileNameForm } from "@/components/domain/profile-name-form";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { isServerSupabaseConfigured } from "@/lib/env";
@@ -47,7 +48,8 @@ export default async function AccountPage() {
         <Card>
           <CardTitle>Profile</CardTitle>
           <CardDescription>
-            {profile?.preferred_name ?? profile?.display_name ?? user.email ?? "Authenticated user"}
+            Your staff display name should be your real name (for example Kara Williams), not a role
+            label.
           </CardDescription>
           <dl className="mt-4 space-y-3 text-sm">
             <div>
@@ -59,6 +61,12 @@ export default async function AccountPage() {
               <dd>{profile?.status ?? "Supabase auth active"}</dd>
             </div>
           </dl>
+          <div className="mt-4">
+            <ProfileNameForm
+              initialDisplayName={profile?.display_name ?? "Kara Williams"}
+              initialPreferredName={profile?.preferred_name ?? "Kara"}
+            />
+          </div>
         </Card>
         <Card>
           <CardTitle>Memberships</CardTitle>
