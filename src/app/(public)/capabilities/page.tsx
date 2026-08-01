@@ -38,7 +38,7 @@ export default function CapabilitiesPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             {INSTRUCTIONAL_CAPABILITIES.map((item) => (
               <article
-                key={item.title}
+                key={item.id}
                 className="border-border bg-background-elevated/80 rounded-[var(--radius-lg)] border p-4"
               >
                 <h3 className="text-foreground font-semibold">{item.title}</h3>

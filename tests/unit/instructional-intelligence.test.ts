@@ -67,4 +67,14 @@ describe("instructional intelligence analyzers", () => {
   it("lists all instructional differentiator capabilities", () => {
     expect(INSTRUCTIONAL_CAPABILITIES.length).toBeGreaterThanOrEqual(13);
   });
+
+  it("makes every capability openable via href", () => {
+    for (const item of INSTRUCTIONAL_CAPABILITIES) {
+      expect(item.href.length).toBeGreaterThan(1);
+      expect(item.howTo.length).toBeGreaterThan(10);
+      if (item.toolId) {
+        expect(item.href).toContain(`tool=${item.toolId}`);
+      }
+    }
+  });
 });

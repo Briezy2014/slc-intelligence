@@ -36,13 +36,17 @@ export default function CapabilityRoadmapPage() {
           <h2 className="text-xl font-semibold">Instructional differentiators</h2>
           <div className="grid gap-3 md:grid-cols-2">
             {INSTRUCTIONAL_CAPABILITIES.map((item) => (
-              <Card key={item.title}>
-                <CardTitle className="text-base">{item.title}</CardTitle>
+              <Card key={item.id}>
+                <CardTitle className="text-base">
+                  <Link href={item.href} className="hover:text-highlight underline-offset-2 hover:underline">
+                    {item.title}
+                  </Link>
+                </CardTitle>
                 <CardDescription>{item.body}</CardDescription>
                 <p className="text-highlight mt-3 text-xs font-semibold tracking-wide uppercase">
                   {INSTRUCTIONAL_STATUS_LABEL[item.status]}
                 </p>
-                <p className="text-muted mt-1 text-xs">{item.where}</p>
+                <p className="text-muted mt-1 text-xs">{item.howTo}</p>
               </Card>
             ))}
           </div>
