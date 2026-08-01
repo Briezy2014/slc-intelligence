@@ -6,6 +6,10 @@ import {
   INTERVENTION_TEMPLATES,
   applyCommunicationTemplate,
 } from "@/lib/catalogs";
+import {
+  enrichCommunicationDraftContext,
+  findBehaviorDefinitionForFocus,
+} from "@/lib/catalogs/behavior-communication";
 import { BEHAVIOR_DEFINITION_TEMPLATES } from "@/lib/catalogs/behavior-templates";
 import { mapDocumentTextToFields } from "@/lib/documents/map-document-text";
 import type { AiAssistDomain, AiSuggestInput, AiSuggestion } from "@/lib/ai/types";
@@ -44,39 +48,71 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
   const domain = input.domain;
 
   switch (domain) {
-    case "communication":
+    case "communication": {
+      const matchedBehavior = findBehaviorDefinitionForFocus(
+        input.focusArea,
+        input.behaviorTemplateId,
+      );
+      const focusArea =
+        matchedBehavior?.name.toLowerCase() ||
+        input.focusArea?.trim() ||
+        "the current support focus";
+      const draftContext = enrichCommunicationDraftContext(
+        {
+          focusArea,
+          studentFirstName: "your student",
+          contactFirstName: "family",
+          staffName: "SLC Intelligence team",
+        },
+        matchedBehavior?.id ?? input.behaviorTemplateId,
+      );
+      const behaviorBoostTokens = matchedBehavior
+        ? tokens(
+            `${matchedBehavior.name} ${matchedBehavior.category} behavior support incident safety boundary bus`,
+          )
+        : [];
       return topScored(
         COMMUNICATION_TEMPLATES,
-        (template) =>
-          scoreText(
+        (template) => {
+          const base = scoreText(
             `${template.name} ${template.subjectTemplate} ${template.bodyTemplate}`,
-            needle,
-          ),
+            needle.length ? needle : behaviorBoostTokens,
+          );
+          const behaviorTemplateBoost =
+            matchedBehavior && template.id.startsWith("behavior")
+              ? 8
+              : matchedBehavior && (template.id.includes("bus") || template.id.includes("bully"))
+                ? 4
+                : 0;
+          return base + behaviorTemplateBoost;
+        },
         4,
       ).map(({ item }, index) => {
-        const draft = applyCommunicationTemplate(item, {
-          focusArea: input.focusArea || "the current instructional focus",
-          studentFirstName: "the student",
-          contactFirstName: "there",
-          staffName: "SLC Intelligence team",
-        });
+        const draft = applyCommunicationTemplate(item, draftContext);
         return {
           id: `local-communication-${item.id}-${index}`,
           domain,
           title: item.name,
-          summary: "Family communication draft based on starter intelligence templates.",
+          summary: matchedBehavior
+            ? `Family letter draft for specific behavior: ${matchedBehavior.name}.`
+            : "Family communication draft based on starter intelligence templates.",
           draftText: `${draft.subject}\n\n${draft.summary}`,
           fields: {
             subject: draft.subject,
             summary: draft.summary,
             visibility: draft.visibility,
             method: draft.method,
+            focusArea,
+            behaviorTemplateId: matchedBehavior?.id ?? "",
           },
-          rationale: "Matched communication templates to your focus area and context.",
+          rationale: matchedBehavior
+            ? `Used the selected behavior (${matchedBehavior.name}) with parent-friendly supports from the behavior catalog.`
+            : "Matched communication templates to your focus area and context.",
           source: "local_intelligence",
           requiresReview: true,
         };
       });
+    }
 
     case "accommodation":
       return topScored(

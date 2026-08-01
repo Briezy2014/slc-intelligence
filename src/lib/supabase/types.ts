@@ -138,6 +138,34 @@ export type Organization = {
   updated_at: Timestamp;
 };
 
+export type OrganizationSubscriptionStatus =
+  | "inactive"
+  | "trialing"
+  | "active"
+  | "past_due"
+  | "canceled"
+  | "unpaid"
+  | "incomplete"
+  | "incomplete_expired"
+  | "paused";
+
+export type OrganizationSubscription = {
+  id: Uuid;
+  organization_id: Uuid;
+  stripe_customer_id: Nullable<string>;
+  stripe_subscription_id: Nullable<string>;
+  stripe_price_id: Nullable<string>;
+  status: OrganizationSubscriptionStatus;
+  current_period_start: Nullable<Timestamp>;
+  current_period_end: Nullable<Timestamp>;
+  cancel_at_period_end: boolean;
+  canceled_at: Nullable<Timestamp>;
+  latest_invoice_id: Nullable<string>;
+  raw_status: Nullable<string>;
+  created_at: Timestamp;
+  updated_at: Timestamp;
+};
+
 export type OrganizationPrivacySettings = {
   organization_id: Uuid;
   small_group_threshold: number;
@@ -1965,6 +1993,11 @@ export type Database = {
   public: {
     Tables: {
       organizations: RowDefinition<Organization, Partial<Organization>, Partial<Organization>>;
+      organization_subscriptions: RowDefinition<
+        OrganizationSubscription,
+        Partial<OrganizationSubscription>,
+        Partial<OrganizationSubscription>
+      >;
       organization_memberships: RowDefinition<
         OrganizationMembership,
         Partial<OrganizationMembership>,
@@ -2558,6 +2591,26 @@ export type Database = {
       member_role: {
         Args: { p_org_id: Uuid };
         Returns: RoleCode | null;
+      };
+      activate_own_organization_admin_membership: {
+        Args: Record<string, never>;
+        Returns: Array<{
+          membership_id: Uuid;
+          organization_id: Uuid;
+          organization_name: string;
+          role_code: string;
+          status: string;
+        }>;
+      };
+      claim_sole_organization_as_admin: {
+        Args: Record<string, never>;
+        Returns: Array<{
+          membership_id: Uuid;
+          organization_id: Uuid;
+          organization_name: string;
+          role_code: string;
+          status: string;
+        }>;
       };
       can_read_student: {
         Args: { p_org_id: Uuid; p_student_id: Uuid };

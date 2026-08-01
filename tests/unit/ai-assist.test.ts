@@ -24,6 +24,22 @@ describe("AI Assist local intelligence", () => {
     expect(interventions.some((item) => item.fields?.category)).toBe(true);
   });
 
+  it("builds behavior family letters from a specific behavior dropdown selection", () => {
+    const communications = buildLocalSuggestions({
+      domain: "communication",
+      focusArea: "Task refusal",
+      behaviorTemplateId: "task-refusal",
+    });
+    expect(communications.length).toBeGreaterThan(0);
+    const draft = communications.map((item) => item.draftText).join("\n");
+    expect(draft.toLowerCase()).toContain("task refusal");
+    expect(draft.toLowerCase()).not.toContain("related to behavior");
+    expect(draft.toLowerCase()).not.toContain("practiced behavior");
+    expect(communications.some((item) => item.id.includes("behavior"))).toBe(true);
+    expect(communications[0]?.fields?.behaviorTemplateId).toBe("task-refusal");
+    expect(draft.toLowerCase()).toContain("replacement");
+  });
+
   it("honors the kill switch", async () => {
     vi.stubEnv("AI_ASSIST_ENABLED", "false");
     const result = await suggestWithAiAssist({

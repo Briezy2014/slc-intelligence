@@ -79,3 +79,11 @@ export const staffDutySchema = z
     message: "End time must be after start time.",
     path: ["endTime"],
   });
+
+export const classroomRoutineSchema = z.object({
+  organizationId: z.string().uuid(),
+  classroomId: z.string().uuid(),
+  name: z.string().trim().min(1, "Routine name is required.").max(180),
+  description: z.string().trim().max(2000).optional().or(z.literal("")),
+  status: z.enum(["active", "inactive", "archived"]).default("active"),
+});

@@ -78,6 +78,20 @@ export default async function OrganizationSettingsPage() {
           </Card>
         ) : null}
         {organization?.id ? <StarterLibrariesCard organizationId={organization.id} /> : null}
+        <Card>
+          <CardTitle>Billing</CardTitle>
+          <CardDescription>
+            One monthly subscription for this organization. No plan tiers.
+          </CardDescription>
+          <div className="mt-4">
+            <Link
+              href="/billing"
+              className="bg-accent text-accent-foreground inline-flex rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold"
+            >
+              Open billing
+            </Link>
+          </div>
+        </Card>
       </div>
     </main>
   );

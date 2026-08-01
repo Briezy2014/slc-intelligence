@@ -12,6 +12,7 @@ import {
 } from "@/lib/actions/shared";
 import {
   classroomAnnouncementSchema,
+  classroomRoutineSchema,
   classroomScheduleBlockSchema,
   classroomScheduleSchema,
   dailyStudentNoteSchema,
@@ -181,6 +182,50 @@ export async function saveDailyStudentNoteAction(formData: FormData): Promise<Ac
       ],
     });
     return { status: "success", message: "Daily student note saved." };
+  } catch {
+    return { status: "error", message: GENERIC_ACTION_MESSAGE };
+  }
+}
+
+export async function saveClassroomRoutineAction(formData: FormData): Promise<ActionState> {
+  const parsed = classroomRoutineSchema.safeParse(emptyToUndefined(formDataToObject(formData)));
+  if (!parsed.success) return validationError(parsed.error);
+  const values = parsed.data;
+  const context = await getActionContext(values.organizationId, "routine.manage");
+  if (!("supabase" in context)) return context;
+  try {
+    if (!(await canClassroomOps(context, "can_read_classroom_ops", values.classroomId))) {
+      return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
+    }
+    const payload = {
+      organization_id: context.organizationId,
+      classroom_id: values.classroomId,
+      name: values.name,
+      description: values.description?.trim() ? values.description.trim() : null,
+      status: values.status,
+      created_by: context.user.id,
+    };
+    const result = await context.supabase
+      .from("classroom_routines")
+      .insert(payload)
+      .select("id")
+      .single();
+    if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
+    await auditAndRevalidate({
+      organizationId: context.organizationId,
+      actorUserId: context.user.id,
+      actionType: "classroom_routine.create",
+      resourceType: "classroom_routine",
+      resourceId: result.data.id,
+      newState: payload,
+      paths: [
+        "/classroom-operations",
+        "/classroom-operations/daily",
+        "/classroom-operations/routines",
+        `/classrooms/${values.classroomId}/schedule`,
+      ],
+    });
+    return { status: "success", message: "Classroom routine saved." };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
   }

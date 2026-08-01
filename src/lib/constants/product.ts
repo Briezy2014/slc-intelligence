@@ -7,6 +7,7 @@ export const PUBLIC_NAV = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/capabilities", label: "Capabilities" },
+  { href: "/pricing", label: "Pricing" },
   { href: "/privacy", label: "Privacy" },
   { href: "/pilot-use", label: "Pilot use" },
   { href: "/terms", label: "Terms" },
@@ -19,9 +20,14 @@ export const PUBLIC_NAV = [
 export const PLATFORM_NAV = [
   { href: "/command-center", label: "Command Center" },
   { href: "/instructional-intelligence", label: "Instructional Intelligence" },
+<<<<<<< HEAD
   { href: "/instructional-packets", label: "Instructional Packets" },
+=======
+  { href: "/worksheet-generator", label: "Worksheet Generator" },
+>>>>>>> origin/main
   { href: "/ai-assist", label: "AI Assist" },
   { href: "/para-supports", label: "Para Supports" },
+  { href: "/billing", label: "Billing" },
   { href: "/students", label: "Students" },
   { href: "/schools", label: "Schools" },
   { href: "/programs", label: "Programs" },
