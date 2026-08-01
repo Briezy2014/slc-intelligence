@@ -47,6 +47,12 @@ export const INSTRUCTIONAL_CAPABILITIES: InstructionalCapability[] = [
     where: "/instructional-intelligence · Instructional plan · AI Assist lesson planning",
   },
   {
+    title: "Generate differentiated instructional packets",
+    body: "Build 30–100 page activity packets from grade, support needs, reading level, IEP goals, and interests—with visuals, cut-and-paste, games, assessments, and data forms.",
+    status: "available_now",
+    where: "/instructional-packets",
+  },
+  {
     title: "Help paraprofessionals understand approved supports",
     body: "Rewrite accommodations/supports into plain do/don’t language for classroom staff.",
     status: "available_now",
