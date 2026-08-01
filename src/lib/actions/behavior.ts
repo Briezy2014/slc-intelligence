@@ -13,11 +13,16 @@ import {
 import { calculateIntervalPercentage, calculateRate } from "@/lib/analytics/behavior-calculations";
 import type { Json } from "@/lib/supabase/types";
 import {
+  COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS,
+  getBehaviorDefinitionTemplate,
+} from "@/lib/catalogs/behavior-templates";
+import {
   behaviorDefinitionSchema,
   behaviorObservationSchema,
   behaviorStatusSchema,
   fbaWorkspaceSchema,
 } from "@/lib/validation/behavior";
+import { z } from "zod";
 
 async function behaviorSessionById(
   context: Awaited<ReturnType<typeof getActionContext>>,
@@ -367,6 +372,215 @@ export async function saveFbaWorkspaceAction(formData: FormData): Promise<Action
       ],
     });
     return { status: "success", message: "FBA workspace saved." };
+  } catch {
+    return { status: "error", message: GENERIC_ACTION_MESSAGE };
+  }
+}
+
+export type EnsureBehaviorsResult = ActionState & {
+  createdCount?: number;
+  behaviorDefinitionId?: string;
+};
+
+/** Creates common classroom behavior definitions for a student when none exist yet. */
+export async function ensureCommonBehaviorDefinitionsAction(input: {
+  organizationId: string;
+  studentId: string;
+}): Promise<EnsureBehaviorsResult> {
+  const parsed = z
+    .object({
+      organizationId: z.string().uuid(),
+      studentId: z.string().uuid(),
+    })
+    .safeParse(input);
+  if (!parsed.success) return validationError(parsed.error);
+
+  const values = parsed.data;
+  const context = await getActionContext(values.organizationId);
+  if (!("supabase" in context)) return context;
+
+  try {
+    if (!(await canBehavior(context, "can_define_behavior", values.studentId))) {
+      return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
+    }
+
+    const existing = await context.supabase
+      .from("behavior_definitions")
+      .select("id,name")
+      .eq("organization_id", context.organizationId)
+      .eq("student_id", values.studentId)
+      .neq("status", "archived");
+
+    if (existing.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
+
+    const existingNames = new Set(
+      (existing.data ?? []).map((row) => row.name.trim().toLowerCase()),
+    );
+    let createdCount = 0;
+
+    for (const templateId of COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS) {
+      const template = getBehaviorDefinitionTemplate(templateId);
+      if (!template) continue;
+      if (existingNames.has(template.name.trim().toLowerCase())) continue;
+
+      const insert = await context.supabase
+        .from("behavior_definitions")
+        .insert({
+          organization_id: context.organizationId,
+          student_id: values.studentId,
+          name: template.name,
+          operational_definition: template.operationalDefinition,
+          status: "active",
+          created_by: context.user.id,
+        })
+        .select("id")
+        .single();
+      if (insert.error) continue;
+
+      const exampleRows = template.examples.map((example, index) => ({
+        behavior_definition_id: insert.data.id,
+        example_text: example,
+        sort_order: index + 1,
+      }));
+      const nonexampleRows = template.nonexamples.map((nonexample, index) => ({
+        behavior_definition_id: insert.data.id,
+        nonexample_text: nonexample,
+        sort_order: index + 1,
+      }));
+      if (exampleRows.length) {
+        await context.supabase.from("behavior_definition_examples").insert(exampleRows);
+      }
+      if (nonexampleRows.length) {
+        await context.supabase.from("behavior_definition_nonexamples").insert(nonexampleRows);
+      }
+      existingNames.add(template.name.trim().toLowerCase());
+      createdCount += 1;
+    }
+
+    await auditAndRevalidate({
+      organizationId: context.organizationId,
+      actorUserId: context.user.id,
+      actionType: "behavior_definition.ensure_common",
+      resourceType: "behavior_definition",
+      resourceId: values.studentId,
+      newState: { createdCount, studentId: values.studentId },
+      paths: [
+        "/behavior-detective",
+        `/students/${values.studentId}/behavior`,
+        `/students/${values.studentId}/behavior/definitions`,
+        `/students/${values.studentId}/behavior/observations`,
+      ],
+    });
+
+    return {
+      status: "success",
+      message:
+        createdCount > 0
+          ? `Added ${createdCount} common classroom behaviors for this student.`
+          : "Common classroom behaviors are already set up for this student.",
+      createdCount,
+    };
+  } catch {
+    return { status: "error", message: GENERIC_ACTION_MESSAGE };
+  }
+}
+
+/** Creates one behavior definition from a starter template and returns its id. */
+export async function createBehaviorFromTemplateAction(input: {
+  organizationId: string;
+  studentId: string;
+  templateId: string;
+}): Promise<EnsureBehaviorsResult> {
+  const parsed = z
+    .object({
+      organizationId: z.string().uuid(),
+      studentId: z.string().uuid(),
+      templateId: z.string().trim().min(1),
+    })
+    .safeParse(input);
+  if (!parsed.success) return validationError(parsed.error);
+
+  const values = parsed.data;
+  const template = getBehaviorDefinitionTemplate(values.templateId);
+  if (!template) return { status: "error", message: "Choose a starter behavior from the list." };
+
+  const context = await getActionContext(values.organizationId);
+  if (!("supabase" in context)) return context;
+
+  try {
+    if (!(await canBehavior(context, "can_define_behavior", values.studentId))) {
+      return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
+    }
+
+    const existing = await context.supabase
+      .from("behavior_definitions")
+      .select("id,name")
+      .eq("organization_id", context.organizationId)
+      .eq("student_id", values.studentId)
+      .ilike("name", template.name)
+      .maybeSingle();
+
+    if (existing.data?.id) {
+      return {
+        status: "success",
+        message: "That behavior is already saved for this student.",
+        behaviorDefinitionId: existing.data.id,
+        createdCount: 0,
+      };
+    }
+
+    const insert = await context.supabase
+      .from("behavior_definitions")
+      .insert({
+        organization_id: context.organizationId,
+        student_id: values.studentId,
+        name: template.name,
+        operational_definition: template.operationalDefinition,
+        status: "active",
+        created_by: context.user.id,
+      })
+      .select("id")
+      .single();
+    if (insert.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
+
+    const exampleRows = template.examples.map((example, index) => ({
+      behavior_definition_id: insert.data.id,
+      example_text: example,
+      sort_order: index + 1,
+    }));
+    const nonexampleRows = template.nonexamples.map((nonexample, index) => ({
+      behavior_definition_id: insert.data.id,
+      nonexample_text: nonexample,
+      sort_order: index + 1,
+    }));
+    if (exampleRows.length) {
+      await context.supabase.from("behavior_definition_examples").insert(exampleRows);
+    }
+    if (nonexampleRows.length) {
+      await context.supabase.from("behavior_definition_nonexamples").insert(nonexampleRows);
+    }
+
+    await auditAndRevalidate({
+      organizationId: context.organizationId,
+      actorUserId: context.user.id,
+      actionType: "behavior_definition.create_from_template",
+      resourceType: "behavior_definition",
+      resourceId: insert.data.id,
+      newState: { templateId: values.templateId, name: template.name },
+      paths: [
+        "/behavior-detective",
+        `/students/${values.studentId}/behavior`,
+        `/students/${values.studentId}/behavior/definitions`,
+        `/students/${values.studentId}/behavior/observations`,
+      ],
+    });
+
+    return {
+      status: "success",
+      message: `${template.name} is ready to use.`,
+      behaviorDefinitionId: insert.data.id,
+      createdCount: 1,
+    };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
   }

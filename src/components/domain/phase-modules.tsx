@@ -30,7 +30,6 @@ import {
   saveInterventionPlanAction,
   saveInterventionReviewAction,
 } from "@/lib/actions/interventions";
-import { summarizeBehaviorAnalytics } from "@/lib/data/behavior-analytics";
 import type { BehaviorData } from "@/lib/data/behavior";
 import type { InterventionData } from "@/lib/data/interventions";
 import type { ReportingData } from "@/lib/data/reporting";
@@ -39,6 +38,7 @@ import {
   fidelityPercent,
   plannedVsDelivered,
 } from "@/lib/analytics/intervention-calculations";
+import { observationMethodLabel } from "@/lib/catalogs/behavior-templates";
 
 function submitAction(action: (formData: FormData) => Promise<unknown>) {
   return action as unknown as (formData: FormData) => void;
@@ -401,45 +401,42 @@ export {
 } from "@/components/domain/behavior-forms";
 
 export function BehaviorDashboard({ data, studentId }: { data: BehaviorData; studentId?: string }) {
-  const analytics = summarizeBehaviorAnalytics(data);
+  const filteredDefinitions = studentId
+    ? data.definitions.filter((definition) => definition.student_id === studentId)
+    : data.definitions;
+  const filteredSessions = studentId
+    ? data.sessions.filter((session) => session.student_id === studentId)
+    : data.sessions;
+
   return (
     <div className="space-y-6">
-      <div className="rounded-[var(--radius-xl)] border border-[rgb(38_211_193/0.35)] bg-[linear-gradient(135deg,rgb(33_18_56/0.95),rgb(17_94_89/0.38))] p-5">
-        <h2 className="text-xl font-semibold">Behavior Detective</h2>
-        <p className="text-muted mt-2 text-sm">
-          Observable behavior data, ABC context, and FBA evidence workspaces. Summaries are
-          educator-review supports, not automated determinations.
-        </p>
-      </div>
-      <DataReadinessPanel
-        status={analytics.latency.sufficiency.status}
-        reason={analytics.latency.sufficiency.reason}
-      />
       <TableShell
-        caption="Behavior definitions"
-        headers={["Name", "Student", "Status"]}
-        rows={data.definitions.map((definition) => {
+        caption="Saved behaviors"
+        headers={["Behavior", "Student", "Status"]}
+        emptyMessage="No saved behaviors yet."
+        rows={filteredDefinitions.map((definition) => {
           const student = data.students.find((entry) => entry.id === definition.student_id);
           return [
             definition.name,
-            student ? studentName(student) : "Authorized student",
+            student ? studentName(student) : "Student",
             definition.status,
           ];
         })}
       />
       <TableShell
-        caption="Behavior observations"
-        headers={["Date", "Method", "Setting", "Activity", "Status"]}
-        rows={data.sessions.map((session) => [
+        caption="Recent observations"
+        headers={["Date", "What you recorded", "Where", "Activity", "Status"]}
+        emptyMessage="No observations yet."
+        rows={filteredSessions.map((session) => [
           session.session_date,
-          session.measurement_method,
-          session.setting ?? "Not set",
-          session.activity ?? "Not set",
+          observationMethodLabel(session.measurement_method),
+          session.setting ?? "—",
+          session.activity ?? "—",
           session.status,
         ])}
       />
       {data.permissions.canFinalize
-        ? data.sessions
+        ? filteredSessions
             .filter((session) => session.status === "draft")
             .slice(0, 3)
             .map((session) => (
@@ -452,12 +449,19 @@ export function BehaviorDashboard({ data, studentId }: { data: BehaviorData; stu
                 <input type="hidden" name="sessionId" value={session.id} />
                 <input type="hidden" name="studentId" value={session.student_id} />
                 <Button type="submit" variant="secondary" size="sm">
-                  Finalize {session.session_date}
+                  Mark {session.session_date} final
                 </Button>
               </form>
             ))
         : null}
-      <FbaWorkspaceForm data={data} studentId={studentId} />
+      <details className="border-border rounded-[var(--radius-lg)] border p-4">
+        <summary className="cursor-pointer text-sm font-semibold">
+          Team review notes (optional)
+        </summary>
+        <div className="mt-4">
+          <FbaWorkspaceForm data={data} studentId={studentId} />
+        </div>
+      </details>
     </div>
   );
 }
@@ -467,9 +471,9 @@ export function FbaWorkspaceForm({ data, studentId }: { data: BehaviorData; stud
   const today = new Date().toISOString().slice(0, 10);
   return (
     <Card>
-      <CardTitle>FBA evidence workspace</CardTitle>
+      <CardTitle>Team review notes</CardTitle>
       <CardDescription>
-        Use this as an evidence organizer; educator hypothesis text remains team-authored.
+        Optional place to keep team notes. Your team still writes any hypothesis language.
       </CardDescription>
       <form action={submitAction(saveFbaWorkspaceAction)} className="mt-4 space-y-4">
         <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />

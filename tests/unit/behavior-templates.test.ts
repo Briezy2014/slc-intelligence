@@ -2,7 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   BEHAVIOR_DEFINITION_TEMPLATES,
   BEHAVIOR_SETTING_OPTIONS,
+  COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS,
+  OBSERVATION_METHOD_OPTIONS,
   getBehaviorDefinitionTemplate,
+  observationMethodLabel,
 } from "@/lib/catalogs/behavior-templates";
 
 describe("behavior templates", () => {
@@ -25,5 +28,16 @@ describe("behavior templates", () => {
 
   it("provides expanded observation dropdown options", () => {
     expect(BEHAVIOR_SETTING_OPTIONS.length).toBeGreaterThanOrEqual(20);
+  });
+
+  it("exposes common classroom starters and plain-language methods", () => {
+    expect(COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS.length).toBeGreaterThanOrEqual(5);
+    for (const id of COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS) {
+      expect(getBehaviorDefinitionTemplate(id)).toBeTruthy();
+    }
+    expect(OBSERVATION_METHOD_OPTIONS.some((option) => option.value === "abc" && option.primary)).toBe(
+      true,
+    );
+    expect(observationMethodLabel("frequency")).toMatch(/how many times/i);
   });
 });
