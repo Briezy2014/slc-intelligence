@@ -20,11 +20,8 @@ export const PUBLIC_NAV = [
 export const PLATFORM_NAV = [
   { href: "/command-center", label: "Command Center" },
   { href: "/instructional-intelligence", label: "Instructional Intelligence" },
-<<<<<<< HEAD
   { href: "/instructional-packets", label: "Instructional Packets" },
-=======
   { href: "/worksheet-generator", label: "Worksheet Generator" },
->>>>>>> origin/main
   { href: "/ai-assist", label: "AI Assist" },
   { href: "/para-supports", label: "Para Supports" },
   { href: "/billing", label: "Billing" },
