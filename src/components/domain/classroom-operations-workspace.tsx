@@ -17,7 +17,8 @@ import {
   saveClassroomScheduleAction,
   saveDailyStudentNoteAction,
 } from "@/lib/actions/classroom-operations";
-import { OWNER_CLASSROOM_NAME, ensurePilotDemoSetupAction } from "@/lib/actions/pilot-demo-setup";
+import { ensurePilotDemoSetupAction } from "@/lib/actions/pilot-demo-setup";
+import { OWNER_CLASSROOM_NAME } from "@/lib/constants/owner-classroom";
 import { scheduleBlockDurationMinutes } from "@/lib/analytics/executive-function-calculations";
 import type { ClassroomOperationsData } from "@/lib/data/classroom-operations";
 

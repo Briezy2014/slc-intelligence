@@ -9,20 +9,13 @@ import {
   UNAUTHORIZED_ACTION_MESSAGE,
   VALIDATION_ACTION_MESSAGE,
 } from "@/lib/actions/shared";
+import {
+  OWNER_CLASSROOM_NAME,
+  OWNER_DEMO_STUDENTS,
+  OWNER_SCHEDULE_NAME,
+  OWNER_SCHOOL_NAME,
+} from "@/lib/constants/owner-classroom";
 import { hasPermission } from "@/lib/permissions/check";
-
-export const OWNER_SCHOOL_NAME = "Williams School";
-export const OWNER_CLASSROOM_NAME = "Williams SLC room 95";
-export const OWNER_SCHEDULE_NAME = "Williams SLC weekday schedule";
-export const OWNER_DEMO_STUDENTS = [
-  { code: "S1", grade: "3" },
-  { code: "S2", grade: "3" },
-  { code: "S3", grade: "4" },
-  { code: "S4", grade: "4" },
-  { code: "S5", grade: "5" },
-  { code: "S6", grade: "5" },
-  { code: "S7", grade: "6" },
-] as const;
 
 const LEGACY_CLASSROOM_NAMES = ["Pilot Demo Classroom", "Demo Classroom"] as const;
 
