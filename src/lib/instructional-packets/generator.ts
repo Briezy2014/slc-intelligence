@@ -405,7 +405,7 @@ export function generateInstructionalPacket(input: {
 
   buildVisualSupports(sections, profile, theme, visualCount);
   buildTaskAnalysis(sections, profile, theme);
-  buildCutAndPaste(sections, profile, theme, cutCount)
+  buildCutAndPaste(sections, profile, theme, cutCount);
   buildGames(sections, profile, theme, gameCount);
   buildPracticePages(sections, profile, theme, difficulty, practiceCount);
   buildAssessments(sections, profile, theme, assessCount);
