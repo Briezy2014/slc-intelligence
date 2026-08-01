@@ -17,34 +17,66 @@ export const PUBLIC_NAV = [
   { href: "/sign-in", label: "Sign in" },
 ] as const;
 
-export const PLATFORM_NAV = [
-  { href: "/command-center", label: "Command Center" },
-  { href: "/instructional-intelligence", label: "Instructional Intelligence" },
-  { href: "/instructional-packets", label: "Instructional Packets" },
-  { href: "/worksheet-generator", label: "Worksheet Generator" },
-  { href: "/ai-assist", label: "AI Assist" },
-  { href: "/para-supports", label: "Para Supports" },
-  { href: "/billing", label: "Billing" },
-  { href: "/students", label: "Students" },
-  { href: "/schools", label: "Schools" },
-  { href: "/programs", label: "Programs" },
-  { href: "/classrooms", label: "Classrooms" },
-  { href: "/staff", label: "Staff" },
-  { href: "/goals", label: "Goals" },
-  { href: "/progress/enter", label: "Rapid Progress" },
-  { href: "/education-documents", label: "IEP / ETR Docs" },
-  { href: "/reports", label: "Reports" },
-  { href: "/behavior-detective", label: "Behavior Detective" },
-  { href: "/interventions", label: "Interventions" },
-  { href: "/accommodations", label: "Accommodations" },
-  { href: "/services", label: "Services" },
-  { href: "/family-communication", label: "Family Communication" },
-  { href: "/parent-share", label: "Parent Share" },
-  { href: "/deadlines", label: "Deadline Tracker" },
-  { href: "/meetings", label: "Meetings" },
-  { href: "/executive-function", label: "Executive Function" },
-  { href: "/classroom-operations", label: "Classroom Operations" },
-  { href: "/administrative-intelligence", label: "Administrative Intelligence" },
-  { href: "/capability-roadmap", label: "Capability Roadmap" },
-  { href: "/organization/settings", label: "Organization" },
-] as const;
+export type PlatformNavItem = {
+  href: string;
+  label: string;
+};
+
+/** Grouped navigation — daily classroom work first, setup/admin last. */
+export const PLATFORM_NAV_GROUPS: Array<{
+  label: string;
+  items: PlatformNavItem[];
+}> = [
+  {
+    label: "Daily use",
+    items: [
+      { href: "/command-center", label: "Command Center" },
+      { href: "/students", label: "Students" },
+      { href: "/classroom-operations", label: "Classroom Operations" },
+      { href: "/progress/enter", label: "Rapid Progress" },
+      { href: "/goals", label: "Goals" },
+      { href: "/behavior-detective", label: "Behavior Detective" },
+      { href: "/instructional-intelligence", label: "Instructional Intelligence" },
+      { href: "/worksheet-generator", label: "Worksheet Generator" },
+      { href: "/family-communication", label: "Family Communication" },
+    ],
+  },
+  {
+    label: "Instruction & materials",
+    items: [
+      { href: "/instructional-packets", label: "Instructional Packets" },
+      { href: "/ai-assist", label: "AI Assist" },
+      { href: "/para-supports", label: "Para Supports" },
+      { href: "/interventions", label: "Interventions" },
+      { href: "/accommodations", label: "Accommodations" },
+      { href: "/services", label: "Services" },
+      { href: "/executive-function", label: "Executive Function" },
+    ],
+  },
+  {
+    label: "Documents & family",
+    items: [
+      { href: "/education-documents", label: "IEP / ETR Docs" },
+      { href: "/meetings", label: "Meetings" },
+      { href: "/parent-share", label: "Parent Share" },
+      { href: "/deadlines", label: "Deadline Tracker" },
+      { href: "/reports", label: "Reports" },
+    ],
+  },
+  {
+    label: "Setup & admin",
+    items: [
+      { href: "/schools", label: "Schools" },
+      { href: "/programs", label: "Programs" },
+      { href: "/classrooms", label: "Classrooms" },
+      { href: "/staff", label: "Staff" },
+      { href: "/administrative-intelligence", label: "Administrative Intelligence" },
+      { href: "/capability-roadmap", label: "Capability Roadmap" },
+      { href: "/billing", label: "Billing" },
+      { href: "/organization/settings", label: "Organization" },
+    ],
+  },
+];
+
+/** Flat list derived from groups (sitemap / legacy consumers). */
+export const PLATFORM_NAV = PLATFORM_NAV_GROUPS.flatMap((group) => group.items);
