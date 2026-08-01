@@ -2592,6 +2592,26 @@ export type Database = {
         Args: { p_org_id: Uuid };
         Returns: RoleCode | null;
       };
+      activate_own_organization_admin_membership: {
+        Args: Record<string, never>;
+        Returns: Array<{
+          membership_id: Uuid;
+          organization_id: Uuid;
+          organization_name: string;
+          role_code: string;
+          status: string;
+        }>;
+      };
+      claim_sole_organization_as_admin: {
+        Args: Record<string, never>;
+        Returns: Array<{
+          membership_id: Uuid;
+          organization_id: Uuid;
+          organization_name: string;
+          role_code: string;
+          status: string;
+        }>;
+      };
       can_read_student: {
         Args: { p_org_id: Uuid; p_student_id: Uuid };
         Returns: boolean;

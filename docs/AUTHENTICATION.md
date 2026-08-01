@@ -9,7 +9,19 @@ Rules:
 3. Organization membership is verified after authentication through `organization_memberships`.
 4. The selected organization is stored in an HTTP-only `slc_org_id` cookie.
 5. Auth error messages are intentionally generic and do not enumerate accounts.
-6. No service-role key is used in application code.
+6. Service-role key is reserved for trusted server jobs (for example Stripe webhooks), not routine page auth.
+
+## Owner / membership-pending recovery
+
+`/membership-pending` is for staff waiting on access-request approval. It is **not** a normal owner state.
+
+If the founding owner lands there:
+
+1. Apply migration `202608010001_owner_membership_recovery.sql` in Supabase.
+2. Open `/membership-pending` and click **Restore my owner / admin access**.
+3. Or in Supabase SQL, confirm `organization_memberships` has the owner `user_id` with `role_code = 'organization_admin'` and `status = 'active'`.
+
+Active members who open `/membership-pending` are redirected to Command Center automatically.
 
 ## Access requests (approval workflow)
 
