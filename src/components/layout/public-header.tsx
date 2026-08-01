@@ -23,7 +23,7 @@ export function PublicHeader() {
         <div className="flex items-center gap-2">
           <Link
             href="/sign-in"
-            className="bg-accent text-accent-foreground hover:bg-accent-secondary hidden min-h-11 items-center gap-2 rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold transition-colors sm:inline-flex"
+            className="bg-accent text-accent-foreground hover:bg-accent-secondary inline-flex min-h-11 items-center gap-2 rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold transition-colors"
           >
             <LogIn className="size-4" aria-hidden="true" />
             Sign in
