@@ -50,11 +50,38 @@ SET
   updated_at = now();
 
 UPDATE public.organizations
-SET status = 'active', archived_at = NULL
+SET status = 'active', updated_at = now()
 WHERE id = (SELECT id FROM public.organizations ORDER BY created_at ASC LIMIT 1);
 ```
 
+`organizations` has **no** `archived_at` column — only `status`. Do not set `archived_at`.
+
 Then sign out / sign in and open `/command-center`.
+
+### Set display name to Kara Williams (optional)
+
+Profile rows must exist before membership inserts (memberships reference `user_profiles`). Run this first or right after:
+
+```sql
+WITH owner AS (
+  SELECT id AS user_id
+  FROM auth.users
+  WHERE lower(email) IN (
+    lower('briezy682014@gmail.com'),
+    lower('aspyn682014@yahoo.com')
+  )
+)
+INSERT INTO public.user_profiles (id, display_name, preferred_name, status)
+SELECT owner.user_id, 'Kara Williams', 'Kara', 'active'
+FROM owner
+ON CONFLICT (id) DO UPDATE
+SET
+  display_name = 'Kara Williams',
+  preferred_name = 'Kara',
+  status = 'active',
+  updated_at = now();
+```
+
 
 ## App recovery (after migration deploy)
 

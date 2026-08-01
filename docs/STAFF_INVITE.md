@@ -23,22 +23,4 @@ That badge/role label is your **role**, not your name. Staff list Name should sh
 
 ### Immediate Supabase SQL (optional)
 
-```sql
-WITH owner AS (
-  SELECT id AS user_id
-  FROM auth.users
-  WHERE lower(email) IN (
-    lower('briezy682014@gmail.com'),
-    lower('aspyn682014@yahoo.com')
-  )
-)
-INSERT INTO public.user_profiles (id, display_name, preferred_name, status)
-SELECT owner.user_id, 'Kara Williams', 'Kara', 'active'
-FROM owner
-ON CONFLICT (id) DO UPDATE
-SET
-  display_name = 'Kara Williams',
-  preferred_name = 'Kara',
-  status = 'active',
-  updated_at = now();
-```
+Run the Kara Williams profile SQL in `docs/OWNER_MEMBERSHIP_RECOVERY.md` (profile first, then membership). Do **not** use `organizations.archived_at` — that column does not exist.

@@ -1,20 +1,6 @@
--- Allow users to see organizations they belong to even when membership is not yet active.
--- (Previously organizations were only visible via is_org_member, which requires status=active.
--- That hid org names for pending members and made owner recovery confusing.)
-DROP POLICY IF EXISTS organizations_select_any_membership ON public.organizations;
-CREATE POLICY organizations_select_any_membership
-ON public.organizations FOR SELECT
-USING (
-  EXISTS (
-    SELECT 1
-    FROM public.organization_memberships m
-    WHERE m.organization_id = organizations.id
-      AND m.user_id = auth.uid()
-  )
-);
+-- organizations has no archived_at column (only status).
+-- Recreate owner-recovery functions without that invalid reference.
 
--- Let an organization_admin reactivate their own membership when stuck pending/inactive.
--- This unblocks the founding owner without requiring another admin to approve them.
 CREATE OR REPLACE FUNCTION public.activate_own_organization_admin_membership()
 RETURNS TABLE (
   membership_id uuid,
@@ -72,9 +58,6 @@ $$;
 REVOKE ALL ON FUNCTION public.activate_own_organization_admin_membership() FROM PUBLIC;
 GRANT EXECUTE ON FUNCTION public.activate_own_organization_admin_membership() TO authenticated;
 
--- If the signed-in user has no memberships at all, and exactly one organization exists
--- with zero active organization_admin members, claim that org as organization_admin.
--- Intended for single-tenant founder recovery (e.g. membership row missing after auth recreate).
 CREATE OR REPLACE FUNCTION public.claim_sole_organization_as_admin()
 RETURNS TABLE (
   membership_id uuid,
@@ -105,7 +88,6 @@ BEGIN
   WHERE m.user_id = v_user_id;
 
   IF v_my_memberships > 0 THEN
-    -- User already has memberships; use activate_own_organization_admin_membership instead.
     RETURN;
   END IF;
 
