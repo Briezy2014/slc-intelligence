@@ -5,13 +5,30 @@ import type {
   PacketSizeTarget,
   StudentPacketProfile,
 } from "@/lib/instructional-packets/types";
+import { visualMarker, type WorksheetVisualId } from "@/lib/worksheet-generator/visuals";
 
 const COIN_SET = [
-  { name: "penny", value: "1¢", worth: "$0.01" },
-  { name: "nickel", value: "5¢", worth: "$0.05" },
-  { name: "dime", value: "10¢", worth: "$0.10" },
-  { name: "quarter", value: "25¢", worth: "$0.25" },
+  { name: "penny", value: "1¢", worth: "$0.01", visual: "coin-penny" as const },
+  { name: "nickel", value: "5¢", worth: "$0.05", visual: "coin-nickel" as const },
+  { name: "dime", value: "10¢", worth: "$0.10", visual: "coin-dime" as const },
+  { name: "quarter", value: "25¢", worth: "$0.25", visual: "coin-quarter" as const },
 ] as const;
+
+const PRINT_PAGE_BREAK = "---------- PAGE BREAK ----------";
+
+function themeVisual(theme: string, pageIndex: number): WorksheetVisualId {
+  const value = theme.toLowerCase();
+  if (/space|rocket|planet|star|moon|astronaut/.test(value)) {
+    const space: WorksheetVisualId[] = ["space-rocket", "space-planet", "space-stars"];
+    return space[pageIndex % space.length]!;
+  }
+  if (/animal|dog|cat|pet/.test(value)) {
+    return pageIndex % 2 === 0 ? "animal-dog" : "animal-cat";
+  }
+  if (/sport|ball|swim/.test(value)) return "sports-ball";
+  if (/cook|food|apple/.test(value)) return "cooking-apple";
+  return "theme-banner";
+}
 
 function interestTheme(interest: string): string {
   const value = interest.trim() || "preferred interest";
@@ -43,27 +60,6 @@ function difficultyLabel(difficulty: PacketDifficulty): string {
   }
 }
 
-function scaffoldNote(difficulty: PacketDifficulty): string {
-  switch (difficulty) {
-    case "easy":
-      return "High visual support · fewer choices · larger response spaces · adult model first.";
-    case "moderate":
-      return "Balanced independence · 2–3 step directions · mixed practice.";
-    case "challenging":
-      return "Reduced prompts · multi-step combinations · generalization across settings.";
-    case "errorless":
-      return "Errorless: model → guided · prevent incorrect practice · reinforce correct response immediately.";
-    case "task_analysis":
-      return "Break skill into numbered steps; teach one step at a time; chain forward/backward as planned.";
-    case "aba":
-      return "ABA style: clear SD, prompt hierarchy (I→VP→PP→GP→I), discrete trials, reinforcement notes.";
-    case "udl":
-      return "UDL: multiple means of engagement, representation, and action/expression; offer choice boards.";
-    default:
-      return "Differentiate supports to the learner profile.";
-  }
-}
-
 function pushSection(
   sections: PacketSection[],
   sectionType: string,
@@ -89,22 +85,20 @@ function buildVisualSupports(
     pushSection(
       sections,
       "visual_support",
-      `Visual support ${i + 1}: ${coin.name} (${theme})`,
+      `${coin.name} card · ${theme}`,
       [
-        `Learner: ${studentLabel(profile)} · Reading access: ${profile.readingLevel}`,
-        `Theme: ${theme} station card`,
+        visualMarker(themeVisual(theme, i)),
+        visualMarker(coin.visual),
         "",
-        `COIN CARD — ${coin.name.toUpperCase()}`,
-        `[Picture box: large ${coin.name} · ${theme} background sticker]`,
         `Name: ${coin.name}`,
-        `Value: ${coin.value} (${coin.worth})`,
-        "Color cue: ________________",
-        "Size cue: ________________",
+        `Value: ${coin.value}  (${coin.worth})`,
         "",
-        "Student says/points:",
-        `□ “${coin.name}”   □ “${coin.value}”`,
+        "Circle the answer:",
+        `□ ${coin.name}     □ ${coin.value}`,
         "",
-        "Adult script: “Show me the {coin}. What is it worth?”",
+        "Trace / write:",
+        `${coin.name} ________________`,
+        `${coin.value} ________________`,
       ].join("\n"),
     );
   }
@@ -114,50 +108,46 @@ function buildTaskAnalysis(
   sections: PacketSection[],
   profile: StudentPacketProfile,
   theme: string,
-  difficulty: PacketDifficulty,
 ): void {
   pushSection(
     sections,
     "task_analysis",
-    "Task analysis: Identify a U.S. coin",
+    "Steps: Name the coin",
     [
-      `Goal focus: ${profile.skillGoal}`,
-      `IEP goal alignment: ${profile.iepGoal}`,
-      `Style: ${difficultyLabel(difficulty)} · Theme: ${theme}`,
+      visualMarker("coins-set"),
+      visualMarker(themeVisual(theme, 0)),
       "",
-      "Steps:",
-      "1. Look at the coin (or picture).",
-      "2. Check color (copper / silver).",
-      "3. Check size (small / medium / large).",
-      "4. Say or point to the coin name.",
-      "5. Say or match the value.",
-      `6. Place coin in the correct ${theme} sorting mat.`,
+      "1. Look at the coin.",
+      "2. Check the color.",
+      "3. Check the size.",
+      "4. Point to or say the name.",
+      "5. Point to or say the value.",
+      `6. Put it on the ${theme} mat.`,
       "",
-      "Data: + independent · V verbal · G gestural · M model · P physical",
-      "Trials: 1 __  2 __  3 __  4 __  5 __",
+      `Goal: ${profile.skillGoal}`,
     ].join("\n"),
   );
 
   pushSection(
     sections,
     "task_analysis",
-    "Task analysis: Count coin combinations to $5.00",
+    "Steps: Make the amount",
     [
-      `IEP goal: ${profile.iepGoal}`,
+      visualMarker("coins-set"),
+      visualMarker(themeVisual(theme, 1)),
+      "",
       `Theme: ${theme} checkout`,
       "",
-      "Steps:",
-      "1. Gather coins for the price card.",
-      "2. Sort by type (pennies, nickels, dimes, quarters).",
-      "3. Count quarters first (skip-count by 25).",
-      "4. Count dimes (skip-count by 10).",
-      "5. Count nickels (skip-count by 5).",
-      "6. Count pennies by 1.",
-      "7. Write/total the amount.",
-      "8. Compare to price: enough / not enough / exact.",
+      "1. Look at the price.",
+      "2. Sort coins (penny · nickel · dime · quarter).",
+      "3. Count quarters.",
+      "4. Count dimes.",
+      "5. Count nickels.",
+      "6. Count pennies.",
+      "7. Write the total.",
+      "8. Check: enough · not enough · exact",
       "",
-      "Prompt hierarchy: Independent → Gesture → Verbal → Model → Partial physical",
-      "Mastery criterion example: 4/5 trials correct across 3 sessions.",
+      `Goal: ${profile.iepGoal}`,
     ].join("\n"),
   );
 }
@@ -170,24 +160,24 @@ function buildCutAndPaste(
 ): void {
   for (let i = 0; i < count; i += 1) {
     const target = COIN_SET[i % COIN_SET.length];
+    const distractor = COIN_SET[(i + 1) % COIN_SET.length];
     pushSection(
       sections,
       "cut_and_paste",
-      `Cut-and-paste ${i + 1}: Match ${target.name} · ${theme}`,
+      `Cut and paste ${i + 1}: ${target.name}`,
       [
-        `Reading level support: ${profile.readingLevel} (picture + short labels)`,
+        visualMarker(themeVisual(theme, i)),
+        visualMarker(target.visual),
+        visualMarker(distractor.visual),
         "",
-        `Cut the coin pictures below. Paste onto the matching ${theme} pockets.`,
+        `Cut the ${target.name}. Paste it on the ${theme} pocket.`,
         "",
-        "Pockets:",
-        `□ ${target.name} landing pad (${target.value})`,
-        "□ Not this coin (distractors)",
+        "Paste here:",
+        `□ ${target.name}  (${target.value})`,
+        "□ Not this coin",
         "",
-        "Cut bank:",
-        `[ ] ${target.name}   [ ] distractor coin A   [ ] distractor coin B`,
-        "",
-        "Extension: Paste the value label next to the coin.",
-        `Labels: ${target.value} · ${target.worth} · ${target.name}`,
+        `Write the value: ${target.value} / ${target.worth}`,
+        `Reading help: ${profile.readingLevel}`,
       ].join("\n"),
     );
   }
@@ -201,50 +191,58 @@ function buildGames(
 ): void {
   const games = [
     {
-      title: `${theme} Coin Sort Race`,
+      title: `${theme} coin sort`,
       body: [
-        "Players: 1 student + adult/para",
-        "Materials: coin cards, 4 sorting mats, timer",
-        "Rules: Draw a card, name it, place on correct mat.",
-        "Win: 8/10 correct placements.",
-        "Data: record independent vs prompted.",
+        visualMarker("coins-set"),
+        visualMarker(themeVisual(theme, 0)),
+        "",
+        "Draw a coin card.",
+        "Say the name.",
+        "Put it on the matching mat.",
+        "",
+        "Mats: penny · nickel · dime · quarter",
       ].join("\n"),
     },
     {
-      title: `${theme} Market: Pay the Price`,
+      title: `${theme} shop`,
       body: [
-        `Set up a pretend ${theme} shop with price tags under $5.00.`,
-        "Student selects coins to meet or beat the price.",
-        "Levels: exact change · closest without going under · make change from $1/$5.",
-        `IEP link: ${profile.iepGoal}`,
+        visualMarker(themeVisual(theme, 1)),
+        visualMarker("coins-set"),
+        "",
+        `Price under $5.00 at the ${theme} shop.`,
+        "Choose coins to pay.",
+        "Check: exact · too little · too much",
+        "",
+        `Goal: ${profile.iepGoal}`,
       ].join("\n"),
     },
     {
-      title: "Coin Memory Match",
+      title: "Coin match",
       body: [
-        "Match coin picture ↔ name ↔ value.",
-        "Start with 4 pairs (easy), build to 8 pairs (challenging).",
-        "Say the match aloud before keeping the pair.",
+        visualMarker("coin-penny"),
+        visualMarker("coin-nickel"),
+        visualMarker("coin-dime"),
+        visualMarker("coin-quarter"),
+        "",
+        "Match picture → name → value.",
+        "Say the match out loud.",
       ].join("\n"),
     },
     {
-      title: `${theme} Bingo: Coin Values`,
+      title: `${theme} bingo`,
       body: [
-        "Bingo board with coin names/values.",
-        "Caller shows a coin picture; student covers matching square.",
-        `Celebrate with preferred ${theme} token.`,
+        visualMarker(themeVisual(theme, 3)),
+        visualMarker("coins-set"),
+        "",
+        "Cover the matching coin name or value.",
+        "Call out: penny · nickel · dime · quarter",
       ].join("\n"),
     },
   ];
 
   for (let i = 0; i < count; i += 1) {
-    const game = games[i % games.length];
-    pushSection(
-      sections,
-      "game",
-      `Game ${i + 1}: ${game.title}`,
-      `${game.body}\n\nSupport needs note: ${profile.supportNeeds}`,
-    );
+    const game = games[i % games.length]!;
+    pushSection(sections, "game", `Game ${i + 1}: ${game.title}`, game.body);
   }
 }
 
@@ -281,26 +279,22 @@ function buildPracticePages(
     pushSection(
       sections,
       "practice",
-      `Practice page ${i + 1}: ${level} · Make ${target}`,
+      `Practice ${i + 1}: Make ${target}`,
       [
-        `Theme: ${theme} checkout ticket #${i + 1}`,
-        `Skill goal: ${profile.skillGoal}`,
-        `IEP goal: ${profile.iepGoal}`,
-        `Differentiation: ${scaffoldNote(difficulty)}`,
+        visualMarker(themeVisual(theme, i)),
+        visualMarker("coins-set"),
         "",
-        `Price to make: ${target}`,
+        `${theme} checkout #${i + 1}`,
+        `Level: ${level}`,
         "",
-        "Show coins with tallies or drawings:",
+        `Price: ${target}`,
+        "",
         "Quarters: ____   Dimes: ____   Nickels: ____   Pennies: ____",
         "",
         "Total: $ ______.__",
-        "Check: □ Exact  □ Too little  □ Too much",
+        "□ Exact   □ Too little   □ Too much",
         "",
-        difficulty === "errorless"
-          ? "Errorless support: Adult places first correct coin, student completes remaining with immediate praise."
-          : "Independent attempt first; prompt only after wait time.",
-        "",
-        "Quick ID warm-up (circle): penny · nickel · dime · quarter",
+        "Circle: penny · nickel · dime · quarter",
       ].join("\n"),
     );
   }
@@ -316,83 +310,24 @@ function buildAssessments(
     pushSection(
       sections,
       "assessment",
-      `Assessment ${i + 1}: Coin ID + combinations`,
+      `Check-up ${i + 1}`,
       [
-        `Student code: ${studentLabel(profile)}`,
-        `Date: __________  Assessor: __________`,
-        `Theme context (optional): ${theme}`,
+        visualMarker("coins-set"),
+        visualMarker(themeVisual(theme, i)),
         "",
-        "Part A — Identify (point/say)",
+        `Name: ${studentLabel(profile)}     Date: __________`,
+        "",
+        "Name the coin:",
         "1. penny ____   2. nickel ____   3. dime ____   4. quarter ____",
         "",
-        "Part B — Values",
+        "Write the value:",
         "5. nickel = ____¢   6. dime = ____¢   7. quarter = ____¢",
         "",
-        "Part C — Combinations (aligned to IEP goal)",
-        `IEP: ${profile.iepGoal}`,
-        "8. Make $0.30 ____",
-        "9. Make $1.00 ____",
-        "10. Make $2.45 ____",
-        i % 2 === 0 ? "11. Make $5.00 ____" : "11. Which set equals $0.75? (A/B/C) ____",
-        "",
-        "Score: ____ / 11    % correct: ____",
-        "Prompt level summary: I __ V __ G __ M __ P __",
-      ].join("\n"),
-    );
-  }
-}
-
-function buildProgressAndData(
-  sections: PacketSection[],
-  profile: StudentPacketProfile,
-  count: number,
-): void {
-  for (let i = 0; i < count; i += 1) {
-    pushSection(
-      sections,
-      "progress_monitoring",
-      `Progress monitoring sheet ${i + 1}`,
-      [
-        `Student: ${studentLabel(profile)} · Grade ${profile.gradeLevel}`,
-        `Goal: ${profile.iepGoal}`,
-        `Reading access: ${profile.readingLevel}`,
-        "",
-        "Session date: __________",
-        "Setting: □ classroom □ small group □ 1:1 □ community",
-        "",
-        "Probe 1: __________  Probe 2: __________  Probe 3: __________",
-        "Accuracy: ____%   Independence: ____%   Trials correct: ____ / ____",
-        "",
-        "Notes / error patterns:",
-        "______________________________________________",
-        "Next instructional adjustment:",
-        "______________________________________________",
-      ].join("\n"),
-    );
-  }
-
-  for (let i = 0; i < Math.max(2, Math.floor(count / 2)); i += 1) {
-    pushSection(
-      sections,
-      "data_collection",
-      `Data collection form ${i + 1} (ABA trial log)`,
-      [
-        `Student: ${studentLabel(profile)}`,
-        `SD examples: “What coin?” / “Make ${profile.iepGoal.includes("$") ? "$X.XX" : "the amount"}”`,
-        "",
-        "Trial | Target | Response (+/-) | Prompt | Reinforcer | Notes",
-        "1     |        |               |        |            |",
-        "2     |        |               |        |            |",
-        "3     |        |               |        |            |",
-        "4     |        |               |        |            |",
-        "5     |        |               |        |            |",
-        "6     |        |               |        |            |",
-        "7     |        |               |        |            |",
-        "8     |        |               |        |            |",
-        "9     |        |               |        |            |",
-        "10    |        |               |        |            |",
-        "",
-        "% independent: ____   % correct (any prompt): ____",
+        "Make the amount:",
+        "8. $0.30 ____",
+        "9. $1.00 ____",
+        "10. $2.45 ____",
+        i % 2 === 0 ? "11. $5.00 ____" : "11. Which equals $0.75? ____",
       ].join("\n"),
     );
   }
@@ -422,8 +357,8 @@ function buildAnswerKey(profile: StudentPacketProfile, theme: string): string {
 }
 
 /**
- * Generate a differentiated instructional packet outline with printable page content.
- * This is an educator-reviewed draft pack, not an automatic IEP decision.
+ * Generate a student-facing instructional packet with printable visuals.
+ * Teacher how-to pages are omitted — pages are for the learner to use.
  */
 export function generateInstructionalPacket(input: {
   profile: StudentPacketProfile;
@@ -447,133 +382,67 @@ export function generateInstructionalPacket(input: {
   pushSection(
     sections,
     "cover",
-    "Packet cover",
+    `${theme} Money Skills`,
     [
-      "SLC Intelligence · Instructional Packet (educator review draft)",
-      `Title: ${theme} Money Skills Pack`,
-      `Student code: ${studentLabel(profile)}`,
-      `Grade: ${profile.gradeLevel} · Support profile: ${profile.supportNeeds}`,
-      `Reading access level: ${profile.readingLevel}`,
-      `Skill goal: ${profile.skillGoal}`,
-      `IEP goal: ${profile.iepGoal}`,
-      `Difficulty / style: ${difficultyLabel(difficulty)}`,
-      `Target length: about ${target} pages`,
+      visualMarker(themeVisual(theme, 0)),
+      visualMarker("coins-set"),
       "",
-      "Includes: visual supports · cut-and-paste · games · practice · assessments ·",
-      "progress sheets · data forms · answer keys",
+      `${theme} Money Skills`,
+      `Student: ${studentLabel(profile)}`,
+      `Goal: ${profile.skillGoal}`,
+      `Also practice: ${profile.iepGoal}`,
     ].join("\n"),
   );
 
-  pushSection(
-    sections,
-    "overview",
-    "Teacher / para overview",
-    [
-      scaffoldNote(difficulty),
-      "",
-      "How to use this packet:",
-      "1. Start with visual supports and errorless/model trials.",
-      "2. Move to cut-and-paste and games for engagement.",
-      "3. Use differentiated practice pages for massed/distributed trials.",
-      "4. Probe with assessments; log data on PM / ABA sheets.",
-      "5. Adjust level (Easy → Moderate → Challenging) based on independence.",
-      "",
-      "Accommodations to consider:",
-      "- Picture-supported directions matching reading level",
-      "- Reduced language / first-then visuals",
-      "- Manipulatives or coin cards before abstract totals",
-      `- Interest-based ${theme} reinforcers and contexts`,
-      "",
-      "Guardrail: Human educators choose materials, prompts, and mastery decisions.",
-    ].join("\n"),
-  );
-
-  // Allocate pages toward target (cover+overview already 2).
-  const remaining = Math.max(28, target - 2);
-  const visualCount = Math.max(4, Math.round(remaining * 0.12));
-  const cutCount = Math.max(4, Math.round(remaining * 0.12));
-  const gameCount = Math.max(3, Math.round(remaining * 0.1));
+  // Student pages only (no teacher how-to / data / answer-key sheets).
+  const remaining = Math.max(28, target - 1);
+  const visualCount = Math.max(6, Math.round(remaining * 0.18));
+  const cutCount = Math.max(5, Math.round(remaining * 0.16));
+  const gameCount = Math.max(4, Math.round(remaining * 0.12));
   const assessCount = Math.max(3, Math.round(remaining * 0.1));
-  const progressCount = Math.max(3, Math.round(remaining * 0.1));
-  let practiceCount =
-    remaining - visualCount - cutCount - gameCount - assessCount - progressCount - 4; // task analysis x2 + answer key pages later
-  if (practiceCount < 8) practiceCount = 8;
+  let practiceCount = remaining - visualCount - cutCount - gameCount - assessCount - 2;
+  if (practiceCount < 10) practiceCount = 10;
 
   buildVisualSupports(sections, profile, theme, visualCount);
-  buildTaskAnalysis(sections, profile, theme, difficulty);
-  buildCutAndPaste(sections, profile, theme, cutCount);
+  buildTaskAnalysis(sections, profile, theme);
+  buildCutAndPaste(sections, profile, theme, cutCount)
   buildGames(sections, profile, theme, gameCount);
   buildPracticePages(sections, profile, theme, difficulty, practiceCount);
   buildAssessments(sections, profile, theme, assessCount);
-  buildProgressAndData(sections, profile, progressCount);
-
-  // Differentiated level menu pages
-  pushSection(
-    sections,
-    "differentiation",
-    "Differentiated levels menu",
-    [
-      "Choose a track for today’s session:",
-      "",
-      "★ Easy — 2 coin types, model-first, errorless options, large visuals",
-      "★★ Moderate — all 4 coins, short combinations under $1–$2",
-      "★★★ Challenging — combinations to $5.00, mixed coin sets, fewer prompts",
-      "",
-      "Style overlays (can combine with a level):",
-      `- Errorless learning: ${scaffoldNote("errorless")}`,
-      `- Task analysis: ${scaffoldNote("task_analysis")}`,
-      `- ABA style: ${scaffoldNote("aba")}`,
-      `- UDL style: ${scaffoldNote("udl")}`,
-      "",
-      `Learner interest engine: embed ${theme} in examples, shops, and reinforcers.`,
-    ].join("\n"),
-  );
 
   const answerKey = buildAnswerKey(profile, theme);
-  pushSection(sections, "answer_key", "Answer key", answerKey);
 
-  // Trim or pad lightly to approach target page count.
   let finalSections = sections;
   if (finalSections.length > target + 5) {
     finalSections = sections.slice(0, target);
-    // ensure answer key remains
-    if (finalSections[finalSections.length - 1]?.sectionType !== "answer_key") {
-      finalSections[finalSections.length - 1] = {
-        pageNumber: finalSections.length,
-        sectionType: "answer_key",
-        title: "Answer key",
-        body: answerKey,
-      };
-    }
   } else {
     while (finalSections.length < target) {
       const n = finalSections.length + 1;
       pushSection(
         finalSections,
         "practice",
-        `Bonus practice page ${n}: ${theme} combinations`,
+        `Bonus practice: ${theme} combinations`,
         [
-          `Make amount: $${((n % 20) * 0.25).toFixed(2)}`,
-          "Coins used: Q __ D __ N __ P __",
-          "Total: $ ____.__",
-          `IEP alignment: ${profile.iepGoal}`,
+          visualMarker(themeVisual(theme, n)),
+          visualMarker("coins-set"),
+          "",
+          `Make: $${((n % 20) * 0.25).toFixed(2)}`,
+          "Quarters: ____   Dimes: ____   Nickels: ____   Pennies: ____",
+          "Total: $ ______.__",
         ].join("\n"),
       );
     }
   }
 
-  // Renumerate
   finalSections = finalSections.map((section, index) => ({
     ...section,
     pageNumber: index + 1,
   }));
 
   const overview = [
-    `${theme} Money Skills Pack · ~${finalSections.length} pages`,
-    `${difficultyLabel(difficulty)} · Grade ${profile.gradeLevel} · Reading access ${profile.readingLevel}`,
-    `Support profile: ${profile.supportNeeds}`,
+    `${theme} Money Skills · ${finalSections.length} student pages`,
+    `${difficultyLabel(difficulty)} · Grade ${profile.gradeLevel} · Reading ${profile.readingLevel}`,
     `Goals: ${profile.skillGoal} · ${profile.iepGoal}`,
-    "Educator review required before classroom use.",
   ].join("\n");
 
   return {
@@ -584,29 +453,20 @@ export function generateInstructionalPacket(input: {
     overview,
     sections: finalSections,
     answerKey,
-    educatorNotes:
-      "This packet is an assistive draft generated from the learner profile. Customize for the IEP, approved accommodations, and district materials before printing or assigning.",
+    educatorNotes: "Student-facing packet pages with printable visuals. Download as PDF to print.",
   };
 }
 
+/** Plain text export (includes visual markers for PDF rendering). */
 export function packetToPlainText(packet: GeneratedInstructionalPacket): string {
-  const pages = packet.sections
-    .map(
-      (section) =>
-        `\n===== PAGE ${section.pageNumber} · ${section.sectionType.toUpperCase()} =====\n` +
-        `${section.title}\n\n${section.body}\n`,
-    )
-    .join("\n");
+  return packet.sections
+    .map((section) => `PAGE ${section.pageNumber}\n${section.title}\n\n${section.body}\n`)
+    .join(`\n${PRINT_PAGE_BREAK}\n`);
+}
 
-  return [
-    packet.title,
-    packet.overview,
-    "",
-    packet.educatorNotes,
-    pages,
-    "",
-    "===== END OF PACKET =====",
-  ].join("\n");
+/** Content string for Print / Save as PDF (page breaks + visual markers). */
+export function packetToPrintableContent(packet: GeneratedInstructionalPacket): string {
+  return packetToPlainText(packet);
 }
 
 export const EXAMPLE_COIN_SPACE_PROFILE: StudentPacketProfile = {

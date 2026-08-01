@@ -1,11 +1,11 @@
 # Instructional packet generator
 
-**Status:** Active assistive drafting  
+**Status:** Active student packet drafting  
 **Route:** `/instructional-packets`
 
 ## Purpose
 
-Generate educator-reviewed, differentiated instructional packets from a learner profile (grade, support needs, reading level, skill/IEP goals, preferred interests).
+Generate **student-facing** instructional packets from a learner profile (grade, support needs, reading level, skill/IEP goals, preferred interests), then **Download as PDF** to print.
 
 Example profile:
 
@@ -16,35 +16,35 @@ Example profile:
 - IEP goal: Count combinations up to $5.00
 - Preferred interests: Space
 
-## Packet contents
+## Packet contents (student pages)
 
-- Cover + teacher/para overview
-- Differentiated levels menu
-- Visual supports
-- Task analysis pages
-- Cut-and-paste activities
+- Cover with theme + coin visuals
+- Visual support cards (real SVG drawings in PDF)
+- Simple step pages
+- Cut-and-paste
 - Games
-- Practice worksheets (multi-level)
-- Assessments
-- Progress monitoring sheets
-- ABA-style data collection forms
-- Answer keys
+- Practice pages
+- Check-ups
+
+Teacher “how to use this packet,” data sheets, and answer-key pages are **not** included in the printable packet.
+
+## Download / print
+
+1. Generate the packet.
+2. Click **Download as PDF**.
+3. In the print dialog, choose **Save as PDF** (or Microsoft Print to PDF).
+
+Visual markers like `[[VISUAL:coin-penny]]` become drawings in the printable PDF.
 
 ## Generation modes
 
-- Easy
-- Moderate
-- Challenging
-- Errorless learning
-- Task analysis
-- ABA style
-- UDL style
+- Easy / Moderate / Challenging
+- Errorless learning / Task analysis / ABA style / UDL style
 
 Target length options: about 30, 40, 60, 80, or 100 pages.
 
-## Guardrails
+## AI / ChatGPT
 
-- Educator review required before printing or assigning
-- Prefer coded student IDs during pilots
-- Does not determine IEP goals, eligibility, or placement
-- Local intelligence generator (works without an external model)
+Instructional Packets use the **local visual generator** (works without an API key).
+
+A **ChatGPT Plus subscription cannot be synced**. For stronger AI-written **worksheet** text, add an OpenAI **API key** (`AI_API_KEY`) per `docs/AI_API_KEY_SETUP.md` and use **Worksheet Generator**.
