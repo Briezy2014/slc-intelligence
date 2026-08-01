@@ -9,29 +9,35 @@ Classroom operations surfaces for schedules, routines, daily notes, announcement
 - Classroom routines
 - Classroom announcements (no student PII)
 - Daily Command Center route for today-focused work
-- One-click **pilot demo setup** (school, classroom, S1/S2, sample schedule)
+- One-click owner classroom setup
+
+## Owner classroom setup
+
+Use **Create Williams SLC room 95 + students S1–S7** on Classroom Operations / Daily Command Center.
+
+That action creates or refreshes:
+
+1. **Williams School**
+2. Classroom **Williams SLC room 95**
+3. Coded students **S1–S7** (assigned to that classroom)
+4. Weekday sample schedule + time blocks
+5. Arrival routine + staff announcement
+
+Safe to run more than once — it only fills missing pieces.
 
 ## Guardrails
 
 - Reinforcement records must not be used for punitive ranking or deprivation of basic needs.
 - Classroom announcements are guarded against student PII and should stay classroom-level.
 - Daily notes remain student-scoped records.
-- During the pilot, use coded students (**S1**, **S2**) only — never real student or family PII.
-
-## How to model for district administration
-
-1. Open **Classroom Operations** or **Daily Command Center**.
-2. Click **Set up demo classroom (S1 + S2)**.
-3. Review the sample weekday schedule blocks.
-4. Add daily notes for S1/S2, routines, and staff announcements as needed.
-5. Use the Schedules / Notes / Routines / Announcements tabs to focus each workflow.
+- During the pilot, use coded students (**S1–S7**) only — never real student or family PII.
 
 ## Application layer
 
 - Workspace UI: `src/components/domain/classroom-operations-workspace.tsx`
 - Data module: `src/lib/data/classroom-operations.ts`
 - Actions: `src/lib/actions/classroom-operations.ts`
-- Demo setup: `src/lib/actions/pilot-demo-setup.ts`
+- Owner setup: `src/lib/actions/pilot-demo-setup.ts`
 - Validation: `src/lib/validation/classroom-operations.ts`
 - Routes:
   - `/classroom-operations`

@@ -17,7 +17,7 @@ import {
   saveClassroomScheduleAction,
   saveDailyStudentNoteAction,
 } from "@/lib/actions/classroom-operations";
-import { ensurePilotDemoSetupAction } from "@/lib/actions/pilot-demo-setup";
+import { OWNER_CLASSROOM_NAME, ensurePilotDemoSetupAction } from "@/lib/actions/pilot-demo-setup";
 import { scheduleBlockDurationMinutes } from "@/lib/analytics/executive-function-calculations";
 import type { ClassroomOperationsData } from "@/lib/data/classroom-operations";
 
@@ -125,8 +125,17 @@ export function ClassroomOperationsWorkspace({
           announcements: section === "daily" || section === "announcements",
         };
 
+  const hasWilliamsClassroom = data.classrooms.some(
+    (classroom) => classroom.name === OWNER_CLASSROOM_NAME,
+  );
+  const codedStudentCount = data.students.filter((student) =>
+    /^S[1-7]$/i.test(student.local_identifier || student.first_name),
+  ).length;
   const needsSetup =
-    data.classrooms.length === 0 || data.students.length === 0 || data.schedules.length === 0;
+    !hasWilliamsClassroom ||
+    codedStudentCount < 7 ||
+    data.schedules.length === 0 ||
+    data.scheduleBlocks.length === 0;
 
   return (
     <div className="space-y-8">
@@ -134,17 +143,19 @@ export function ClassroomOperationsWorkspace({
         title={section === "daily" ? "Daily Command Center" : "Classroom operations"}
         tone="info"
       >
-        Create a schedule first, then add time blocks. Use coded students (S1, S2) for district
-        modeling — never enter real student or family PII during the pilot.
+        Start with <strong>{OWNER_CLASSROOM_NAME}</strong> and coded students <strong>S1–S7</strong>
+        . Then add schedules, blocks, notes, routines, and announcements. Never enter real student
+        or family PII during the pilot.
       </Alert>
 
       {show.setup ? (
         <Card>
-          <CardTitle>District modeling setup</CardTitle>
+          <CardTitle>Stand up {OWNER_CLASSROOM_NAME}</CardTitle>
           <CardDescription>
-            One click adds Pilot Demo School, Pilot Demo Classroom, coded students{" "}
-            <strong>S1</strong> and <strong>S2</strong>, a sample weekday schedule with blocks, and
-            an arrival routine. Safe to run again — it only fills what is missing.
+            One click creates <strong>Williams School</strong>, classroom{" "}
+            <strong>{OWNER_CLASSROOM_NAME}</strong>, coded students <strong>S1–S7</strong>, a
+            weekday schedule with time blocks, an arrival routine, and a staff announcement. Safe to
+            run again — it only fills what is missing.
           </CardDescription>
           {data.organizationId ? (
             <form className="mt-4 space-y-3" action={setupAction}>
@@ -153,8 +164,8 @@ export function ClassroomOperationsWorkspace({
                 {setupPending
                   ? "Setting up…"
                   : needsSetup
-                    ? "Set up demo classroom (S1 + S2)"
-                    : "Refresh demo classroom setup"}
+                    ? `Create ${OWNER_CLASSROOM_NAME} + students S1–S7`
+                    : "Refresh classroom setup"}
               </Button>
               {setupState.message ? (
                 <Alert
@@ -168,13 +179,13 @@ export function ClassroomOperationsWorkspace({
           ) : null}
           {!needsSetup ? (
             <p className="text-muted mt-3 text-sm">
-              Current org: {data.students.length} student(s), {data.classrooms.length} classroom(s),{" "}
-              {data.schedules.length} schedule(s), {data.scheduleBlocks.length} block(s).
+              Ready: {OWNER_CLASSROOM_NAME} · {codedStudentCount} coded students (S1–S7) ·{" "}
+              {data.schedules.length} schedule(s) · {data.scheduleBlocks.length} block(s).
             </p>
           ) : (
             <p className="text-muted mt-3 text-sm">
-              Your org is missing classrooms, students, or schedules — use the button above before
-              modeling for district administration.
+              Classroom dropdown stays empty until a classroom exists. Use the button above to
+              create {OWNER_CLASSROOM_NAME} and connect students/schedules.
             </p>
           )}
         </Card>
@@ -211,14 +222,25 @@ export function ClassroomOperationsWorkspace({
               {data.permissions.canManageSchedules ? (
                 visibleClassrooms.length === 0 ? (
                   <div className="mt-4 space-y-3">
-                    <Alert title="Create a classroom first" tone="warning">
-                      Schedules attach to classrooms. Use <strong>Set up demo classroom</strong>{" "}
-                      above, or create a classroom under{" "}
-                      <Link href="/classrooms" className="font-semibold underline">
-                        Classrooms
+                    <Alert title="No classroom in the dropdown yet" tone="warning">
+                      There is nothing to choose until a classroom exists. Create{" "}
+                      <strong>{OWNER_CLASSROOM_NAME}</strong> with the setup button above (adds
+                      S1–S7 too), or add a classroom under{" "}
+                      <Link href="/classrooms/new" className="font-semibold underline">
+                        Classrooms → New
                       </Link>
                       .
                     </Alert>
+                    {data.organizationId ? (
+                      <form action={setupAction}>
+                        <input type="hidden" name="organizationId" value={data.organizationId} />
+                        <Button type="submit" disabled={setupPending}>
+                          {setupPending
+                            ? "Creating…"
+                            : `Create ${OWNER_CLASSROOM_NAME} + S1–S7 now`}
+                        </Button>
+                      </form>
+                    ) : null}
                   </div>
                 ) : (
                   <form
@@ -299,7 +321,8 @@ export function ClassroomOperationsWorkspace({
                   <div className="mt-4">
                     <Alert title="Save a schedule first" tone="warning">
                       Create a classroom schedule in section 1, then come back here to add time
-                      blocks. Or use <strong>Set up demo classroom</strong> to load a sample day.
+                      blocks. Or create <strong>{OWNER_CLASSROOM_NAME}</strong> with the setup
+                      button above to load a sample weekday.
                     </Alert>
                   </div>
                 ) : (
@@ -415,16 +438,23 @@ export function ClassroomOperationsWorkspace({
                   </Alert>
                 </div>
               ) : data.students.length === 0 ? (
-                <div className="mt-4">
+                <div className="mt-4 space-y-3">
                   <Alert title="Add students first" tone="warning">
-                    There are no students in this organization yet. Use{" "}
-                    <strong>Set up demo classroom</strong> to add coded students S1 and S2, or
-                    create students under{" "}
+                    There are no students yet. Create <strong>{OWNER_CLASSROOM_NAME}</strong> to add
+                    coded students <strong>S1–S7</strong>, or add coded students under{" "}
                     <Link href="/students/new" className="font-semibold underline">
                       Students
                     </Link>
                     .
                   </Alert>
+                  {data.organizationId ? (
+                    <form action={setupAction}>
+                      <input type="hidden" name="organizationId" value={data.organizationId} />
+                      <Button type="submit" disabled={setupPending}>
+                        {setupPending ? "Creating…" : "Create Williams SLC room 95 + S1–S7"}
+                      </Button>
+                    </form>
+                  ) : null}
                 </div>
               ) : (
                 <form action={submitAction(saveDailyStudentNoteAction)} className="mt-4 space-y-3">
@@ -496,10 +526,19 @@ export function ClassroomOperationsWorkspace({
               <CardTitle>Add routine</CardTitle>
               {data.permissions.canManageRoutines ? (
                 visibleClassrooms.length === 0 ? (
-                  <div className="mt-4">
+                  <div className="mt-4 space-y-3">
                     <Alert title="Create a classroom first" tone="warning">
-                      Routines attach to classrooms. Use demo setup or create a classroom first.
+                      Routines attach to classrooms. Create <strong>{OWNER_CLASSROOM_NAME}</strong>{" "}
+                      first.
                     </Alert>
+                    {data.organizationId ? (
+                      <form action={setupAction}>
+                        <input type="hidden" name="organizationId" value={data.organizationId} />
+                        <Button type="submit" disabled={setupPending}>
+                          {setupPending ? "Creating…" : `Create ${OWNER_CLASSROOM_NAME}`}
+                        </Button>
+                      </form>
+                    ) : null}
                   </div>
                 ) : (
                   <form
@@ -576,10 +615,19 @@ export function ClassroomOperationsWorkspace({
               <CardTitle>Add announcement</CardTitle>
               {data.permissions.canManageAnnouncements ? (
                 visibleClassrooms.length === 0 ? (
-                  <div className="mt-4">
+                  <div className="mt-4 space-y-3">
                     <Alert title="Create a classroom first" tone="warning">
-                      Announcements attach to classrooms.
+                      Announcements attach to classrooms. Create{" "}
+                      <strong>{OWNER_CLASSROOM_NAME}</strong> first.
                     </Alert>
+                    {data.organizationId ? (
+                      <form action={setupAction}>
+                        <input type="hidden" name="organizationId" value={data.organizationId} />
+                        <Button type="submit" disabled={setupPending}>
+                          {setupPending ? "Creating…" : `Create ${OWNER_CLASSROOM_NAME}`}
+                        </Button>
+                      </form>
+                    ) : null}
                   </div>
                 ) : (
                   <form

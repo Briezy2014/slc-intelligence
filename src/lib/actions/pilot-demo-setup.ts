@@ -11,13 +11,20 @@ import {
 } from "@/lib/actions/shared";
 import { hasPermission } from "@/lib/permissions/check";
 
-const DEMO_SCHOOL_NAME = "Pilot Demo School";
-const DEMO_CLASSROOM_NAME = "Pilot Demo Classroom";
-const DEMO_SCHEDULE_NAME = "Sample weekday schedule";
-const DEMO_STUDENTS = [
+export const OWNER_SCHOOL_NAME = "Williams School";
+export const OWNER_CLASSROOM_NAME = "Williams SLC room 95";
+export const OWNER_SCHEDULE_NAME = "Williams SLC weekday schedule";
+export const OWNER_DEMO_STUDENTS = [
   { code: "S1", grade: "3" },
-  { code: "S2", grade: "4" },
+  { code: "S2", grade: "3" },
+  { code: "S3", grade: "4" },
+  { code: "S4", grade: "4" },
+  { code: "S5", grade: "5" },
+  { code: "S6", grade: "5" },
+  { code: "S7", grade: "6" },
 ] as const;
+
+const LEGACY_CLASSROOM_NAMES = ["Pilot Demo Classroom", "Demo Classroom"] as const;
 
 const SAMPLE_BLOCKS = [
   { label: "Arrival / morning meeting", start: "08:15", end: "08:35", sort: 1, type: "arrival" },
@@ -43,8 +50,8 @@ const SAMPLE_BLOCKS = [
 ] as const;
 
 /**
- * Creates a modeling-ready classroom for district demos:
- * school, classroom, coded students S1/S2, sample schedule blocks, and a routine.
+ * Stands up the owner modeling classroom:
+ * Williams School → Williams SLC room 95 → coded students S1–S7 → weekday schedule/blocks.
  * Safe to run more than once — only fills missing pieces.
  */
 export async function ensurePilotDemoSetupAction(formData: FormData): Promise<ActionState> {
@@ -79,15 +86,26 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
     if (schools.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
 
     const existingSchool =
-      schools.data?.find((school) => school.name === DEMO_SCHOOL_NAME) ?? schools.data?.[0];
+      schools.data?.find((school) => school.name === OWNER_SCHOOL_NAME) ??
+      schools.data?.find((school) => school.name === "Pilot Demo School") ??
+      schools.data?.[0];
+
     if (existingSchool) {
       schoolId = existingSchool.id;
+      if (existingSchool.name !== OWNER_SCHOOL_NAME) {
+        await context.supabase
+          .from("schools")
+          .update({ name: OWNER_SCHOOL_NAME, status: "active" })
+          .eq("id", existingSchool.id)
+          .eq("organization_id", context.organizationId);
+        created.push("renamed school to Williams School");
+      }
     } else {
       const schoolInsert = await context.supabase
         .from("schools")
         .insert({
           organization_id: context.organizationId,
-          name: DEMO_SCHOOL_NAME,
+          name: OWNER_SCHOOL_NAME,
           school_type: "public",
           status: "active",
         })
@@ -97,7 +115,7 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
         return { status: "error", message: GENERIC_ACTION_MESSAGE };
       }
       schoolId = schoolInsert.data.id;
-      created.push("school");
+      created.push("Williams School");
     }
 
     let classroomId: string | null = null;
@@ -108,19 +126,43 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
       .order("created_at", { ascending: true });
     if (classrooms.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
 
-    const existingClassroom =
-      classrooms.data?.find((classroom) => classroom.name === DEMO_CLASSROOM_NAME) ??
-      classrooms.data?.[0];
-    if (existingClassroom) {
-      classroomId = existingClassroom.id;
+    const exactClassroom = classrooms.data?.find(
+      (classroom) => classroom.name === OWNER_CLASSROOM_NAME,
+    );
+    const legacyClassroom = classrooms.data?.find((classroom) =>
+      LEGACY_CLASSROOM_NAMES.some(
+        (name) => name.toLowerCase() === classroom.name.trim().toLowerCase(),
+      ),
+    );
+
+    if (exactClassroom) {
+      classroomId = exactClassroom.id;
+    } else if (legacyClassroom) {
+      const renamed = await context.supabase
+        .from("classrooms")
+        .update({
+          name: OWNER_CLASSROOM_NAME,
+          description: "Williams SLC room 95 — coded students S1–S7 for modeling.",
+          school_id: schoolId,
+          status: "active",
+        })
+        .eq("id", legacyClassroom.id)
+        .eq("organization_id", context.organizationId)
+        .select("id")
+        .single();
+      if (renamed.error || !renamed.data) {
+        return { status: "error", message: GENERIC_ACTION_MESSAGE };
+      }
+      classroomId = renamed.data.id;
+      created.push("renamed classroom to Williams SLC room 95");
     } else {
       const classroomInsert = await context.supabase
         .from("classrooms")
         .insert({
           organization_id: context.organizationId,
           school_id: schoolId,
-          name: DEMO_CLASSROOM_NAME,
-          description: "Coded demo classroom for district modeling (S1/S2).",
+          name: OWNER_CLASSROOM_NAME,
+          description: "Williams SLC room 95 — coded students S1–S7 for modeling.",
           academic_year: "2025-2026",
           status: "active",
         })
@@ -130,7 +172,7 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
         return { status: "error", message: GENERIC_ACTION_MESSAGE };
       }
       classroomId = classroomInsert.data.id;
-      created.push("classroom");
+      created.push("Williams SLC room 95");
     }
 
     const existingStudents = await context.supabase
@@ -140,7 +182,7 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
     if (existingStudents.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
 
     const studentIds: string[] = [];
-    for (const demo of DEMO_STUDENTS) {
+    for (const demo of OWNER_DEMO_STUDENTS) {
       const found = existingStudents.data?.find(
         (student) =>
           student.local_identifier.toUpperCase() === demo.code ||
@@ -208,7 +250,6 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
       });
     }
 
-    // Ensure existing demo students are assigned to the classroom when possible.
     for (const studentId of studentIds) {
       const assignment = await context.supabase
         .from("student_classroom_assignments")
@@ -240,17 +281,24 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
     if (schedules.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
 
     const existingSchedule =
-      schedules.data?.find((schedule) => schedule.name === DEMO_SCHEDULE_NAME) ??
+      schedules.data?.find((schedule) => schedule.name === OWNER_SCHEDULE_NAME) ??
       schedules.data?.[0];
     if (existingSchedule) {
       scheduleId = existingSchedule.id;
+      if (existingSchedule.name !== OWNER_SCHEDULE_NAME) {
+        await context.supabase
+          .from("classroom_schedules")
+          .update({ name: OWNER_SCHEDULE_NAME, status: "active" })
+          .eq("id", existingSchedule.id)
+          .eq("organization_id", context.organizationId);
+      }
     } else {
       const scheduleInsert = await context.supabase
         .from("classroom_schedules")
         .insert({
           organization_id: context.organizationId,
           classroom_id: classroomId,
-          name: DEMO_SCHEDULE_NAME,
+          name: OWNER_SCHEDULE_NAME,
           academic_year: "2025-2026",
           status: "active",
           created_by: context.user.id,
@@ -261,7 +309,7 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
         return { status: "error", message: GENERIC_ACTION_MESSAGE };
       }
       scheduleId = scheduleInsert.data.id;
-      created.push("schedule");
+      created.push("weekday schedule");
     }
 
     const blocks = await context.supabase
@@ -280,7 +328,7 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
         end_time: block.end,
         label: block.label,
         block_type: block.type,
-        location: DEMO_CLASSROOM_NAME,
+        location: OWNER_CLASSROOM_NAME,
         sort_order: block.sort,
       }));
       const blockInsert = await context.supabase
@@ -305,14 +353,14 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
             classroom_id: classroomId,
             name: "Arrival routine",
             description:
-              "Enter, hang backpack, check visual schedule, choose regulation tool if needed, join morning meeting.",
+              "Enter Williams SLC room 95, hang backpack, check visual schedule, choose regulation tool if needed, join morning meeting.",
             status: "active",
             created_by: context.user.id,
           })
           .select("id")
           .single();
         if (!routineInsert.error && routineInsert.data) {
-          created.push("routine");
+          created.push("arrival routine");
         }
       }
     }
@@ -327,8 +375,8 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
       await context.supabase.from("classroom_announcements").insert({
         organization_id: context.organizationId,
         classroom_id: classroomId,
-        title: "Demo classroom ready for modeling",
-        body: "This is a staff announcement for the pilot demo classroom. Use coded students S1 and S2 only — no real student or family PII.",
+        title: "Williams SLC room 95 ready",
+        body: "Staff note: Williams SLC room 95 is set up with coded students S1–S7 for modeling. Do not enter real student or family PII during the pilot.",
         contains_student_pii: false,
         audience: "staff",
         status: "published",
@@ -343,7 +391,11 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
       actionType: "pilot_demo.setup",
       resourceType: "classroom",
       resourceId: classroomId,
-      newState: { created },
+      newState: {
+        created,
+        classroom: OWNER_CLASSROOM_NAME,
+        students: OWNER_DEMO_STUDENTS.map((s) => s.code),
+      },
       paths: [
         "/classroom-operations",
         "/classroom-operations/daily",
@@ -361,13 +413,13 @@ export async function ensurePilotDemoSetupAction(formData: FormData): Promise<Ac
       return {
         status: "success",
         message:
-          "Demo classroom is already set up with coded students S1/S2, a sample schedule, and supports.",
+          "Williams SLC room 95 is ready with coded students S1–S7, a weekday schedule, and classroom supports.",
       };
     }
 
     return {
       status: "success",
-      message: `Demo setup complete: added ${created.join(", ")}. Use coded students S1 and S2 for modeling.`,
+      message: `Setup complete: added ${created.join(", ")}. Classroom: Williams SLC room 95. Students: S1–S7.`,
     };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };

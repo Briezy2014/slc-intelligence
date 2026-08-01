@@ -13,11 +13,11 @@ export function DemoStudentCard({ organizationId }: { organizationId: string }) 
     <Card>
       <CardTitle>Create demo student</CardTitle>
       <CardDescription>
-        Adds one fictional coded practice student with an active practice IEP cycle so you can try
-        goals, progressions, and Behavior Detective. For a full district-modeling classroom (S1 + S2
-        + sample schedule), use{" "}
+        Adds one fictional coded practice student (next free code such as S1, S2, …) with an active
+        practice IEP cycle. For the full owner classroom (Williams SLC room 95 + S1–S7 + schedule),
+        use{" "}
         <a href="/classroom-operations/daily" className="font-semibold underline">
-          Daily Command Center → Set up demo classroom
+          Daily Command Center → Create Williams SLC room 95 + students S1–S7
         </a>
         . Do not replace this with real student names or real IEP/ETR uploads during the pilot.
       </CardDescription>
