@@ -59,10 +59,9 @@ export function InstructionalPacketGenerator() {
 
   return (
     <div className="space-y-6">
-      <Alert title="Educator-reviewed instructional packet drafts" tone="info">
-        Enter a learner profile (use coded IDs in pilot). Choose difficulty/style and target length
-        (30–100 pages). The generator builds visual supports, cut-and-paste, games, assessments,
-        progress sheets, data forms, and answer keys. Review before printing or assigning.
+      <Alert title="How this works" tone="info">
+        Enter a learner profile, choose difficulty/style and length (30–100 pages), then generate.
+        Review before printing or assigning.
       </Alert>
 
       <Card>
@@ -72,7 +71,7 @@ export function InstructionalPacketGenerator() {
           interest.
         </CardDescription>
         <div className="mt-4 grid gap-3 md:grid-cols-2">
-          <FormField id="studentCode" label="Student code (pilot)">
+          <FormField id="studentCode" label="Student code">
             <Input
               id="studentCode"
               value={studentCode}

@@ -16,7 +16,7 @@ export default function InstructionalPacketsPage() {
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Instructional packets" }]} />
       <PageHeader
         title="Instructional packet generator"
-        description="Turn a learner profile and IEP goal into a differentiated activity packet with visuals, games, assessments, and data sheets — always educator-reviewed."
+        description="Turn a learner profile and IEP goal into a differentiated activity packet with visuals, games, assessments, and data sheets."
       />
       <InstructionalPacketGenerator />
       <p className="text-muted mt-6 text-sm">

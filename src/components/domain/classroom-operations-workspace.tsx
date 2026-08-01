@@ -139,23 +139,14 @@ export function ClassroomOperationsWorkspace({
 
   return (
     <div className="space-y-8">
-      <Alert
-        title={section === "daily" ? "Daily Command Center" : "Classroom operations"}
-        tone="info"
-      >
-        Start with <strong>{OWNER_CLASSROOM_NAME}</strong> and coded students <strong>S1–S7</strong>
-        . Then add schedules, blocks, notes, routines, and announcements. Never enter real student
-        or family PII during the pilot.
-      </Alert>
-
       {show.setup ? (
         <Card>
           <CardTitle>Stand up {OWNER_CLASSROOM_NAME}</CardTitle>
           <CardDescription>
             One click creates <strong>Williams School</strong>, classroom{" "}
-            <strong>{OWNER_CLASSROOM_NAME}</strong>, coded students <strong>S1–S7</strong>, a
-            weekday schedule with time blocks, an arrival routine, and a staff announcement. Safe to
-            run again — it only fills what is missing.
+            <strong>{OWNER_CLASSROOM_NAME}</strong>, students <strong>S1–S7</strong>, a weekday
+            schedule with time blocks, an arrival routine, and a staff announcement. Safe to run
+            again — it only fills what is missing.
           </CardDescription>
           {data.organizationId ? (
             <form className="mt-4 space-y-3" action={setupAction}>
@@ -179,7 +170,7 @@ export function ClassroomOperationsWorkspace({
           ) : null}
           {!needsSetup ? (
             <p className="text-muted mt-3 text-sm">
-              Ready: {OWNER_CLASSROOM_NAME} · {codedStudentCount} coded students (S1–S7) ·{" "}
+              Ready: {OWNER_CLASSROOM_NAME} · {codedStudentCount} students (S1–S7) ·{" "}
               {data.schedules.length} schedule(s) · {data.scheduleBlocks.length} block(s).
             </p>
           ) : (
@@ -426,7 +417,7 @@ export function ClassroomOperationsWorkspace({
         <Section
           id="notes"
           title="3. Daily student notes"
-          description="Log a coded student note for the day. Choose the student — do not use real names in the pilot."
+          description="Log a student note for the day. Choose the student from the list."
         >
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
@@ -441,7 +432,7 @@ export function ClassroomOperationsWorkspace({
                 <div className="mt-4 space-y-3">
                   <Alert title="Add students first" tone="warning">
                     There are no students yet. Create <strong>{OWNER_CLASSROOM_NAME}</strong> to add
-                    coded students <strong>S1–S7</strong>, or add coded students under{" "}
+                    students <strong>S1–S7</strong>, or add students under{" "}
                     <Link href="/students/new" className="font-semibold underline">
                       Students
                     </Link>
@@ -608,7 +599,7 @@ export function ClassroomOperationsWorkspace({
         <Section
           id="announcements"
           title="5. Classroom announcements"
-          description="Staff-facing classroom notices only — never include student PII."
+          description="Staff-facing classroom notices."
         >
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>

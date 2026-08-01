@@ -2,15 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
-import { Alert } from "@/components/ui/alert";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import {
   ACTIVE_CAPABILITIES,
   BENEFIT_POINTS,
-  CAPABILITY_GUARDRAIL,
   FUTURE_GATED_CAPABILITIES,
   INSTRUCTIONAL_CAPABILITIES,
-  INSTRUCTIONAL_POSITIONING,
 } from "@/lib/content/capabilities";
 import { INSTRUCTIONAL_STATUS_LABEL } from "@/lib/instructional-intelligence/matrix";
 
@@ -22,16 +19,9 @@ export default function CapabilityRoadmapPage() {
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Capability roadmap" }]} />
       <PageHeader
         title="Capability roadmap"
-        description="What is available now for special education classroom teams, and what stays gated for later district/legal approval."
+        description="What teams can use now, and what is still on the roadmap."
       />
       <div className="space-y-6">
-        <Alert title="Privacy and authority guardrail" tone="warning">
-          {CAPABILITY_GUARDRAIL}
-        </Alert>
-        <Alert title="Instructional positioning" tone="info">
-          {INSTRUCTIONAL_POSITIONING}
-        </Alert>
-
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Instructional differentiators</h2>
           <div className="grid gap-3 md:grid-cols-2">
@@ -79,8 +69,7 @@ export default function CapabilityRoadmapPage() {
         <section className="space-y-3">
           <h2 className="text-xl font-semibold">Future capabilities — not activated</h2>
           <p className="text-muted text-sm">
-            SIS, EMIS, expanded 504, compliance reports, OCR reporting packages, and state reporting
-            remain inactive until district and legal counsel approve.
+            Listed for planning. Details also appear on the public homepage.
           </p>
           <div className="grid gap-3 md:grid-cols-2">
             {FUTURE_GATED_CAPABILITIES.map((item) => (

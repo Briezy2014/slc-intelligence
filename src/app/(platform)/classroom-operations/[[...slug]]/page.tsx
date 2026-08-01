@@ -51,7 +51,7 @@ export default async function ClassroomOperationsPage({
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Classroom Operations" }]} />
       <PageHeader
         title={sectionTitle(section)}
-        description="Create schedules and time blocks, log daily notes for coded students, manage routines, and post staff announcements."
+        description="Create schedules and time blocks, log daily notes, manage routines, and post staff announcements."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -79,7 +79,7 @@ export default async function ClassroomOperationsPage({
               {
                 href: "/classroom-operations/notes",
                 label: "Daily notes",
-                description: "Enter and review coded student notes.",
+                description: "Enter and review daily student notes.",
               },
               {
                 href: "/classroom-operations/routines",
@@ -89,7 +89,7 @@ export default async function ClassroomOperationsPage({
               {
                 href: "/classroom-operations/announcements",
                 label: "Announcements",
-                description: "Staff classroom notices (no student PII).",
+                description: "Staff classroom notices.",
               },
             ]}
           />

@@ -203,7 +203,7 @@ export function StudentForm({
       <input type="hidden" name="organizationId" value={organizationId} />
       {student ? <input type="hidden" name="studentId" value={student.id} /> : null}
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="firstName" label="First name (pilot: use code, e.g. S1)">
+        <FormField id="firstName" label="First name">
           <Input
             id="firstName"
             name="firstName"
@@ -212,7 +212,7 @@ export function StudentForm({
             defaultValue={student?.first_name ?? ""}
           />
         </FormField>
-        <FormField id="lastName" label="Last name (pilot: use Student or code)">
+        <FormField id="lastName" label="Last name">
           <Input
             id="lastName"
             name="lastName"
@@ -222,7 +222,7 @@ export function StudentForm({
           />
         </FormField>
       </div>
-      <FormField id="preferredName" label="Preferred name (optional coded label)">
+      <FormField id="preferredName" label="Preferred name (optional)">
         <Input
           id="preferredName"
           name="preferredName"
@@ -231,7 +231,7 @@ export function StudentForm({
         />
       </FormField>
       <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="localIdentifier" label="Local identifier (pilot classroom code)">
+        <FormField id="localIdentifier" label="Classroom code">
           <Input
             id="localIdentifier"
             name="localIdentifier"
@@ -346,7 +346,7 @@ export function StudentForm({
             id="supportPlanNotes"
             name="supportPlanNotes"
             defaultValue={student?.support_plan_notes ?? ""}
-            placeholder="Brief caseload notes only — avoid unnecessary PII"
+            placeholder="Brief caseload notes"
           />
         </FormField>
       </div>
