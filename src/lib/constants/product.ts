@@ -3,18 +3,17 @@ export const APP_TAGLINE = "The Intelligence Platform for Specialized Learning C
 export const PRODUCTION_DOMAIN = "slcintelligence.com";
 export const CANONICAL_PRODUCTION_URL = "https://slcintelligence.com";
 
+/** Top public nav links. Sign in is the blue header button only (not duplicated here). */
 export const PUBLIC_NAV = [
   { href: "/", label: "Home" },
   { href: "/about", label: "About" },
   { href: "/capabilities", label: "Capabilities" },
   { href: "/pricing", label: "Pricing" },
   { href: "/privacy", label: "Privacy" },
-  { href: "/pilot-use", label: "Pilot use" },
   { href: "/terms", label: "Terms" },
   { href: "/accessibility", label: "Accessibility" },
   { href: "/support", label: "Support" },
   { href: "/request-access", label: "Request access" },
-  { href: "/sign-in", label: "Sign in" },
 ] as const;
 
 export type PlatformNavItem = {

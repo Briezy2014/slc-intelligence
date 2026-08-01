@@ -3,6 +3,14 @@ import { BrandLogo } from "@/components/brand/brand-logo";
 import { OrganizationSelector } from "@/components/navigation/organization-selector";
 import { UserMenu } from "@/components/navigation/user-menu";
 
+function shortDeployLabel() {
+  const sha = process.env.VERCEL_GIT_COMMIT_SHA?.trim();
+  if (sha && sha.length >= 7) {
+    return `Build ${sha.slice(0, 7)}`;
+  }
+  return "Build current";
+}
+
 export async function PlatformTopNav() {
   return (
     <header className="border-border/80 bg-background/80 sticky top-0 z-40 border-b backdrop-blur-xl">
@@ -17,6 +25,9 @@ export async function PlatformTopNav() {
           </Link>
         </div>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <p className="text-muted order-last text-xs sm:order-first" title="Deploy version">
+            {shortDeployLabel()}
+          </p>
           <OrganizationSelector />
           <UserMenu />
           <Link

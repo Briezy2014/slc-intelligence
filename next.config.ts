@@ -14,6 +14,16 @@ const securityHeaders = [
   },
 ];
 
+/** Keep HTML/RSC documents fresh so signed-in tabs do not stick on old UI. */
+const documentCacheHeaders = [
+  {
+    key: "Cache-Control",
+    value: "private, no-cache, no-store, max-age=0, must-revalidate",
+  },
+  { key: "CDN-Cache-Control", value: "no-store" },
+  { key: "Vercel-CDN-Cache-Control", value: "no-store" },
+];
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
@@ -23,6 +33,11 @@ const nextConfig: NextConfig = {
       {
         source: "/:path*",
         headers: securityHeaders,
+      },
+      {
+        // Hashed static assets keep long-lived caching; page documents do not.
+        source: "/((?!_next/static|_next/image|brand|icons|favicon.ico).*)",
+        headers: documentCacheHeaders,
       },
     ];
   },
