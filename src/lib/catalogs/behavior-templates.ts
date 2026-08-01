@@ -850,3 +850,69 @@ export const BEHAVIOR_DEFINITION_TEMPLATES: BehaviorDefinitionTemplate[] = [
 export function getBehaviorDefinitionTemplate(id: string) {
   return BEHAVIOR_DEFINITION_TEMPLATES.find((entry) => entry.id === id) ?? null;
 }
+
+/** Common classroom starters auto-created when a student has no saved behaviors yet. */
+export const COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS = [
+  "task-refusal",
+  "work-avoidance-delay",
+  "attention-calling-out",
+  "elopement",
+  "verbal-disruption",
+  "flopping",
+  "bolting-transition",
+  "noncompliance-delay",
+] as const;
+
+export type ObservationMethodCode =
+  | "abc"
+  | "frequency"
+  | "duration"
+  | "latency"
+  | "interval"
+  | "intensity";
+
+/** Plain-language labels for teachers who are not behavior analysts. */
+export const OBSERVATION_METHOD_OPTIONS: Array<{
+  value: ObservationMethodCode;
+  label: string;
+  help: string;
+  primary?: boolean;
+}> = [
+  {
+    value: "abc",
+    label: "What happened before, during, and after",
+    help: "Best everyday choice. Write what came first, what you saw, and what happened next.",
+    primary: true,
+  },
+  {
+    value: "frequency",
+    label: "How many times it happened",
+    help: "Count each time the behavior happened while you watched.",
+    primary: true,
+  },
+  {
+    value: "duration",
+    label: "How long it lasted",
+    help: "Track total minutes (or episodes) the behavior lasted.",
+    primary: true,
+  },
+  {
+    value: "latency",
+    label: "How long until they started (advanced)",
+    help: "Time from a direction to the student starting the behavior or response.",
+  },
+  {
+    value: "interval",
+    label: "Yes/no checks on a timer (advanced)",
+    help: "Mark whether the behavior happened in short timed intervals.",
+  },
+  {
+    value: "intensity",
+    label: "How strong / intense it was (advanced)",
+    help: "Pick an intensity level from a saved scale.",
+  },
+];
+
+export function observationMethodLabel(method: string): string {
+  return OBSERVATION_METHOD_OPTIONS.find((option) => option.value === method)?.label ?? method;
+}

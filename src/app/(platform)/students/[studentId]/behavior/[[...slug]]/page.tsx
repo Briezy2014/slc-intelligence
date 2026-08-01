@@ -37,7 +37,7 @@ export default async function StudentBehaviorPage({
       />
       <PageHeader
         title="Student behavior"
-        description="Behavior Detective tools for the selected student."
+        description="Log what you saw. Common classroom behaviors are set up for you."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -48,49 +48,39 @@ export default async function StudentBehaviorPage({
           <ModuleLinkGrid
             links={[
               {
+                href: `/students/${studentId}/behavior/observations/new`,
+                label: "Log observation",
+                description: "Record what happened today.",
+              },
+              {
                 href: `/students/${studentId}/behavior/definitions`,
-                label: "Definitions",
-                description: "Create and review observable behavior definitions.",
+                label: "Behaviors",
+                description: "Review or add the behaviors you track.",
               },
               {
                 href: `/students/${studentId}/behavior/observations`,
-                label: "Observations",
-                description:
-                  "Enter ABC, frequency, duration, latency, interval, or intensity data.",
-              },
-              {
-                href: `/students/${studentId}/behavior/observations/new`,
-                label: "New observation",
-                description: "Record a new draft or finalized behavior observation.",
+                label: "History",
+                description: "See recent saved observations.",
               },
               {
                 href: `/students/${studentId}/behavior/analytics`,
-                label: "Analytics",
-                description: "View sufficiency, grouping, trend, and context summaries.",
-              },
-              {
-                href: `/students/${studentId}/behavior/fba-support`,
-                label: "FBA support",
-                description: "Organize evidence and team-authored hypotheses.",
+                label: "Summary",
+                description: "Simple totals for team review.",
               },
             ]}
           />
           {section === "definitions" ? (
             <Card>
-              <CardTitle>Behavior definition</CardTitle>
-              <CardDescription>
-                Use observable, measurable language and examples/nonexamples.
-              </CardDescription>
+              <CardTitle>Behaviors</CardTitle>
+              <CardDescription>Choose a starter, edit if needed, then save.</CardDescription>
               <div className="mt-4">
                 <BehaviorDefinitionForm data={state.data} studentId={studentId} />
               </div>
             </Card>
           ) : section === "observations" && slug[1] === "new" ? (
             <Card>
-              <CardTitle>New behavior observation</CardTitle>
-              <CardDescription>
-                Draft entries can be finalized by authorized educators.
-              </CardDescription>
+              <CardTitle>Log observation</CardTitle>
+              <CardDescription>Pick the behavior, then record what you saw.</CardDescription>
               <div className="mt-4">
                 <BehaviorObservationForm data={state.data} studentId={studentId} />
               </div>
