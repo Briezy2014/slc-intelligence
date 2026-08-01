@@ -1,6 +1,11 @@
 import { PlatformSidebar } from "@/components/navigation/platform-sidebar";
 import { PlatformTopNav } from "@/components/navigation/platform-top-nav";
 
+/** Always render fresh platform HTML so removed banners cannot stick in edge/browser caches. */
+export const dynamic = "force-dynamic";
+export const fetchCache = "force-no-store";
+export const revalidate = 0;
+
 export default function PlatformLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="min-h-screen">

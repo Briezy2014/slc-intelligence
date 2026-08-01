@@ -14,7 +14,7 @@ export default async function BehaviorDetectivePage() {
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Behavior Detective" }]} />
       <PageHeader
         title="Behavior Detective"
-        description="Log what you saw in class. You keep the decisions — this only organizes your notes."
+        description="Pick a student, choose what you saw, and save the note. You keep the decisions — this only organizes your classroom log."
       />
       {!state.configured ? (
         <ConfigurationState />
