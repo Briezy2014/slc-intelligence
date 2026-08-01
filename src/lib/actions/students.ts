@@ -107,24 +107,40 @@ export async function createDemoStudentAction(formData: FormData): Promise<Actio
   if (!("supabase" in context)) return context;
 
   const stamp = new Date().toISOString().slice(0, 10).replaceAll("-", "");
-  const localIdentifier = `DEMO-${stamp}-${Math.floor(Math.random() * 900 + 100)}`;
   const today = new Date().toISOString().slice(0, 10);
   const cycleEnd = new Date();
   cycleEnd.setFullYear(cycleEnd.getFullYear() + 1);
 
   try {
+    const existing = await context.supabase
+      .from("students")
+      .select("local_identifier")
+      .eq("organization_id", context.organizationId);
+    const used = new Set(
+      (existing.data ?? []).map((student) => student.local_identifier.toUpperCase()),
+    );
+    let code = "S1";
+    for (let index = 1; index <= 99; index += 1) {
+      const candidate = `S${index}`;
+      if (!used.has(candidate)) {
+        code = candidate;
+        break;
+      }
+    }
+
     const studentResult = await context.supabase
       .from("students")
       .insert({
         organization_id: context.organizationId,
-        first_name: "Demo",
+        first_name: code,
         last_name: "Student",
-        preferred_name: "Demo",
-        local_identifier: localIdentifier,
+        preferred_name: code,
+        local_identifier: code,
         grade_level: "3",
         enrollment_status: "active",
         start_date: today,
         end_date: null,
+        has_iep: true,
         created_by: context.user.id,
         updated_by: context.user.id,
       })
@@ -139,7 +155,7 @@ export async function createDemoStudentAction(formData: FormData): Promise<Actio
     await context.supabase.from("iep_cycles").insert({
       organization_id: context.organizationId,
       student_id: studentId,
-      label: `Demo IEP cycle ${stamp}`,
+      label: `${code} practice IEP cycle ${stamp}`,
       start_date: today,
       end_date: cycleEnd.toISOString().slice(0, 10),
       review_date: null,
@@ -154,7 +170,7 @@ export async function createDemoStudentAction(formData: FormData): Promise<Actio
       actionType: "student.create_demo",
       resourceType: "student",
       resourceId: studentId,
-      newState: { local_identifier: localIdentifier, grade_level: "3" },
+      newState: { local_identifier: code, grade_level: "3" },
       paths: [
         "/students",
         `/students/${studentId}`,
@@ -164,6 +180,9 @@ export async function createDemoStudentAction(formData: FormData): Promise<Actio
         "/goals",
         "/behavior-detective",
         "/education-documents",
+        "/classroom-operations",
+        "/classroom-operations/daily",
+        "/classroom-operations/notes",
       ],
     });
 

@@ -6,11 +6,13 @@ export function TableShell({
   headers,
   rows,
   className,
+  emptyMessage,
 }: {
   caption: string;
   headers: string[];
   rows: string[][];
   className?: string;
+  emptyMessage?: string;
 }) {
   return (
     <div
@@ -34,21 +36,32 @@ export function TableShell({
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, index) => (
-            <tr
-              key={`${row[0]}-${index}`}
-              className="odd:bg-background-elevated even:bg-surface-subtle/40"
-            >
-              {row.map((cell, cellIndex) => (
-                <td
-                  key={`${index}-${cellIndex}`}
-                  className="border-border text-muted border-b px-4 py-3"
-                >
-                  {cell}
-                </td>
-              ))}
+          {rows.length === 0 ? (
+            <tr>
+              <td
+                colSpan={headers.length}
+                className="border-border text-muted border-b px-4 py-6 text-sm"
+              >
+                {emptyMessage ?? "Nothing here yet."}
+              </td>
             </tr>
-          ))}
+          ) : (
+            rows.map((row, index) => (
+              <tr
+                key={`${row[0]}-${index}`}
+                className="odd:bg-background-elevated even:bg-surface-subtle/40"
+              >
+                {row.map((cell, cellIndex) => (
+                  <td
+                    key={`${index}-${cellIndex}`}
+                    className="border-border text-muted border-b px-4 py-3"
+                  >
+                    {cell}
+                  </td>
+                ))}
+              </tr>
+            ))
+          )}
         </tbody>
       </table>
     </div>
