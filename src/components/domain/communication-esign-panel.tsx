@@ -46,9 +46,9 @@ export function CommunicationEsignPanel({ data }: { data: CommunicationsData }) 
 
   if (familyLogs.length === 0) {
     return (
-      <Alert title="No family-visible communications yet" tone="info">
-        Save a family-visible behavior letter, progress note, or other parent communication first.
-        Every family-visible log can request a parent receipt signature.
+      <Alert title="No family messages to sign yet" tone="info">
+        Save a Family visible note first (behavior letter, progress note, or other parent message).
+        Then you can create a parent “I have read this” signature link here.
       </Alert>
     );
   }

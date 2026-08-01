@@ -450,11 +450,10 @@ export function CommunicationsWorkspace({
 }) {
   return (
     <div className="space-y-6">
-      <Alert title="Family-visible export guardrail" tone="info">
-        Exports include family_visible communication summaries only; internal and restricted records
-        stay separate. Use Template & language to draft and translate, then Parent e-signature for
-        receipt signatures on behavior letters and other home communications. Parents can check “I
-        have read this,” type their name, and send — staff get an in-app notification.
+      <Alert title="Family notes vs staff-only notes" tone="info">
+        When you save a note, set Visibility to Family visible if parents may see it. Internal notes
+        stay staff-only. After saving a family note, it also appears under Messages for families.
+        Use Parent e-signature below when you need an “I have read this” receipt.
       </Alert>
       <StaffNotificationsPanel
         organizationId={data.organizationId}
@@ -477,14 +476,15 @@ export function CommunicationsWorkspace({
         </Button>
       </form>
       <TableShell
-        caption="Communications"
+        caption="Your saved messages"
         headers={["Subject", "Language", "Visibility", "E-sign", "Status", "Occurred"]}
+        emptyMessage="No messages saved yet. Use Write a message / Template & language above, keep Visibility on Family visible if parents may see it, then save."
         rows={data.communications.map((log) => [
           log.subject,
           communicationLanguageLabel(log.language_code || "en"),
-          log.visibility,
+          log.visibility.replaceAll("_", " "),
           log.esign_status || "none",
-          log.status,
+          log.status.replaceAll("_", " "),
           new Date(log.occurred_at).toLocaleString(),
         ])}
       />

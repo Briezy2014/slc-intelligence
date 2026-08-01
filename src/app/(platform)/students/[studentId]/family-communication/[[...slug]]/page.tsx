@@ -29,7 +29,7 @@ export default async function StudentFamilyCommunicationPage({
       />
       <PageHeader
         title="Student family communication"
-        description="Template & language drafting, contacts, acknowledgements, and family-visible exports."
+        description="Write school-to-home notes for this student. Save with Visibility = Family visible to add them to Messages for families."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -42,17 +42,17 @@ export default async function StudentFamilyCommunicationPage({
               {
                 href: `/students/${studentId}/family-communication/contacts`,
                 label: "Contacts",
-                description: "Student contact records.",
+                description: "Who can receive messages for this student.",
               },
               {
                 href: `/students/${studentId}/family-communication/communications`,
-                label: "Template & language",
-                description: "Choose template and translate into one of 20 languages.",
+                label: "Write a message",
+                description: "Draft and save a note for the family.",
               },
               {
-                href: `/students/${studentId}/family-communication/exports`,
-                label: "Exports",
-                description: "Family-visible exports only.",
+                href: "/parent-share",
+                label: "Messages for families",
+                description: "Checklist of notes already marked okay to send home.",
               },
             ]}
           />
