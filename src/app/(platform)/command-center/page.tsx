@@ -27,7 +27,7 @@ import { getCommandCenterSummary } from "@/lib/data/analytics";
 import { getAdministrativeIntelligence } from "@/lib/data/administrative";
 
 export const metadata: Metadata = {
-  title: "Command Center",
+  title: "Home",
 };
 
 function SummaryCard({
@@ -77,28 +77,45 @@ export default async function CommandCenterPage() {
 
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Command Center" }]} />
+      <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Home" }]} />
       <PageHeader
-        title="Command Center"
-        description={`Signed in with ${organization?.name ?? "your organization"} context.`}
+        title="Home"
+        description={`Welcome to ${organization?.name ?? "your classroom workspace"}. Pick one job below.`}
       />
       <div className="space-y-6">
-        <Alert title="Decision-support notice" tone="neutral">
-          Command Center summaries are calculated from authorized organization records and are not
-          high-stakes alerts or automated recommendations.
-        </Alert>
         <Card className="brand-glow">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <CardTitle>Membership context</CardTitle>
-              <CardDescription>
-                Current role: {ROLE_LABELS[membership.role_code]}. Active memberships:{" "}
-                {memberships.length}.
-              </CardDescription>
-            </div>
-            <Badge tone="success">Authenticated</Badge>
+          <CardTitle>Start here</CardTitle>
+          <CardDescription className="mt-1">
+            {ROLE_LABELS[membership.role_code]} · {memberships.length} active membership
+            {memberships.length === 1 ? "" : "s"}
+          </CardDescription>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            {[
+              { href: "/students", label: "Students", hint: "Open your caseload" },
+              { href: "/progress/enter", label: "Progress", hint: "Enter progress data" },
+              { href: "/behavior-detective", label: "Behavior", hint: "Log what you saw" },
+              { href: "/family-communication", label: "Families", hint: "Write a home note" },
+              { href: "/supports", label: "Supports", hint: "Accommodations & more" },
+              {
+                href: "/classroom-operations",
+                label: "Classroom",
+                hint: "Day-of schedule & notes",
+              },
+            ].map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="border-border hover:border-highlight/50 hover:bg-surface-subtle rounded-[var(--radius-md)] border px-3 py-3 transition-colors"
+              >
+                <span className="text-foreground block text-sm font-semibold">{item.label}</span>
+                <span className="text-muted block text-xs">{item.hint}</span>
+              </Link>
+            ))}
           </div>
         </Card>
+        <Alert title="Counts below are summaries only" tone="neutral">
+          They help you scan your caseload. They are not automated recommendations.
+        </Alert>
         {summaryState.error ? (
           <SafeErrorState message={summaryState.error} />
         ) : (
