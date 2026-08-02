@@ -15,12 +15,13 @@ export function StarterLibrariesCard({ organizationId }: { organizationId: strin
 
   return (
     <Card>
-      <CardTitle>Starter content libraries</CardTitle>
+      <CardTitle>Content libraries</CardTitle>
       <CardDescription>
-        Load pre-populated interventions ({counts.interventions}), accommodations (
-        {counts.accommodations}), executive function skills ({counts.executiveFunctionSkills}), and
-        communication templates ({counts.communicationTemplates}). Goal starter templates (
-        {counts.goals}) are always available when creating a student goal.
+        Interventions ({counts.interventions}), accommodations ({counts.accommodations}), executive
+        function skills ({counts.executiveFunctionSkills}), and communication templates (
+        {counts.communicationTemplates}) load automatically for your organization. Goal templates (
+        {counts.goals}) and learning progressions ({counts.learningProgressions}) are always
+        available when creating goals. Use Refresh only if a dropdown still looks empty.
       </CardDescription>
       <form
         className="mt-4 space-y-3"
@@ -33,14 +34,14 @@ export function StarterLibrariesCard({ organizationId }: { organizationId: strin
         }}
       >
         <input type="hidden" name="organizationId" value={organizationId} />
-        <Button type="submit" disabled={pending}>
-          {pending ? "Loading starter libraries…" : "Load starter libraries"}
+        <Button type="submit" variant="secondary" disabled={pending}>
+          {pending ? "Refreshing libraries…" : "Refresh starter libraries"}
         </Button>
       </form>
       {message ? (
         <div className="mt-3">
           <Alert
-            title={status === "success" ? "Starter libraries updated" : "Unable to load libraries"}
+            title={status === "success" ? "Libraries ready" : "Unable to refresh libraries"}
             tone={status === "success" ? "success" : "danger"}
           >
             {message}
@@ -48,13 +49,9 @@ export function StarterLibrariesCard({ organizationId }: { organizationId: strin
         </div>
       ) : null}
       <ol className="text-muted mt-4 list-decimal space-y-1 pl-5 text-sm">
-        <li>Load starter libraries here.</li>
         <li>Create a student under Students.</li>
-        <li>Create an IEP cycle, then pick a starter goal template on the student Goals page.</li>
-        <li>
-          Use Rapid Progress, Interventions, Accommodations, Family Communication, and Executive
-          Function dropdowns.
-        </li>
+        <li>Pick library items from Interventions, Accommodations, EF, or Family Communication.</li>
+        <li>Save records based on your classroom input — libraries stay pre-filled.</li>
       </ol>
     </Card>
   );

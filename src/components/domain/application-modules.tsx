@@ -116,15 +116,6 @@ export function AccommodationsWorkspace({
         These records document planned and implemented supports. They do not determine legal
         compliance.
       </Alert>
-      {data.libraryItems.length === 0 ? (
-        <Alert title="Load starter accommodations" tone="warning">
-          The library dropdown is empty until you add items or load starter libraries under{" "}
-          <Link href="/organization/settings" className="font-semibold underline">
-            Organization
-          </Link>
-          .
-        </Alert>
-      ) : null}
       <AiAssistPanel
         domain="accommodation"
         title="AI Assist · Accommodations"
@@ -617,15 +608,6 @@ export function ExecutiveFunctionWorkspace({
       <Alert title="Executive function observations are descriptive" tone="info">
         Percentages describe observed support use and do not claim mastery.
       </Alert>
-      {data.skillAreas.length === 0 ? (
-        <Alert title="Load starter EF skill areas" tone="warning">
-          Skill area dropdowns populate after you load starter libraries under{" "}
-          <Link href="/organization/settings" className="font-semibold underline">
-            Organization
-          </Link>
-          .
-        </Alert>
-      ) : null}
       <AiAssistPanel
         domain="executive_function"
         title="AI Assist · Executive function"
@@ -662,9 +644,7 @@ export function ExecutiveFunctionWorkspace({
             </FormField>
             <FormField id="efSkillAreaId" label="Skill area">
               <Select id="efSkillAreaId" name="skillAreaId" defaultValue="">
-                <option value="">
-                  Choose skill area (optional until starter libraries are loaded)
-                </option>
+                <option value="">Choose skill area (optional)</option>
                 {data.skillAreas.map((skill) => (
                   <option key={skill.id} value={skill.id}>
                     {skill.name}

@@ -1,7 +1,9 @@
 import type { SupabaseClient, User } from "@supabase/supabase-js";
 import { isServerSupabaseConfigured } from "@/lib/env";
 import { requireActiveMembership, type MembershipWithOrganization } from "@/lib/org/context";
+import { ensureStarterLibrariesForOrganization } from "@/lib/org/ensure-starter-libraries";
 import { hasPermission } from "@/lib/permissions/check";
+import { createServiceRoleSupabaseClient } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import type { Database, PermissionCode } from "@/lib/supabase/types";
 
@@ -40,8 +42,23 @@ export async function getOrgDataContext(
   }
 
   const { user, membership, organization } = await requireActiveMembership(organizationId);
+  const supabase = await createServerSupabaseClient();
+
+  // Pre-populate org libraries (interventions, accommodations, EF, communication)
+  // so dropdowns are full without a manual "Load starter" step.
+  try {
+    const writer = createServiceRoleSupabaseClient() ?? supabase;
+    await ensureStarterLibrariesForOrganization({
+      supabase: writer,
+      organizationId: membership.organization_id,
+      actorUserId: user.id,
+    });
+  } catch {
+    // Non-fatal: page still loads; admin can refresh libraries from Organization settings.
+  }
+
   return {
-    supabase: await createServerSupabaseClient(),
+    supabase,
     user,
     membership,
     organizationId: membership.organization_id,
