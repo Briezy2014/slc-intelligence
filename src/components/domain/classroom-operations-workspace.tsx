@@ -19,6 +19,7 @@ import {
 } from "@/lib/actions/classroom-operations";
 import { ensurePilotDemoSetupAction } from "@/lib/actions/pilot-demo-setup";
 import {
+  CLASSROOM_ANNOUNCEMENT_TEMPLATES,
   CLASSROOM_BLOCK_TEMPLATES,
   CLASSROOM_ROUTINE_TEMPLATES,
   CLASSROOM_SCHEDULE_TEMPLATES,
@@ -120,6 +121,15 @@ export function ClassroomOperationsWorkspace({
       CLASSROOM_ROUTINE_TEMPLATES[0],
     [routinePreset],
   );
+  const [announcementPreset, setAnnouncementPreset] = useState<string>(
+    CLASSROOM_ANNOUNCEMENT_TEMPLATES[0].title,
+  );
+  const selectedAnnouncement = useMemo(
+    () =>
+      CLASSROOM_ANNOUNCEMENT_TEMPLATES.find((item) => item.title === announcementPreset) ??
+      CLASSROOM_ANNOUNCEMENT_TEMPLATES[0],
+    [announcementPreset],
+  );
   const [setupState, setupAction, setupPending] = useActionState(
     runPilotDemoSetup,
     initialSetupState,
@@ -131,15 +141,16 @@ export function ClassroomOperationsWorkspace({
     [data.schedules, selectedScheduleId],
   );
 
+  // Overview is cards-only: teachers must tap a path before forms open.
   const show =
     section === "overview"
       ? {
           setup: true,
-          schedules: true,
-          blocks: true,
-          notes: true,
-          routines: true,
-          announcements: true,
+          schedules: false,
+          blocks: false,
+          notes: false,
+          routines: false,
+          announcements: false,
         }
       : {
           setup: section === "daily",
@@ -193,8 +204,19 @@ export function ClassroomOperationsWorkspace({
       {!needsSetup ? (
         <Alert title="Classroom ready" tone="success">
           {OWNER_CLASSROOM_NAME} · {codedStudentCount} students · {data.schedules.length}{" "}
-          schedule(s) · {data.scheduleBlocks.length} time block(s). Pick a card above, then use the
-          dropdowns.
+          schedule(s) · {data.scheduleBlocks.length} time block(s).{" "}
+          {section === "overview"
+            ? "Tap a card above to open a guided form."
+            : "Answer the dropdown questions below, then save."}
+        </Alert>
+      ) : null}
+
+      {section === "overview" ? (
+        <Alert title="Start here" tone="info">
+          Tap <strong>Today in class</strong>, <strong>Schedules</strong>,{" "}
+          <strong>Daily notes</strong>, <strong>Routines</strong>, or <strong>Announcements</strong>
+          . Each one opens library dropdowns — usually two questions — so you are never staring at a
+          blank page.
         </Alert>
       ) : null}
 
@@ -220,8 +242,8 @@ export function ClassroomOperationsWorkspace({
       {show.schedules ? (
         <Section
           id="schedules"
-          title="1. Classroom schedule"
-          description="Name the daily/weekly schedule for a classroom. You need this before adding time blocks."
+          title="Schedules — answer 2 questions"
+          description="Pick a classroom, pick a schedule template from the library, then save."
         >
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
@@ -256,7 +278,7 @@ export function ClassroomOperationsWorkspace({
                   >
                     <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
                     <input type="hidden" name="status" value="active" />
-                    <FormField id="opsClassroomId" label="Classroom">
+                    <FormField id="opsClassroomId" label="1. Which classroom?">
                       <Select
                         id="opsClassroomId"
                         name="classroomId"
@@ -271,7 +293,7 @@ export function ClassroomOperationsWorkspace({
                         ))}
                       </Select>
                     </FormField>
-                    <FormField id="scheduleName" label="1. Choose a schedule template">
+                    <FormField id="scheduleName" label="2. Which schedule from the library?">
                       <Select
                         id="scheduleName"
                         name="name"
@@ -324,8 +346,8 @@ export function ClassroomOperationsWorkspace({
       {show.blocks ? (
         <Section
           id="blocks"
-          title="2. Schedule blocks"
-          description="Add labeled time blocks (arrival, literacy, lunch, dismissal, etc.) to a saved schedule."
+          title="Time blocks — answer 2 questions"
+          description="Pick the schedule, then pick a block from the library (times fill in for you)."
         >
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
@@ -345,7 +367,7 @@ export function ClassroomOperationsWorkspace({
                     className="mt-4 space-y-3"
                   >
                     <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-                    <FormField id="blockScheduleId" label="Schedule">
+                    <FormField id="blockScheduleId" label="1. Which schedule?">
                       <Select
                         id="blockScheduleId"
                         name="scheduleId"
@@ -365,7 +387,7 @@ export function ClassroomOperationsWorkspace({
                       name="classroomId"
                       value={selectedSchedule?.classroom_id ?? ""}
                     />
-                    <FormField id="blockPreset" label="1. Choose a time-block from the library">
+                    <FormField id="blockPreset" label="2. Which time block from the library?">
                       <Select
                         id="blockPreset"
                         value={blockPreset}
@@ -382,7 +404,7 @@ export function ClassroomOperationsWorkspace({
                     <input type="hidden" name="startTime" value={selectedBlock.start} />
                     <input type="hidden" name="endTime" value={selectedBlock.end} />
                     <input type="hidden" name="blockType" value={selectedBlock.type} />
-                    <FormField id="blockDay" label="2. Day of week">
+                    <FormField id="blockDay" label="Day of week (optional)">
                       <Select id="blockDay" name="dayOfWeek" defaultValue="">
                         <option value="">All days</option>
                         <option value="1">Monday</option>
@@ -428,8 +450,8 @@ export function ClassroomOperationsWorkspace({
       {show.notes ? (
         <Section
           id="notes"
-          title="3. Daily student notes"
-          description="Log a student note for the day. Choose the student from the list."
+          title="Daily notes — answer 2 questions"
+          description="Pick the student, pick a note from the library, edit if needed, then save."
         >
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
@@ -462,7 +484,7 @@ export function ClassroomOperationsWorkspace({
               ) : (
                 <form action={submitAction(saveDailyStudentNoteAction)} className="mt-4 space-y-3">
                   <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-                  <FormField id="noteStudentId" label="1. Student">
+                  <FormField id="noteStudentId" label="1. Which student?">
                     <Select id="noteStudentId" name="studentId" required defaultValue="">
                       <option value="">Choose student</option>
                       {data.students.map((student) => (
@@ -472,7 +494,7 @@ export function ClassroomOperationsWorkspace({
                       ))}
                     </Select>
                   </FormField>
-                  <FormField id="noteTemplate" label="2. Note template">
+                  <FormField id="noteTemplate" label="2. Which note from the library?">
                     <Select
                       id="noteTemplate"
                       value={noteText}
@@ -535,8 +557,8 @@ export function ClassroomOperationsWorkspace({
       {show.routines ? (
         <Section
           id="routines"
-          title="4. Classroom routines"
-          description="Save classroom routines you want staff to follow (arrival, transitions, dismissal)."
+          title="Routines — answer 2 questions"
+          description="Pick a routine from the library, keep or edit the steps, then save."
         >
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
@@ -578,7 +600,7 @@ export function ClassroomOperationsWorkspace({
                         ))}
                       </Select>
                     </FormField>
-                    <FormField id="routinePreset" label="1. Choose a routine from the library">
+                    <FormField id="routinePreset" label="1. Which routine from the library?">
                       <Select
                         id="routinePreset"
                         value={routinePreset}
@@ -592,7 +614,7 @@ export function ClassroomOperationsWorkspace({
                       </Select>
                     </FormField>
                     <input type="hidden" name="name" value={selectedRoutine.name} />
-                    <FormField id="routineDescription" label="2. Steps (edit if needed)">
+                    <FormField id="routineDescription" label="2. Keep or edit the steps">
                       <Textarea
                         id="routineDescription"
                         name="description"
@@ -631,8 +653,8 @@ export function ClassroomOperationsWorkspace({
       {show.announcements ? (
         <Section
           id="announcements"
-          title="5. Classroom announcements"
-          description="Staff-facing classroom notices."
+          title="Announcements — answer 2 questions"
+          description="Pick a notice from the library, choose who should see it, then save."
         >
           <div className="grid gap-6 lg:grid-cols-2">
             <Card>
@@ -674,13 +696,38 @@ export function ClassroomOperationsWorkspace({
                         ))}
                       </Select>
                     </FormField>
-                    <FormField id="announcementTitle" label="Title">
-                      <Input id="announcementTitle" name="title" required />
+                    <FormField id="announcementPreset" label="1. Which notice from the library?">
+                      <Select
+                        id="announcementPreset"
+                        value={announcementPreset}
+                        onChange={(event) => setAnnouncementPreset(event.target.value)}
+                      >
+                        {CLASSROOM_ANNOUNCEMENT_TEMPLATES.map((item) => (
+                          <option key={item.title} value={item.title}>
+                            {item.title}
+                          </option>
+                        ))}
+                      </Select>
                     </FormField>
-                    <FormField id="announcementBody" label="Body">
-                      <Textarea id="announcementBody" name="body" required />
+                    <FormField id="announcementTitle" label="Title (edit if needed)">
+                      <Input
+                        id="announcementTitle"
+                        name="title"
+                        required
+                        key={`title-${selectedAnnouncement.title}`}
+                        defaultValue={selectedAnnouncement.title}
+                      />
                     </FormField>
-                    <FormField id="announcementAudience" label="Audience">
+                    <FormField id="announcementBody" label="Body (edit if needed)">
+                      <Textarea
+                        id="announcementBody"
+                        name="body"
+                        required
+                        key={`body-${selectedAnnouncement.title}`}
+                        defaultValue={selectedAnnouncement.body}
+                      />
+                    </FormField>
+                    <FormField id="announcementAudience" label="2. Who should see it?">
                       <Select id="announcementAudience" name="audience" defaultValue="staff">
                         <option value="staff">Staff</option>
                         <option value="family">Family</option>

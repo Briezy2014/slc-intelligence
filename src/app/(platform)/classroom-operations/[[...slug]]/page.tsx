@@ -12,6 +12,34 @@ import { listClassroomOperations } from "@/lib/data/classroom-operations";
 
 export const metadata: Metadata = { title: "Classroom" };
 
+const CLASSROOM_LINKS = [
+  {
+    href: "/classroom-operations/daily",
+    label: "Today in class",
+    description: "Two quick picks: see today’s schedule and add a student note.",
+  },
+  {
+    href: "/classroom-operations/schedules",
+    label: "Schedules",
+    description: "Question 1: schedule template. Question 2: time-block library.",
+  },
+  {
+    href: "/classroom-operations/notes",
+    label: "Daily notes",
+    description: "Question 1: which student. Question 2: note from the library.",
+  },
+  {
+    href: "/classroom-operations/routines",
+    label: "Routines",
+    description: "Question 1: which routine. Question 2: keep or edit the steps.",
+  },
+  {
+    href: "/classroom-operations/announcements",
+    label: "Announcements",
+    description: "Question 1: notice template. Question 2: who should see it.",
+  },
+] as const;
+
 function resolveSection(slug?: string[]): ClassroomOpsSection {
   const key = slug?.[0];
   if (key === "daily") return "daily";
@@ -39,6 +67,23 @@ function sectionTitle(section: ClassroomOpsSection): string {
   }
 }
 
+function activeHrefFor(section: ClassroomOpsSection): string | undefined {
+  switch (section) {
+    case "daily":
+      return "/classroom-operations/daily";
+    case "schedules":
+      return "/classroom-operations/schedules";
+    case "notes":
+      return "/classroom-operations/notes";
+    case "routines":
+      return "/classroom-operations/routines";
+    case "announcements":
+      return "/classroom-operations/announcements";
+    default:
+      return undefined;
+  }
+}
+
 export default async function ClassroomOperationsPage({
   params,
 }: {
@@ -47,12 +92,14 @@ export default async function ClassroomOperationsPage({
   const { slug = [] } = await params;
   const section = resolveSection(slug);
   const state = await listClassroomOperations();
+  const activeHref = activeHrefFor(section);
+
   return (
     <main id="main-content">
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Classroom" }]} />
       <PageHeader
         title={sectionTitle(section)}
-        description="Answer a couple of dropdowns, then save. Schedules, notes, and routines start from ready-made choices."
+        description="Tap a card, answer two dropdown questions from the library, then save. Nothing should feel blank or stuck."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -60,39 +107,11 @@ export default async function ClassroomOperationsPage({
         <SafeErrorState message={state.error} />
       ) : (
         <div className="space-y-6">
-          <Alert title="Pick what you want to do" tone="info">
-            Tap a card below. Each form uses dropdown libraries — you only fill what is unique
-            today.
+          <Alert title="Everything below is tappable" tone="info">
+            Choose what you want to do. Each path opens a short form with ready-made library
+            dropdowns — pick answers, then save.
           </Alert>
-          <HubLinkGrid
-            links={[
-              {
-                href: "/classroom-operations/daily",
-                label: "Today in class",
-                description: "See today’s schedule, add a note, check routines.",
-              },
-              {
-                href: "/classroom-operations/schedules",
-                label: "Schedules",
-                description: "Pick a schedule template and time-block library.",
-              },
-              {
-                href: "/classroom-operations/notes",
-                label: "Daily notes",
-                description: "Choose a student + note template, then save.",
-              },
-              {
-                href: "/classroom-operations/routines",
-                label: "Routines",
-                description: "Arrival, transition, and dismissal routines from a list.",
-              },
-              {
-                href: "/classroom-operations/announcements",
-                label: "Announcements",
-                description: "Post a short staff classroom notice.",
-              },
-            ]}
-          />
+          <HubLinkGrid links={[...CLASSROOM_LINKS]} activeHref={activeHref} />
           <ClassroomOperationsWorkspace data={state.data} section={section} />
         </div>
       )}
