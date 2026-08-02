@@ -3,11 +3,21 @@ import Link from "next/link";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
-import { CommunicationsWorkspace, ModuleLinkGrid } from "@/components/domain/application-modules";
+import {
+  CommunicationsWorkspace,
+  type FamilyCommunicationView,
+} from "@/components/domain/application-modules";
+import { ModuleLinkGrid } from "@/components/navigation/module-link-grid";
 import { Alert } from "@/components/ui/alert";
 import { listCommunications } from "@/lib/data/communications";
 
 export const metadata: Metadata = { title: "Family communication" };
+
+function viewFromSlug(slug: string[]): FamilyCommunicationView {
+  if (slug[0] === "contacts") return "contacts";
+  if (slug[0] === "communications") return "communications";
+  return "dashboard";
+}
 
 export default async function FamilyCommunicationPage({
   params,
@@ -15,6 +25,7 @@ export default async function FamilyCommunicationPage({
   params: Promise<{ slug?: string[] }>;
 }) {
   const { slug = [] } = await params;
+  const view = viewFromSlug(slug);
   const state = await listCommunications({
     communicationId:
       slug[0] && !["contacts", "communications", "templates", "exports"].includes(slug[0])
@@ -26,7 +37,7 @@ export default async function FamilyCommunicationPage({
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Family Communication" }]} />
       <PageHeader
         title="Family Communication"
-        description="Write notes and letters for families here. Save with Visibility = Family visible, then review the ready-to-send list under Messages for families."
+        description="Tap a card, answer the dropdowns, save with Visibility = Family visible. Then check Messages for families."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -35,15 +46,20 @@ export default async function FamilyCommunicationPage({
       ) : (
         <div className="space-y-6">
           <Alert title="Start here to send something home" tone="info">
-            Use Template & language below to draft, keep Visibility on Family visible, and save.{" "}
+            Tap <strong>Write a message</strong>, choose the student and behavior from the
+            dropdowns, keep Visibility on Family visible, and save.{" "}
             <Link href="/parent-share" className="text-highlight font-semibold underline">
               Messages for families
             </Link>{" "}
-            is only the checklist of notes already marked okay for parents — it stays blank until
-            you save one here.
+            stays blank until you save a family-visible note here.
           </Alert>
           <ModuleLinkGrid
             links={[
+              {
+                href: "/family-communication",
+                label: "Start here",
+                description: "Pick what you want to do.",
+              },
               {
                 href: "/family-communication/contacts",
                 label: "Contacts",
@@ -52,7 +68,7 @@ export default async function FamilyCommunicationPage({
               {
                 href: "/family-communication/communications",
                 label: "Write a message",
-                description: "Choose a template, draft the note, and save it for the family.",
+                description: "Student + behavior dropdowns, templates, then save.",
               },
               {
                 href: "/parent-share",
@@ -61,7 +77,7 @@ export default async function FamilyCommunicationPage({
               },
             ]}
           />
-          <CommunicationsWorkspace data={state.data} />
+          <CommunicationsWorkspace data={state.data} view={view} />
         </div>
       )}
     </main>

@@ -2,10 +2,20 @@ import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
-import { CommunicationsWorkspace, ModuleLinkGrid } from "@/components/domain/application-modules";
+import {
+  CommunicationsWorkspace,
+  type FamilyCommunicationView,
+} from "@/components/domain/application-modules";
+import { ModuleLinkGrid } from "@/components/navigation/module-link-grid";
 import { listCommunications } from "@/lib/data/communications";
 
 export const metadata: Metadata = { title: "Student family communication" };
+
+function viewFromSlug(slug: string[]): FamilyCommunicationView {
+  if (slug[0] === "contacts") return "contacts";
+  if (slug[0] === "communications") return "communications";
+  return "dashboard";
+}
 
 export default async function StudentFamilyCommunicationPage({
   params,
@@ -13,6 +23,7 @@ export default async function StudentFamilyCommunicationPage({
   params: Promise<{ studentId: string; slug?: string[] }>;
 }) {
   const { studentId, slug = [] } = await params;
+  const view = viewFromSlug(slug);
   const state = await listCommunications({
     studentId,
     communicationId:
@@ -29,7 +40,7 @@ export default async function StudentFamilyCommunicationPage({
       />
       <PageHeader
         title="Student family communication"
-        description="Write school-to-home notes for this student. Save with Visibility = Family visible to add them to Messages for families."
+        description="Tap Write a message, use the student and behavior dropdowns, then save a family-visible note."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -40,6 +51,11 @@ export default async function StudentFamilyCommunicationPage({
           <ModuleLinkGrid
             links={[
               {
+                href: `/students/${studentId}/family-communication`,
+                label: "Start here",
+                description: "Pick what you want to do for this student.",
+              },
+              {
                 href: `/students/${studentId}/family-communication/contacts`,
                 label: "Contacts",
                 description: "Who can receive messages for this student.",
@@ -47,7 +63,7 @@ export default async function StudentFamilyCommunicationPage({
               {
                 href: `/students/${studentId}/family-communication/communications`,
                 label: "Write a message",
-                description: "Draft and save a note for the family.",
+                description: "Student + behavior dropdowns, draft, and save.",
               },
               {
                 href: "/parent-share",
@@ -56,7 +72,7 @@ export default async function StudentFamilyCommunicationPage({
               },
             ]}
           />
-          <CommunicationsWorkspace data={state.data} studentId={studentId} />
+          <CommunicationsWorkspace data={state.data} studentId={studentId} view={view} />
         </div>
       )}
     </main>

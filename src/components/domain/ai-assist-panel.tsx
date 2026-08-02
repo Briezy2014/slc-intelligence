@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { FormField } from "@/components/forms/form-field";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
@@ -12,21 +13,43 @@ import { generateAiAssistSuggestionsAction } from "@/lib/actions/ai-assist";
 import { getBehaviorDefinitionTemplate } from "@/lib/catalogs/behavior-templates";
 import type { AiAssistDomain, AiSuggestion } from "@/lib/ai/types";
 
+type AssistStudent = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  preferred_name: string | null;
+  local_identifier?: string | null;
+};
+
+function displayStudentName(student: AssistStudent) {
+  const display = student.preferred_name || student.first_name;
+  return `${student.last_name}, ${display}${
+    student.local_identifier ? ` (${student.local_identifier})` : ""
+  }`;
+}
+
 export function AiAssistPanel({
   domain,
   title = "Draft assistant",
   description = "Generate a reviewable starting draft. Edit before sending or saving.",
   defaultFocusArea = "",
+  students = [],
+  studentId,
   onApply,
 }: {
   domain: AiAssistDomain;
   title?: string;
   description?: string;
   defaultFocusArea?: string;
+  /** When provided for family letters, shows a Student dropdown. */
+  students?: AssistStudent[];
+  /** Prefill / lock student when opened from a student page. */
+  studentId?: string;
   onApply?: (suggestion: AiSuggestion) => void;
 }) {
   const [behaviorTemplateId, setBehaviorTemplateId] = useState("");
   const [focusArea, setFocusArea] = useState(defaultFocusArea);
+  const [selectedStudentId, setSelectedStudentId] = useState(studentId ?? "");
   const [studentContext, setStudentContext] = useState("");
   const [extraNotes, setExtraNotes] = useState("");
   const [pending, startTransition] = useTransition();
@@ -34,6 +57,13 @@ export function AiAssistPanel({
   const [suggestions, setSuggestions] = useState<AiSuggestion[]>([]);
 
   const isCommunication = domain === "communication";
+  const selectedStudent = useMemo(
+    () => students.find((student) => student.id === selectedStudentId) ?? students[0],
+    [students, selectedStudentId],
+  );
+  const studentFirstName = selectedStudent
+    ? selectedStudent.preferred_name || selectedStudent.first_name
+    : undefined;
 
   function selectBehavior(id: string) {
     setBehaviorTemplateId(id);
@@ -48,12 +78,30 @@ export function AiAssistPanel({
       <CardTitle>{title}</CardTitle>
       <CardDescription>{description}</CardDescription>
       <div className="mt-4 space-y-3">
+        {isCommunication && students.length > 0 ? (
+          <FormField id={`${domain}-student`} label="1. Which student?">
+            <Select
+              id={`${domain}-student`}
+              value={selectedStudentId || selectedStudent?.id || ""}
+              onChange={(event) => setSelectedStudentId(event.target.value)}
+              disabled={Boolean(studentId) && students.length === 1}
+            >
+              <option value="">Choose student</option>
+              {students.map((student) => (
+                <option key={student.id} value={student.id}>
+                  {displayStudentName(student)}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+        ) : null}
         {isCommunication ? (
           <SpecificBehaviorSelect
             id={`${domain}-specific-behavior`}
+            label="2. Which behavior is this letter about?"
             value={behaviorTemplateId}
             onChange={selectBehavior}
-            helperText="Select the exact behavior for clearer family letters. This fills the focus area for you."
+            helperText="Pick from the list. The letter will use parent-friendly wording — not staff jargon."
           />
         ) : null}
         <FormField
@@ -76,14 +124,25 @@ export function AiAssistPanel({
             }
           />
         </FormField>
-        <FormField id={`${domain}-context`} label="Student context (optional)">
-          <Input
-            id={`${domain}-context`}
-            value={studentContext}
-            onChange={(event) => setStudentContext(event.target.value)}
-            placeholder="Grade, setting, or support need"
-          />
-        </FormField>
+        {!isCommunication || students.length === 0 ? (
+          <FormField id={`${domain}-context`} label="Student context (optional)">
+            <Input
+              id={`${domain}-context`}
+              value={studentContext}
+              onChange={(event) => setStudentContext(event.target.value)}
+              placeholder="Grade, setting, or support need"
+            />
+          </FormField>
+        ) : (
+          <FormField id={`${domain}-context`} label="Extra classroom context (optional)">
+            <Input
+              id={`${domain}-context`}
+              value={studentContext}
+              onChange={(event) => setStudentContext(event.target.value)}
+              placeholder="Setting, time of day, or what happened"
+            />
+          </FormField>
+        )}
         <FormField id={`${domain}-notes`} label="Notes (optional)">
           <Textarea
             id={`${domain}-notes`}
@@ -104,6 +163,7 @@ export function AiAssistPanel({
                 studentContext,
                 extraNotes,
                 behaviorTemplateId: behaviorTemplateId || undefined,
+                studentFirstName: studentFirstName || undefined,
               });
               setSuggestions(result.suggestions);
               if (!result.enabled) {
