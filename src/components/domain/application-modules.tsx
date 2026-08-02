@@ -77,171 +77,229 @@ export function PermissionNote({
   );
 }
 
-export function ModuleLinkGrid({
-  links,
-}: {
-  links: Array<{ href: string; label: string; description: string }>;
-}) {
-  return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {links.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className="border-border bg-background-elevated hover:border-highlight/50 rounded-[var(--radius-lg)] border p-4 transition-colors"
-        >
-          <p className="font-semibold">{link.label}</p>
-          <p className="text-muted mt-1 text-sm">{link.description}</p>
-        </Link>
-      ))}
-    </div>
-  );
-}
+export { ModuleLinkGrid } from "@/components/navigation/module-link-grid";
+
+export type AccommodationsView = "dashboard" | "library" | "implementation";
 
 export function AccommodationsWorkspace({
   data,
   studentId,
+  view = "dashboard",
 }: {
   data: AccommodationsData;
   studentId?: string;
+  view?: AccommodationsView;
 }) {
   const today = new Date().toISOString().slice(0, 10);
   const visibleStudents = studentId
     ? data.students.filter((student) => student.id === studentId)
     : data.students;
   const firstAccommodation = data.accommodations[0];
+  const showLibrary = view === "dashboard" || view === "library";
+  const showStudentForm = view === "dashboard" || view === "library";
+  const showImplementation = view === "dashboard" || view === "implementation";
+  const showList = view === "dashboard" || view === "implementation";
+
   return (
     <div className="space-y-6">
-      <Alert title="Accommodation records are descriptive" tone="info">
-        These records document planned and implemented supports. They do not determine legal
-        compliance.
+      <Alert title="What to do on this page" tone="info">
+        {view === "library"
+          ? "Pick a library support (already filled for your org), assign it to a student, save."
+          : view === "implementation"
+            ? "After a student accommodation exists, log whether it was used in class today."
+            : "1) Open Library and assign a support. 2) Open Implementation to log what was used."}
       </Alert>
-      <AiAssistPanel
-        domain="accommodation"
-        title="AI Assist · Accommodations"
-        description="Suggest accommodation language and implementation notes for educator review."
-      />
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardTitle>Accommodation library</CardTitle>
-          <CardDescription>Reusable support descriptions for authorized staff.</CardDescription>
-          {data.permissions.canManageLibrary ? (
-            <form
-              action={submitAction(saveAccommodationLibraryItemAction)}
-              className="mt-4 space-y-3"
-            >
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <FormField id="accommodationLibraryName" label="Name">
-                <Input id="accommodationLibraryName" name="name" required />
-              </FormField>
-              <FormField id="accommodationArea" label="Area">
-                <Input id="accommodationArea" name="accommodationArea" />
-              </FormField>
-              <FormField id="accommodationDescription" label="Description">
-                <Textarea id="accommodationDescription" name="description" required />
-              </FormField>
-              <Button type="submit">Save library item</Button>
-            </form>
-          ) : (
-            <PermissionNote />
-          )}
-        </Card>
-        <Card>
-          <CardTitle>Student accommodation</CardTitle>
-          <CardDescription>Create a student-scoped support record.</CardDescription>
-          {data.permissions.canManageAccommodations ? (
-            <form action={submitAction(saveStudentAccommodationAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <FormField id="studentId" label="Student">
-                <Select id="studentId" name="studentId" defaultValue={studentId ?? ""} required>
-                  <option value="">Choose student</option>
-                  {visibleStudents.map((student) => (
-                    <option key={student.id} value={student.id}>
-                      {studentName(student)}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-              <FormField id="libraryItemId" label="Library item">
-                <Select id="libraryItemId" name="libraryItemId">
-                  <option value="">Custom accommodation</option>
-                  {data.libraryItems.map((item) => (
-                    <option key={item.id} value={item.id}>
-                      {item.name}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-              <FormField id="accommodationTitle" label="Title">
-                <Input id="accommodationTitle" name="title" required />
-              </FormField>
-              <FormField id="studentAccommodationDescription" label="Description">
-                <Textarea id="studentAccommodationDescription" name="description" required />
-              </FormField>
-              <input type="hidden" name="status" value="draft" />
-              <Button type="submit">Save accommodation</Button>
-            </form>
-          ) : (
-            <PermissionNote />
-          )}
-        </Card>
-      </div>
-      {firstAccommodation && data.permissions.canImplement ? (
+
+      {visibleStudents.length === 0 ? (
+        <Alert title="Add a student first" tone="warning">
+          Accommodations need a student. Open{" "}
+          <Link href="/students" className="font-semibold underline">
+            Students
+          </Link>{" "}
+          and create one (use a code like S1), then come back.
+        </Alert>
+      ) : null}
+
+      {showLibrary || showStudentForm ? (
+        <div className="grid gap-6 lg:grid-cols-2">
+          {showLibrary ? (
+            <Card>
+              <CardTitle>Accommodation library</CardTitle>
+              <CardDescription>
+                Reusable supports you can assign to students ({data.libraryItems.length} ready).
+              </CardDescription>
+              {data.permissions.canManageLibrary ? (
+                <form
+                  action={submitAction(saveAccommodationLibraryItemAction)}
+                  className="mt-4 space-y-3"
+                >
+                  <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+                  <FormField id="accommodationLibraryName" label="Name">
+                    <Input
+                      id="accommodationLibraryName"
+                      name="name"
+                      required
+                      placeholder="Extended time"
+                    />
+                  </FormField>
+                  <FormField id="accommodationArea" label="Area">
+                    <Input id="accommodationArea" name="accommodationArea" placeholder="Testing" />
+                  </FormField>
+                  <FormField id="accommodationDescription" label="Description">
+                    <Textarea
+                      id="accommodationDescription"
+                      name="description"
+                      required
+                      placeholder="What the support looks like in class"
+                    />
+                  </FormField>
+                  <Button type="submit">Save library item</Button>
+                </form>
+              ) : (
+                <PermissionNote />
+              )}
+              {data.libraryItems.length ? (
+                <TableShell
+                  className="mt-4"
+                  caption="Library items"
+                  headers={["Name", "Area"]}
+                  rows={data.libraryItems.map((item) => [
+                    item.name,
+                    item.accommodation_area || "General",
+                  ])}
+                />
+              ) : null}
+            </Card>
+          ) : null}
+
+          {showStudentForm ? (
+            <Card>
+              <CardTitle>Assign to a student</CardTitle>
+              <CardDescription>
+                Create a student accommodation from the library or custom text.
+              </CardDescription>
+              {data.permissions.canManageAccommodations ? (
+                <form
+                  action={submitAction(saveStudentAccommodationAction)}
+                  className="mt-4 space-y-3"
+                >
+                  <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+                  <FormField id="studentId" label="Student">
+                    <Select id="studentId" name="studentId" defaultValue={studentId ?? ""} required>
+                      <option value="">Choose student</option>
+                      {visibleStudents.map((student) => (
+                        <option key={student.id} value={student.id}>
+                          {studentName(student)}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormField>
+                  <FormField id="libraryItemId" label="1. Which library support?">
+                    <Select id="libraryItemId" name="libraryItemId">
+                      <option value="">Custom accommodation</option>
+                      {data.libraryItems.map((item) => (
+                        <option key={item.id} value={item.id}>
+                          {item.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormField>
+                  <FormField id="accommodationTitle" label="2. Title for this student">
+                    <Input id="accommodationTitle" name="title" required />
+                  </FormField>
+                  <FormField id="studentAccommodationDescription" label="Description">
+                    <Textarea id="studentAccommodationDescription" name="description" required />
+                  </FormField>
+                  <input type="hidden" name="status" value="draft" />
+                  <Button type="submit">Save accommodation</Button>
+                </form>
+              ) : (
+                <PermissionNote />
+              )}
+            </Card>
+          ) : null}
+        </div>
+      ) : null}
+
+      {showImplementation ? (
         <Card>
           <CardTitle>Implementation log</CardTitle>
-          <form
-            action={submitAction(saveAccommodationImplementationLogAction)}
-            className="mt-4 grid gap-3 md:grid-cols-2"
-          >
-            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-            <input type="hidden" name="accommodationId" value={firstAccommodation.id} />
-            <input type="hidden" name="studentId" value={firstAccommodation.student_id} />
-            <FormField id="logDate" label="Date">
-              <Input id="logDate" name="logDate" type="date" defaultValue={today} required />
-            </FormField>
-            <FormField id="implementationStatus" label="Status">
-              <Select
-                id="implementationStatus"
-                name="implementationStatus"
-                defaultValue="implemented"
-              >
-                <option value="implemented">Implemented</option>
-                <option value="partially_implemented">Partially implemented</option>
-                <option value="not_implemented">Not implemented</option>
-                <option value="not_applicable">Not applicable</option>
-                <option value="student_declined">Student declined</option>
-              </Select>
-            </FormField>
-            <FormField id="setting" label="Setting">
-              <Input id="setting" name="setting" />
-            </FormField>
-            <input type="hidden" name="status" value="draft" />
-            <Button type="submit" variant="secondary">
-              Record implementation
-            </Button>
-          </form>
+          <CardDescription>Record whether a saved accommodation was used.</CardDescription>
+          {firstAccommodation && data.permissions.canImplement ? (
+            <form
+              action={submitAction(saveAccommodationImplementationLogAction)}
+              className="mt-4 grid gap-3 md:grid-cols-2"
+            >
+              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+              <input type="hidden" name="accommodationId" value={firstAccommodation.id} />
+              <input type="hidden" name="studentId" value={firstAccommodation.student_id} />
+              <FormField id="logDate" label="Date">
+                <Input id="logDate" name="logDate" type="date" defaultValue={today} required />
+              </FormField>
+              <FormField id="implementationStatus" label="Status">
+                <Select
+                  id="implementationStatus"
+                  name="implementationStatus"
+                  defaultValue="implemented"
+                >
+                  <option value="implemented">Implemented</option>
+                  <option value="partially_implemented">Partially implemented</option>
+                  <option value="not_implemented">Not implemented</option>
+                  <option value="not_applicable">Not applicable</option>
+                  <option value="student_declined">Student declined</option>
+                </Select>
+              </FormField>
+              <FormField id="setting" label="Setting">
+                <Input id="setting" name="setting" placeholder="Classroom / testing" />
+              </FormField>
+              <input type="hidden" name="status" value="draft" />
+              <Button type="submit" variant="secondary">
+                Record implementation
+              </Button>
+            </form>
+          ) : (
+            <Alert title="Save a student accommodation first" tone="warning">
+              Implementation logs appear after you assign an accommodation on the{" "}
+              <Link href="/accommodations/library" className="font-semibold underline">
+                Library
+              </Link>{" "}
+              tab.
+            </Alert>
+          )}
         </Card>
       ) : null}
-      {data.accommodations.length ? (
-        <TableShell
-          caption="Student accommodations"
-          headers={["Title", "Student", "Status", "Dates"]}
-          rows={data.accommodations.map((item) => {
-            const student = data.students.find((entry) => entry.id === item.student_id);
-            return [
-              item.title,
-              student ? studentName(student) : "Authorized student",
-              item.status,
-              `${item.start_date ?? "Not set"} to ${item.end_date ?? "Not set"}`,
-            ];
-          })}
+
+      {showList ? (
+        data.accommodations.length ? (
+          <TableShell
+            caption="Student accommodations"
+            headers={["Title", "Student", "Status", "Dates"]}
+            emptyMessage="No student accommodations yet."
+            rows={data.accommodations.map((item) => {
+              const student = data.students.find((entry) => entry.id === item.student_id);
+              return [
+                item.title,
+                student ? studentName(student) : "Authorized student",
+                item.status.replaceAll("_", " "),
+                `${item.start_date ?? "Not set"} to ${item.end_date ?? "Not set"}`,
+              ];
+            })}
+          />
+        ) : (
+          <EmptyState
+            title="No student accommodations yet"
+            description="Use Library to assign a support to a student. Then come back here to see the list and log implementation."
+          />
+        )
+      ) : null}
+
+      {view === "dashboard" ? (
+        <AiAssistPanel
+          domain="accommodation"
+          title="AI Assist · Accommodations"
+          description="Optional draft help for accommodation wording."
         />
-      ) : (
-        <EmptyState
-          title="No accommodations"
-          description="No authorized accommodations match this scope."
-        />
-      )}
+      ) : null}
     </div>
   );
 }
