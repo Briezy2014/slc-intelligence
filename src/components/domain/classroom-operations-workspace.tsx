@@ -187,7 +187,7 @@ export function ClassroomOperationsWorkspace({
             <form className="mt-4 space-y-3" action={setupAction}>
               <input type="hidden" name="organizationId" value={data.organizationId} />
               <Button type="submit" disabled={setupPending}>
-                {setupPending ? "Setting up…" : "Load classroom starter library"}
+                {setupPending ? "Setting up…" : "Set up classroom now"}
               </Button>
               {setupState.message ? (
                 <Alert

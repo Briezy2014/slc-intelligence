@@ -87,19 +87,23 @@ export default async function CommandCenterPage() {
           <CardTitle>Start here</CardTitle>
           <CardDescription className="mt-1">
             {ROLE_LABELS[membership.role_code]} · {memberships.length} active membership
-            {memberships.length === 1 ? "" : "s"}
+            {memberships.length === 1 ? "" : "s"}. Tap one job — libraries and dropdowns are ready.
           </CardDescription>
           <div className="mt-4 grid gap-3 sm:grid-cols-2">
             {[
-              { href: "/students", label: "Students", hint: "Open your caseload" },
-              { href: "/progress/enter", label: "Progress", hint: "Enter progress data" },
-              { href: "/behavior-detective", label: "Behavior", hint: "Log what you saw" },
-              { href: "/family-communication", label: "Families", hint: "Write a home note" },
-              { href: "/supports", label: "Supports", hint: "Accommodations & more" },
+              { href: "/students", label: "Students", hint: "Open caseload → pick a student" },
               {
                 href: "/classroom-operations",
                 label: "Classroom",
-                hint: "Day-of schedule & notes",
+                hint: "Schedules, notes, routines",
+              },
+              { href: "/supports", label: "Supports", hint: "Accommodations & interventions" },
+              { href: "/progress/enter", label: "Progress", hint: "Enter goal progress" },
+              { href: "/behavior-detective", label: "Behavior", hint: "Log what you saw" },
+              {
+                href: "/family-communication",
+                label: "Families",
+                hint: "Home note from templates",
               },
             ].map((item) => (
               <Link
@@ -109,6 +113,9 @@ export default async function CommandCenterPage() {
               >
                 <span className="text-foreground block text-sm font-semibold">{item.label}</span>
                 <span className="text-muted block text-xs">{item.hint}</span>
+                <span className="text-highlight mt-1 block text-xs font-semibold">
+                  Tap to open →
+                </span>
               </Link>
             ))}
           </div>
