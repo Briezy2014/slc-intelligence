@@ -16,19 +16,20 @@ export default function SupportsHubPage() {
       />
       <div className="space-y-6">
         <Alert title="Start here" tone="info">
-          Most teachers use Accommodations daily. Open one card below — libraries are pre-filled.
+          Tap one card. Libraries fill automatically — pick from dropdowns instead of starting
+          blank. Most intervention specialists use Accommodations and Interventions daily.
         </Alert>
         <HubLinkGrid
           links={[
             {
               href: "/accommodations",
               label: "Accommodations",
-              description: "Classroom and testing supports for students.",
+              description: "Assign a support, then log if it was used today.",
             },
             {
               href: "/interventions",
               label: "Interventions",
-              description: "Intervention plans and fidelity notes.",
+              description: "Start a plan from the library in two dropdowns.",
             },
             {
               href: "/services",

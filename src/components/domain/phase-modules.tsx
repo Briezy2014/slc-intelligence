@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import { Alert } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -565,7 +564,7 @@ export function InterventionPlanForm({
   return (
     <form action={submitAction(saveInterventionPlanAction)} className="space-y-4">
       <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-      <FormField id="studentId" label="Student">
+      <FormField id="studentId" label="1. Which student?">
         <Select id="studentId" name="studentId" required defaultValue={studentId ?? ""}>
           <option value="">Choose student</option>
           {data.students.map((student) => (
@@ -575,9 +574,9 @@ export function InterventionPlanForm({
           ))}
         </Select>
       </FormField>
-      <FormField id="libraryItemId" label="Library item">
+      <FormField id="libraryItemId" label="2. Which intervention from the library?">
         <Select id="libraryItemId" name="libraryItemId">
-          <option value="">No library item</option>
+          <option value="">Custom (type a title below)</option>
           {data.libraryItems.map((item) => (
             <option key={item.id} value={item.id}>
               {item.name}
@@ -586,10 +585,19 @@ export function InterventionPlanForm({
         </Select>
       </FormField>
       <FormField id="title" label="Plan title">
-        <Input id="title" name="title" required />
+        <Input
+          id="title"
+          name="title"
+          required
+          placeholder="Can match the library name or be student-specific"
+        />
       </FormField>
-      <FormField id="description" label="Description">
-        <Textarea id="description" name="description" />
+      <FormField id="description" label="Notes (optional)">
+        <Textarea
+          id="description"
+          name="description"
+          placeholder="What this looks like for this student"
+        />
       </FormField>
       <input type="hidden" name="status" value="draft" />
       <Button type="submit">Save intervention plan</Button>
@@ -597,7 +605,13 @@ export function InterventionPlanForm({
   );
 }
 
-export function InterventionDashboard({ data }: { data: InterventionData }) {
+export function InterventionDashboard({
+  data,
+  focus = "all",
+}: {
+  data: InterventionData;
+  focus?: "all" | "library" | "plans";
+}) {
   const fidelity = fidelityPercent(
     data.fidelityResponses.map((response) => ({ response: response.response })),
   );
@@ -608,73 +622,82 @@ export function InterventionDashboard({ data }: { data: InterventionData }) {
       durationMinutes: log.duration_minutes,
     })),
   );
+  const showPlans = focus === "all" || focus === "plans";
+  const showLibrary = focus === "all" || focus === "library";
   return (
     <div className="space-y-6">
-      <DataReadinessPanel
-        status={fidelity.sufficiency.status}
-        reason={fidelity.sufficiency.reason}
-      />
-      {data.libraryItems.length === 0 ? (
-        <Alert title="Load starter interventions" tone="warning">
-          Intervention library dropdowns stay empty until you add items or load starter libraries
-          under Organization settings.
-        </Alert>
+      {showPlans ? (
+        <>
+          <DataReadinessPanel
+            status={fidelity.sufficiency.status}
+            reason={fidelity.sufficiency.reason}
+          />
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardTitle>{data.plans.length}</CardTitle>
+              <CardDescription>Intervention plans</CardDescription>
+            </Card>
+            <Card>
+              <CardTitle>{fidelity.percent ?? "Not available"}%</CardTitle>
+              <CardDescription>Scored fidelity</CardDescription>
+            </Card>
+            <Card>
+              <CardTitle>{dosage.deliveredSessions}</CardTitle>
+              <CardDescription>Delivered sessions logged</CardDescription>
+            </Card>
+          </div>
+          <TableShell
+            caption="Intervention plans"
+            headers={["Plan", "Student", "Status", "Dates"]}
+            emptyMessage="No plans yet. Use Start a plan above."
+            rows={data.plans.map((plan) => {
+              const student = data.students.find((entry) => entry.id === plan.student_id);
+              return [
+                plan.title,
+                student ? studentName(student) : "Authorized student",
+                plan.status,
+                `${plan.start_date ?? "Not set"} to ${plan.end_date ?? "Not set"}`,
+              ];
+            })}
+          />
+        </>
       ) : null}
-      <AiAssistPanel
-        domain="intervention"
-        title="AI Assist · Interventions"
-        description="Suggest intervention plan approaches and library language for educator review."
-      />
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardTitle>{data.plans.length}</CardTitle>
-          <CardDescription>Intervention plans</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{fidelity.percent ?? "Not available"}%</CardTitle>
-          <CardDescription>Scored fidelity</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{dosage.deliveredSessions}</CardTitle>
-          <CardDescription>Delivered sessions logged</CardDescription>
-        </Card>
-      </div>
-      <TableShell
-        caption="Intervention plans"
-        headers={["Plan", "Student", "Status", "Dates"]}
-        rows={data.plans.map((plan) => {
-          const student = data.students.find((entry) => entry.id === plan.student_id);
-          return [
-            plan.title,
-            student ? studentName(student) : "Authorized student",
-            plan.status,
-            `${plan.start_date ?? "Not set"} to ${plan.end_date ?? "Not set"}`,
-          ];
-        })}
-      />
-      <TableShell
-        caption="Intervention library"
-        headers={["Name", "Category", "Evidence level", "Status"]}
-        rows={data.libraryItems.map((item) => [
-          item.name,
-          item.category ?? "Not set",
-          item.evidence_level.replaceAll("_", " "),
-          item.status,
-        ])}
-      />
-      <TableShell
-        caption="Component fidelity"
-        headers={["Component", "Percent", "Scored items"]}
-        rows={Object.entries(
-          componentFidelity(
-            data.fidelityResponses.map((response) => ({ response: response.response })),
-          ),
-        ).map(([component, result]) => [
-          component,
-          result.percent === null ? "Not available" : String(result.percent),
-          String(result.scoredItems),
-        ])}
-      />
+      {showLibrary ? (
+        <TableShell
+          caption="Intervention library"
+          headers={["Name", "Category", "Evidence level", "Status"]}
+          emptyMessage="Library is filling automatically. Refresh under Organization settings if this stays empty."
+          rows={data.libraryItems.map((item) => [
+            item.name,
+            item.category ?? "Not set",
+            item.evidence_level.replaceAll("_", " "),
+            item.status,
+          ])}
+        />
+      ) : null}
+      {showPlans ? (
+        <TableShell
+          caption="Component fidelity"
+          headers={["Component", "Percent", "Scored items"]}
+          emptyMessage="Fidelity appears after you log it on a student intervention plan."
+          rows={Object.entries(
+            componentFidelity(
+              data.fidelityResponses.map((response) => ({ response: response.response })),
+            ),
+          ).map(([component, result]) => [
+            component,
+            result.percent === null ? "Not available" : String(result.percent),
+            String(result.scoredItems),
+          ])}
+        />
+      ) : null}
+      {focus === "all" ? (
+        <AiAssistPanel
+          domain="intervention"
+          title="AI Assist · Interventions"
+          description="Optional draft help for plan wording — you still choose what to save."
+        />
+      ) : null}
     </div>
   );
 }
@@ -809,23 +832,4 @@ export function InterventionEvidenceForms({
   );
 }
 
-export function ModuleLinkGrid({
-  links,
-}: {
-  links: Array<{ href: string; label: string; description: string }>;
-}) {
-  return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {links.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className="border-border bg-background-elevated hover:border-highlight/50 rounded-[var(--radius-lg)] border p-4 transition-colors"
-        >
-          <p className="font-semibold">{link.label}</p>
-          <p className="text-muted mt-1 text-sm">{link.description}</p>
-        </Link>
-      ))}
-    </div>
-  );
-}
+export { ModuleLinkGrid } from "@/components/navigation/module-link-grid";

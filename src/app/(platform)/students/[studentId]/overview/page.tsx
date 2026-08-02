@@ -1,10 +1,11 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { AssignmentForms, StudentForm } from "@/components/domain/forms";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
+import { HubLinkGrid } from "@/components/navigation/hub-link-grid";
 import { PageHeader } from "@/components/layout/page-header";
 import { TableShell } from "@/components/data-display/table-shell";
+import { Alert } from "@/components/ui/alert";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { updateStudentArchiveStatusAction } from "@/lib/actions/students";
 import { getStudent } from "@/lib/data/students";
@@ -44,61 +45,7 @@ export default async function StudentOverviewPage({
             ? `${student.last_name}, ${student.preferred_name || student.first_name}`
             : "Student overview"
         }
-        description="Student profile, enrollments, assignments, and access-controlled workflow links."
-        actions={
-          student ? (
-            <div className="flex flex-wrap gap-2">
-              <Link
-                href={`/students/${student.id}/iep`}
-                className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold"
-              >
-                IEP
-              </Link>
-              <Link
-                href={`/students/${student.id}/etr`}
-                className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold"
-              >
-                ETR
-              </Link>
-              <Link
-                href={`/students/${student.id}/goals`}
-                className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold"
-              >
-                Goals
-              </Link>
-              <Link
-                href={`/students/${student.id}/progress`}
-                className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold"
-              >
-                Progress
-              </Link>
-              <Link
-                href={`/students/${student.id}/analytics`}
-                className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold"
-              >
-                Analytics
-              </Link>
-              <Link
-                href={`/students/${student.id}/reports`}
-                className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold"
-              >
-                Reports
-              </Link>
-              <Link
-                href={`/students/${student.id}/behavior`}
-                className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold"
-              >
-                Behavior
-              </Link>
-              <Link
-                href={`/students/${student.id}/interventions`}
-                className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold"
-              >
-                Interventions
-              </Link>
-            </div>
-          ) : null
-        }
+        description="Open a daily workflow below, or edit profile and assignments further down."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -106,6 +53,53 @@ export default async function StudentOverviewPage({
         <SafeErrorState message={state.error} />
       ) : student && state.data.organizationId ? (
         <div className="space-y-6">
+          <Alert title="Daily work for this student" tone="info">
+            Tap one card. Codes like {student.local_identifier || "S1"} keep names private in class.
+          </Alert>
+          <HubLinkGrid
+            links={[
+              {
+                href: `/students/${student.id}/interventions`,
+                label: "Interventions",
+                description: "Start or update an intervention plan.",
+              },
+              {
+                href: `/students/${student.id}/accommodations`,
+                label: "Accommodations",
+                description: "Assign supports and log what was used.",
+              },
+              {
+                href: `/students/${student.id}/behavior`,
+                label: "Behavior",
+                description: "Log what you saw and family notes.",
+              },
+              {
+                href: `/students/${student.id}/progress`,
+                label: "Progress",
+                description: "Enter goal progress data.",
+              },
+              {
+                href: `/students/${student.id}/family-communication`,
+                label: "Families",
+                description: "Write a home note from templates.",
+              },
+              {
+                href: `/students/${student.id}/executive-function`,
+                label: "Executive function",
+                description: "EF observations and plans.",
+              },
+              {
+                href: `/students/${student.id}/services`,
+                label: "Services",
+                description: "Service plans and delivery logs.",
+              },
+              {
+                href: `/students/${student.id}/goals`,
+                label: "Goals & IEP",
+                description: "Goals, IEP, and documents.",
+              },
+            ]}
+          />
           <Card>
             <CardTitle>Profile</CardTitle>
             <CardDescription>

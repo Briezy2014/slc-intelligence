@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Select } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -49,8 +50,9 @@ export async function OrganizationSelector() {
   const selected =
     activeMemberships.find((membership) => membership.organization_id === selectedOrganizationId) ??
     activeMemberships[0];
+  const hasName = Boolean(profile?.display_name?.trim() || profile?.preferred_name?.trim());
   const personName =
-    profile?.display_name?.trim() || profile?.preferred_name?.trim() || "Name not set";
+    profile?.display_name?.trim() || profile?.preferred_name?.trim() || "Add your name";
 
   return (
     <form action={setSelectedOrganizationIdAction} className="flex items-end gap-2">
@@ -76,7 +78,16 @@ export async function OrganizationSelector() {
               </option>
             ))}
           </Select>
-          <Badge tone="info">{personName}</Badge>
+          {hasName ? (
+            <Badge tone="info">{personName}</Badge>
+          ) : (
+            <Link
+              href="/staff"
+              className="text-highlight text-sm font-semibold underline underline-offset-2"
+            >
+              {personName}
+            </Link>
+          )}
           <Badge tone="neutral">{ROLE_LABELS[selected.role_code]}</Badge>
         </div>
       </div>

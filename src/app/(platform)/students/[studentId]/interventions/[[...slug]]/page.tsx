@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
+import { Alert } from "@/components/ui/alert";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import { PageHeader } from "@/components/layout/page-header";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
+import { ModuleLinkGrid } from "@/components/navigation/module-link-grid";
 import {
   InterventionDashboard,
   InterventionEvidenceForms,
   InterventionPlanForm,
-  ModuleLinkGrid,
 } from "@/components/domain/phase-modules";
 import { listInterventions } from "@/lib/data/interventions";
 
@@ -37,7 +38,7 @@ export default async function StudentInterventionsPage({
       />
       <PageHeader
         title="Student interventions"
-        description="Plans, components, fidelity, dosage, analytics, and reviews for the selected student."
+        description="Answer two dropdowns to start a plan, then log fidelity or dosage when you use it."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -50,35 +51,31 @@ export default async function StudentInterventionsPage({
               {
                 href: `/students/${studentId}/interventions`,
                 label: "Plans",
-                description: "Review and create intervention plans.",
+                description: "Start or review intervention plans.",
               },
               {
                 href: `/students/${studentId}/interventions/fidelity`,
                 label: "Fidelity",
-                description: "Enter implementation fidelity evidence.",
+                description: "Log whether the plan was followed.",
               },
               {
                 href: `/students/${studentId}/interventions/dosage`,
                 label: "Dosage",
-                description: "Record planned versus delivered intervention exposure.",
-              },
-              {
-                href: `/students/${studentId}/interventions/analytics`,
-                label: "Analytics",
-                description: "View fidelity and dosage summaries with readiness notes.",
+                description: "Record sessions / minutes delivered.",
               },
               {
                 href: `/students/${studentId}/interventions/reviews`,
                 label: "Reviews",
-                description: "Record team review outcomes and next review dates.",
+                description: "Team review outcomes and next dates.",
               },
             ]}
           />
           {section === "overview" ? (
             <Card>
-              <CardTitle>New intervention plan</CardTitle>
+              <CardTitle>Start / update a plan</CardTitle>
               <CardDescription>
-                Plans save as drafts unless an authorized activation role changes status.
+                1) Confirm student. 2) Pick a library intervention. Save as draft, then activate
+                when ready.
               </CardDescription>
               <div className="mt-4">
                 <InterventionPlanForm data={state.data} studentId={studentId} />
@@ -86,9 +83,18 @@ export default async function StudentInterventionsPage({
             </Card>
           ) : null}
           {["fidelity", "dosage", "reviews"].includes(section) || planId ? (
-            <InterventionEvidenceForms data={state.data} planId={planId} />
+            <>
+              <Alert title="Log against an existing plan" tone="info">
+                Use the forms below after a plan exists. If nothing appears, go back to Plans and
+                save one first.
+              </Alert>
+              <InterventionEvidenceForms data={state.data} planId={planId} />
+            </>
           ) : null}
-          <InterventionDashboard data={state.data} />
+          <InterventionDashboard
+            data={state.data}
+            focus={section === "overview" ? "plans" : "all"}
+          />
         </div>
       )}
     </main>

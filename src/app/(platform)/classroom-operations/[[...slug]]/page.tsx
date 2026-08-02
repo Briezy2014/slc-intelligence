@@ -4,12 +4,41 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import {
   ClassroomOperationsWorkspace,
-  ModuleLinkGrid,
   type ClassroomOpsSection,
 } from "@/components/domain/application-modules";
+import { HubLinkGrid } from "@/components/navigation/hub-link-grid";
+import { Alert } from "@/components/ui/alert";
 import { listClassroomOperations } from "@/lib/data/classroom-operations";
 
-export const metadata: Metadata = { title: "Classroom operations" };
+export const metadata: Metadata = { title: "Classroom" };
+
+const CLASSROOM_LINKS = [
+  {
+    href: "/classroom-operations/daily",
+    label: "Today in class",
+    description: "Two quick picks: see today’s schedule and add a student note.",
+  },
+  {
+    href: "/classroom-operations/schedules",
+    label: "Schedules",
+    description: "Question 1: schedule template. Question 2: time-block library.",
+  },
+  {
+    href: "/classroom-operations/notes",
+    label: "Daily notes",
+    description: "Question 1: which student. Question 2: note from the library.",
+  },
+  {
+    href: "/classroom-operations/routines",
+    label: "Routines",
+    description: "Question 1: which routine. Question 2: keep or edit the steps.",
+  },
+  {
+    href: "/classroom-operations/announcements",
+    label: "Announcements",
+    description: "Question 1: notice template. Question 2: who should see it.",
+  },
+] as const;
 
 function resolveSection(slug?: string[]): ClassroomOpsSection {
   const key = slug?.[0];
@@ -24,7 +53,7 @@ function resolveSection(slug?: string[]): ClassroomOpsSection {
 function sectionTitle(section: ClassroomOpsSection): string {
   switch (section) {
     case "daily":
-      return "Daily Command Center";
+      return "Today in class";
     case "schedules":
       return "Schedules";
     case "notes":
@@ -34,7 +63,24 @@ function sectionTitle(section: ClassroomOpsSection): string {
     case "announcements":
       return "Announcements";
     default:
-      return "Classroom Operations";
+      return "Classroom";
+  }
+}
+
+function activeHrefFor(section: ClassroomOpsSection): string | undefined {
+  switch (section) {
+    case "daily":
+      return "/classroom-operations/daily";
+    case "schedules":
+      return "/classroom-operations/schedules";
+    case "notes":
+      return "/classroom-operations/notes";
+    case "routines":
+      return "/classroom-operations/routines";
+    case "announcements":
+      return "/classroom-operations/announcements";
+    default:
+      return undefined;
   }
 }
 
@@ -46,12 +92,14 @@ export default async function ClassroomOperationsPage({
   const { slug = [] } = await params;
   const section = resolveSection(slug);
   const state = await listClassroomOperations();
+  const activeHref = activeHrefFor(section);
+
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Classroom Operations" }]} />
+      <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Classroom" }]} />
       <PageHeader
         title={sectionTitle(section)}
-        description="Create schedules and time blocks, log daily notes, manage routines, and post staff announcements."
+        description="Tap a card, answer two dropdown questions from the library, then save. Nothing should feel blank or stuck."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -59,40 +107,11 @@ export default async function ClassroomOperationsPage({
         <SafeErrorState message={state.error} />
       ) : (
         <div className="space-y-6">
-          <ModuleLinkGrid
-            links={[
-              {
-                href: "/classroom-operations",
-                label: "Operations",
-                description: "Full classroom operations workspace.",
-              },
-              {
-                href: "/classroom-operations/daily",
-                label: "Daily Command Center",
-                description: "Today-focused schedules, notes, and routines.",
-              },
-              {
-                href: "/classroom-operations/schedules",
-                label: "Schedules",
-                description: "Create schedules and add time blocks.",
-              },
-              {
-                href: "/classroom-operations/notes",
-                label: "Daily notes",
-                description: "Enter and review daily student notes.",
-              },
-              {
-                href: "/classroom-operations/routines",
-                label: "Routines",
-                description: "Arrival, transition, and dismissal routines.",
-              },
-              {
-                href: "/classroom-operations/announcements",
-                label: "Announcements",
-                description: "Staff classroom notices.",
-              },
-            ]}
-          />
+          <Alert title="Everything below is tappable" tone="info">
+            Choose what you want to do. Each path opens a short form with ready-made library
+            dropdowns — pick answers, then save.
+          </Alert>
+          <HubLinkGrid links={[...CLASSROOM_LINKS]} activeHref={activeHref} />
           <ClassroomOperationsWorkspace data={state.data} section={section} />
         </div>
       )}
