@@ -19,63 +19,88 @@ export const PUBLIC_NAV = [
 export type PlatformNavItem = {
   href: string;
   label: string;
+  /** Nested links shown when this item (or a child) is active. */
+  children?: PlatformNavItem[];
 };
 
-/** Grouped navigation — daily classroom work first, setup/admin last. */
+/**
+ * Condensed teacher-first navigation.
+ * Features stay available via hubs/children — not 29 peer sidebar tabs.
+ */
 export const PLATFORM_NAV_GROUPS: Array<{
   label: string;
   items: PlatformNavItem[];
 }> = [
   {
-    label: "Daily use",
+    label: "Today",
     items: [
-      { href: "/command-center", label: "Command Center" },
+      { href: "/command-center", label: "Home" },
       { href: "/students", label: "Students" },
-      { href: "/classroom-operations", label: "Classroom Operations" },
-      { href: "/progress/enter", label: "Rapid Progress" },
-      { href: "/goals", label: "Goals" },
-      { href: "/behavior-detective", label: "Behavior Detective" },
-      { href: "/instructional-intelligence", label: "Instructional Intelligence" },
-      { href: "/worksheet-generator", label: "Worksheet Generator" },
-      { href: "/family-communication", label: "Family Communication" },
+      { href: "/classroom-operations", label: "Classroom" },
+      { href: "/progress/enter", label: "Progress" },
+      { href: "/behavior-detective", label: "Behavior" },
+      { href: "/family-communication", label: "Families" },
     ],
   },
   {
-    label: "Instruction & materials",
+    label: "Plan",
     items: [
-      { href: "/instructional-packets", label: "Instructional Packets" },
-      { href: "/ai-assist", label: "AI Assist" },
-      { href: "/para-supports", label: "Para Supports" },
-      { href: "/interventions", label: "Interventions" },
-      { href: "/accommodations", label: "Accommodations" },
-      { href: "/services", label: "Services" },
-      { href: "/executive-function", label: "Executive Function" },
+      {
+        href: "/supports",
+        label: "Supports",
+        children: [
+          { href: "/accommodations", label: "Accommodations" },
+          { href: "/interventions", label: "Interventions" },
+          { href: "/services", label: "Services" },
+          { href: "/executive-function", label: "Executive function" },
+        ],
+      },
+      {
+        href: "/instructional-intelligence",
+        label: "Instruction",
+        children: [
+          { href: "/instructional-packets", label: "Packets" },
+          { href: "/worksheet-generator", label: "Worksheets" },
+          { href: "/para-supports", label: "Para help" },
+          { href: "/ai-assist", label: "AI Assist" },
+        ],
+      },
+      {
+        href: "/education-documents",
+        label: "IEP & docs",
+        children: [
+          { href: "/goals", label: "Goals" },
+          { href: "/meetings", label: "Meetings" },
+          { href: "/deadlines", label: "Deadlines" },
+          { href: "/reports", label: "Reports" },
+          { href: "/parent-share", label: "Ready for families" },
+        ],
+      },
     ],
   },
   {
-    label: "Documents & family",
+    label: "Setup",
     items: [
-      { href: "/education-documents", label: "IEP / ETR Docs" },
-      { href: "/meetings", label: "Meetings" },
-      { href: "/parent-share", label: "Messages for families" },
-      { href: "/deadlines", label: "Deadline Tracker" },
-      { href: "/reports", label: "Reports" },
-    ],
-  },
-  {
-    label: "Setup & admin",
-    items: [
-      { href: "/schools", label: "Schools" },
-      { href: "/programs", label: "Programs" },
-      { href: "/classrooms", label: "Classrooms" },
-      { href: "/staff", label: "Staff" },
-      { href: "/administrative-intelligence", label: "Administrative Intelligence" },
-      { href: "/capability-roadmap", label: "Capability Roadmap" },
-      { href: "/billing", label: "Billing" },
-      { href: "/organization/settings", label: "Organization" },
+      {
+        href: "/admin",
+        label: "Admin",
+        children: [
+          { href: "/staff", label: "Staff" },
+          { href: "/schools", label: "Schools" },
+          { href: "/classrooms", label: "Classrooms" },
+          { href: "/programs", label: "Programs" },
+          { href: "/organization/settings", label: "Organization" },
+          { href: "/billing", label: "Billing" },
+          { href: "/administrative-intelligence", label: "Admin intel" },
+        ],
+      },
     ],
   },
 ];
 
+function flattenNavItems(items: PlatformNavItem[]): PlatformNavItem[] {
+  return items.flatMap((item) => [item, ...(item.children ? flattenNavItems(item.children) : [])]);
+}
+
 /** Flat list derived from groups (sitemap / legacy consumers). */
-export const PLATFORM_NAV = PLATFORM_NAV_GROUPS.flatMap((group) => group.items);
+export const PLATFORM_NAV = PLATFORM_NAV_GROUPS.flatMap((group) => flattenNavItems(group.items));
