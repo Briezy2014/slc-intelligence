@@ -1,3 +1,4 @@
+import { ensurePilotDemoSetupAction } from "@/lib/actions/pilot-demo-setup";
 import {
   emptyDataState,
   getOrgDataContext,
@@ -65,7 +66,7 @@ const emptyClassroomOperationsData: ClassroomOperationsData = {
 };
 
 export async function listClassroomOperations(
-  options: { classroomId?: string; studentId?: string } = {},
+  options: { classroomId?: string; studentId?: string; skipAutoSetup?: boolean } = {},
 ): Promise<DataState<ClassroomOperationsData>> {
   const context = await getOrgDataContext();
   if (!context) return emptyDataState(emptyClassroomOperationsData);
@@ -151,6 +152,16 @@ export async function listClassroomOperations(
       reinforcementResult.error
     ) {
       return safeDataError(emptyClassroomOperationsData);
+    }
+
+    // First visit: stand up a ready classroom + sample schedule so dropdowns aren't empty.
+    if (!options.skipAutoSetup && (classroomsResult.data ?? []).length === 0) {
+      const formData = new FormData();
+      formData.set("organizationId", context.organizationId);
+      const setup = await ensurePilotDemoSetupAction(formData);
+      if (setup.status === "success") {
+        return listClassroomOperations({ ...options, skipAutoSetup: true });
+      }
     }
 
     const scheduleIds = (schedulesResult.data ?? []).map((schedule) => schedule.id);

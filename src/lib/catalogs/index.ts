@@ -16,6 +16,7 @@ export * from "@/lib/catalogs/learning-progressions";
 export * from "@/lib/catalogs/education-document-templates";
 export * from "@/lib/catalogs/ohio-education-templates";
 export * from "@/lib/catalogs/behavior-templates";
+export * from "@/lib/catalogs/classroom-operations-templates";
 
 export function getStarterCatalogCounts() {
   const progressions = getLearningProgressionCounts();

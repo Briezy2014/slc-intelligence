@@ -4,12 +4,13 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import {
   ClassroomOperationsWorkspace,
-  ModuleLinkGrid,
   type ClassroomOpsSection,
 } from "@/components/domain/application-modules";
+import { HubLinkGrid } from "@/components/navigation/hub-link-grid";
+import { Alert } from "@/components/ui/alert";
 import { listClassroomOperations } from "@/lib/data/classroom-operations";
 
-export const metadata: Metadata = { title: "Classroom operations" };
+export const metadata: Metadata = { title: "Classroom" };
 
 function resolveSection(slug?: string[]): ClassroomOpsSection {
   const key = slug?.[0];
@@ -24,7 +25,7 @@ function resolveSection(slug?: string[]): ClassroomOpsSection {
 function sectionTitle(section: ClassroomOpsSection): string {
   switch (section) {
     case "daily":
-      return "Daily Command Center";
+      return "Today in class";
     case "schedules":
       return "Schedules";
     case "notes":
@@ -34,7 +35,7 @@ function sectionTitle(section: ClassroomOpsSection): string {
     case "announcements":
       return "Announcements";
     default:
-      return "Classroom Operations";
+      return "Classroom";
   }
 }
 
@@ -48,10 +49,10 @@ export default async function ClassroomOperationsPage({
   const state = await listClassroomOperations();
   return (
     <main id="main-content">
-      <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Classroom Operations" }]} />
+      <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Classroom" }]} />
       <PageHeader
         title={sectionTitle(section)}
-        description="Create schedules and time blocks, log daily notes, manage routines, and post staff announcements."
+        description="Answer a couple of dropdowns, then save. Schedules, notes, and routines start from ready-made choices."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -59,37 +60,36 @@ export default async function ClassroomOperationsPage({
         <SafeErrorState message={state.error} />
       ) : (
         <div className="space-y-6">
-          <ModuleLinkGrid
+          <Alert title="Pick what you want to do" tone="info">
+            Tap a card below. Each form uses dropdown libraries — you only fill what is unique
+            today.
+          </Alert>
+          <HubLinkGrid
             links={[
               {
-                href: "/classroom-operations",
-                label: "Operations",
-                description: "Full classroom operations workspace.",
-              },
-              {
                 href: "/classroom-operations/daily",
-                label: "Daily Command Center",
-                description: "Today-focused schedules, notes, and routines.",
+                label: "Today in class",
+                description: "See today’s schedule, add a note, check routines.",
               },
               {
                 href: "/classroom-operations/schedules",
                 label: "Schedules",
-                description: "Create schedules and add time blocks.",
+                description: "Pick a schedule template and time-block library.",
               },
               {
                 href: "/classroom-operations/notes",
                 label: "Daily notes",
-                description: "Enter and review daily student notes.",
+                description: "Choose a student + note template, then save.",
               },
               {
                 href: "/classroom-operations/routines",
                 label: "Routines",
-                description: "Arrival, transition, and dismissal routines.",
+                description: "Arrival, transition, and dismissal routines from a list.",
               },
               {
                 href: "/classroom-operations/announcements",
                 label: "Announcements",
-                description: "Staff classroom notices.",
+                description: "Post a short staff classroom notice.",
               },
             ]}
           />

@@ -77,26 +77,7 @@ export function PermissionNote({
   );
 }
 
-export function ModuleLinkGrid({
-  links,
-}: {
-  links: Array<{ href: string; label: string; description: string }>;
-}) {
-  return (
-    <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
-      {links.map((link) => (
-        <Link
-          key={link.href}
-          href={link.href}
-          className="border-border bg-background-elevated hover:border-highlight/50 rounded-[var(--radius-lg)] border p-4 transition-colors"
-        >
-          <p className="font-semibold">{link.label}</p>
-          <p className="text-muted mt-1 text-sm">{link.description}</p>
-        </Link>
-      ))}
-    </div>
-  );
-}
+export { HubLinkGrid as ModuleLinkGrid } from "@/components/navigation/hub-link-grid";
 
 export function AccommodationsWorkspace({
   data,
