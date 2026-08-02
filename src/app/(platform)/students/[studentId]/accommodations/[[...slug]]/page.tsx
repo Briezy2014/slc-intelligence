@@ -2,10 +2,19 @@ import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
-import { AccommodationsWorkspace, ModuleLinkGrid } from "@/components/domain/application-modules";
+import {
+  AccommodationsWorkspace,
+  type AccommodationsView,
+} from "@/components/domain/application-modules";
+import { ModuleLinkGrid } from "@/components/navigation/module-link-grid";
 import { listAccommodations } from "@/lib/data/accommodations";
 
 export const metadata: Metadata = { title: "Student accommodations" };
+
+function viewFromSlug(slug: string[]): AccommodationsView {
+  if (slug[0] === "logs") return "implementation";
+  return "dashboard";
+}
 
 export default async function StudentAccommodationsPage({
   params,
@@ -13,6 +22,7 @@ export default async function StudentAccommodationsPage({
   params: Promise<{ studentId: string; slug?: string[] }>;
 }) {
   const { studentId, slug = [] } = await params;
+  const view = viewFromSlug(slug);
   const state = await listAccommodations({
     studentId,
     accommodationId: slug[0] && !["logs", "reviews"].includes(slug[0]) ? slug[0] : undefined,
@@ -28,7 +38,7 @@ export default async function StudentAccommodationsPage({
       />
       <PageHeader
         title="Student accommodations"
-        description="Student-scoped supports, implementation records, and review history."
+        description="Assign supports for this student, then log what was used."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -41,21 +51,16 @@ export default async function StudentAccommodationsPage({
               {
                 href: `/students/${studentId}/accommodations`,
                 label: "Supports",
-                description: "Review and create supports.",
+                description: "Assign library or custom supports.",
               },
               {
                 href: `/students/${studentId}/accommodations/logs`,
-                label: "Logs",
-                description: "Record implementation information.",
-              },
-              {
-                href: `/students/${studentId}/accommodations/reviews`,
-                label: "Reviews",
-                description: "Review accommodation use descriptively.",
+                label: "Implementation",
+                description: "Log whether a support was used.",
               },
             ]}
           />
-          <AccommodationsWorkspace data={state.data} studentId={studentId} />
+          <AccommodationsWorkspace data={state.data} studentId={studentId} view={view} />
         </div>
       )}
     </main>
