@@ -28,6 +28,9 @@ export type AiSuggestInput = {
   extraNotes?: string;
   /** Optional Behavior Detective definition id for richer family letters. */
   behaviorTemplateId?: string;
+  /** Preferred first name for family letters (from selected student). */
+  studentFirstName?: string;
+  contactFirstName?: string;
 };
 
 export type AiSuggestResult = {

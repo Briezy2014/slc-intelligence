@@ -57,11 +57,15 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
         matchedBehavior?.name.toLowerCase() ||
         input.focusArea?.trim() ||
         "the current support focus";
+      const studentFirstName =
+        input.studentFirstName?.trim() ||
+        input.studentContext?.trim().split(/\s+/)[0] ||
+        "your student";
       const draftContext = enrichCommunicationDraftContext(
         {
           focusArea,
-          studentFirstName: "your student",
-          contactFirstName: "family",
+          studentFirstName,
+          contactFirstName: input.contactFirstName?.trim() || "family",
           staffName: "SLC Intelligence team",
         },
         matchedBehavior?.id ?? input.behaviorTemplateId,

@@ -29,15 +29,36 @@ describe("AI Assist local intelligence", () => {
       domain: "communication",
       focusArea: "Task refusal",
       behaviorTemplateId: "task-refusal",
+      studentFirstName: "Alex",
     });
     expect(communications.length).toBeGreaterThan(0);
     const draft = communications.map((item) => item.draftText).join("\n");
-    expect(draft.toLowerCase()).toContain("task refusal");
+    expect(draft.toLowerCase()).toContain("starting and completing assigned work");
+    expect(draft.toLowerCase()).toContain("alex");
+    expect(draft.toLowerCase()).not.toContain("we are supporting task refusal");
     expect(draft.toLowerCase()).not.toContain("related to behavior");
     expect(draft.toLowerCase()).not.toContain("practiced behavior");
     expect(communications.some((item) => item.id.includes("behavior"))).toBe(true);
     expect(communications[0]?.fields?.behaviorTemplateId).toBe("task-refusal");
     expect(draft.toLowerCase()).toContain("replacement");
+  });
+
+  it("writes parent-safe letters for sensitive behaviors like profanity", () => {
+    const communications = buildLocalSuggestions({
+      domain: "communication",
+      behaviorTemplateId: "profanity",
+      studentFirstName: "Jordan",
+    });
+    const draft = communications
+      .map((item) => item.draftText)
+      .join("\n")
+      .toLowerCase();
+    expect(draft).toContain("school-appropriate language");
+    expect(draft).toContain("jordan");
+    expect(draft).not.toContain("supporting profanity");
+    expect(draft).not.toContain("supporting preventing");
+    expect(draft).not.toContain("cussing");
+    expect(draft).not.toContain("swear words");
   });
 
   it("honors the kill switch", async () => {

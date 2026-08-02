@@ -46,13 +46,13 @@ describe("starter catalogs", () => {
       studentFirstName: "Alex",
       contactFirstName: "Jordan",
       staffName: "Ms. Rivera",
-      focusArea: "task refusal",
+      focusArea: "starting and completing assigned work",
       behaviorDescription:
-        "We are supporting task refusal at school. We respond with a calm, planned approach.",
+        "We are addressing a school concern related to starting and completing assigned work. We respond with a calm, planned approach.",
       classroomSupports: "precorrection; break/help card; task chunking",
       homePartnership: "Please share what is working at home.",
     });
-    expect(draft.summary).toContain("task refusal");
+    expect(draft.summary).toContain("starting and completing assigned work");
     expect(draft.summary).toContain("break/help card");
     expect(draft.summary).toContain("calm, planned approach");
     expect(draft.summary).not.toContain("{{");

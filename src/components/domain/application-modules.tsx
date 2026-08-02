@@ -14,7 +14,10 @@ import {
   saveStudentAccommodationAction,
 } from "@/lib/actions/accommodations";
 import { recordFamilyCommunicationExportAction } from "@/lib/actions/communications";
-import { ContactAndCommunicationForms } from "@/components/domain/communication-workspace-forms";
+import {
+  ContactAndCommunicationForms,
+  type FamilyCommunicationView,
+} from "@/components/domain/communication-workspace-forms";
 import { CommunicationEsignPanel } from "@/components/domain/communication-esign-panel";
 import { StaffNotificationsPanel } from "@/components/domain/staff-notifications-panel";
 import { communicationLanguageLabel } from "@/lib/catalogs/communication-languages";
@@ -490,24 +493,33 @@ export function ServicesWorkspace({ data, studentId }: { data: ServicesData; stu
   );
 }
 
+export type { FamilyCommunicationView };
+
 export function CommunicationsWorkspace({
   data,
   studentId,
+  view = "dashboard",
 }: {
   data: CommunicationsData;
   studentId?: string;
+  view?: FamilyCommunicationView;
 }) {
+  const showComposeTools = view === "communications";
   return (
     <div className="space-y-6">
-      <Alert title="Family notes vs staff-only notes" tone="info">
-        When you save a note, set Visibility to Family visible if parents may see it. Internal notes
-        stay staff-only. After saving a family note, it also appears under Messages for families.
-        Use Parent e-signature below when you need an “I have read this” receipt.
-      </Alert>
-      <StaffNotificationsPanel
-        organizationId={data.organizationId}
-        notifications={data.staffNotifications ?? []}
-      />
+      {showComposeTools ? (
+        <Alert title="Family notes vs staff-only notes" tone="info">
+          When you save a note, set Visibility to Family visible if parents may see it. Internal
+          notes stay staff-only. After saving a family note, it also appears under Messages for
+          families. Use Parent e-signature below when you need an “I have read this” receipt.
+        </Alert>
+      ) : null}
+      {showComposeTools ? (
+        <StaffNotificationsPanel
+          organizationId={data.organizationId}
+          notifications={data.staffNotifications ?? []}
+        />
+      ) : null}
       <ContactAndCommunicationForms
         organizationId={data.organizationId ?? ""}
         students={data.students}
@@ -515,28 +527,33 @@ export function CommunicationsWorkspace({
         canManageContacts={data.permissions.canManageContacts}
         canEnterCommunication={data.permissions.canEnterCommunication}
         studentId={studentId}
+        view={view}
       />
-      <CommunicationEsignPanel data={data} />
-      <form action={submitAction(recordFamilyCommunicationExportAction)}>
-        <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-        <input type="hidden" name="studentId" value={studentId ?? ""} />
-        <Button type="submit" variant="secondary">
-          Record family-visible export
-        </Button>
-      </form>
-      <TableShell
-        caption="Your saved messages"
-        headers={["Subject", "Language", "Visibility", "E-sign", "Status", "Occurred"]}
-        emptyMessage="No messages saved yet. Use Write a message / Template & language above, keep Visibility on Family visible if parents may see it, then save."
-        rows={data.communications.map((log) => [
-          log.subject,
-          communicationLanguageLabel(log.language_code || "en"),
-          log.visibility.replaceAll("_", " "),
-          log.esign_status || "none",
-          log.status.replaceAll("_", " "),
-          new Date(log.occurred_at).toLocaleString(),
-        ])}
-      />
+      {showComposeTools ? (
+        <>
+          <CommunicationEsignPanel data={data} />
+          <form action={submitAction(recordFamilyCommunicationExportAction)}>
+            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+            <input type="hidden" name="studentId" value={studentId ?? ""} />
+            <Button type="submit" variant="secondary">
+              Record family-visible export
+            </Button>
+          </form>
+          <TableShell
+            caption="Your saved messages"
+            headers={["Subject", "Language", "Visibility", "E-sign", "Status", "Occurred"]}
+            emptyMessage="No messages saved yet. Use Write a message / Template & language above, keep Visibility on Family visible if parents may see it, then save."
+            rows={data.communications.map((log) => [
+              log.subject,
+              communicationLanguageLabel(log.language_code || "en"),
+              log.visibility.replaceAll("_", " "),
+              log.esign_status || "none",
+              log.status.replaceAll("_", " "),
+              new Date(log.occurred_at).toLocaleString(),
+            ])}
+          />
+        </>
+      ) : null}
     </div>
   );
 }

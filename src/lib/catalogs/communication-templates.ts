@@ -83,7 +83,7 @@ export const COMMUNICATION_TEMPLATES: CommunicationTemplateCatalogItem[] = [
     "behavior-support-update",
     "Behavior support update",
     "Support plan update for {{studentFirstName}} · {{focusArea}}",
-    "Hello {{contactFirstName}},\n\nI wanted to share a clear update on how we are supporting {{studentFirstName}} at school around {{focusArea}}.\n\n{{behaviorDescription}}\n\nToday we practiced replacement skills and used classroom supports such as {{classroomSupports}}. Our goal is to help {{studentFirstName}} stay safe, regulated, and ready to learn.\n\n{{homePartnership}} Reply to this message if you would like to talk through the plan together.\n\nThank you,\n{{staffName}}",
+    "Hello {{contactFirstName}},\n\nI wanted to share a clear update about {{studentFirstName}} and our plan related to {{focusArea}}.\n\n{{behaviorDescription}}\n\nToday we practiced replacement skills and used classroom supports such as {{classroomSupports}}. Our goal is to help {{studentFirstName}} stay safe, regulated, and ready to learn.\n\n{{homePartnership}} Reply to this message if you would like to talk through the plan together.\n\nThank you,\n{{staffName}}",
     "phone",
   ),
   item(
