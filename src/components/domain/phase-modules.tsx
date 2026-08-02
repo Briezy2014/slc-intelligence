@@ -614,12 +614,6 @@ export function InterventionDashboard({ data }: { data: InterventionData }) {
         status={fidelity.sufficiency.status}
         reason={fidelity.sufficiency.reason}
       />
-      {data.libraryItems.length === 0 ? (
-        <Alert title="Load starter interventions" tone="warning">
-          Intervention library dropdowns stay empty until you add items or load starter libraries
-          under Organization settings.
-        </Alert>
-      ) : null}
       <AiAssistPanel
         domain="intervention"
         title="AI Assist · Interventions"

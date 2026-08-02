@@ -4,34 +4,12 @@ import {
   auditAndRevalidate,
   GENERIC_ACTION_MESSAGE,
   getActionContext,
-  type ActionContext,
   type ActionState,
+  UNAUTHORIZED_ACTION_MESSAGE,
 } from "@/lib/actions/shared";
-import {
-  ACCOMMODATION_TEMPLATES,
-  COMMUNICATION_TEMPLATES,
-  EF_SKILL_TEMPLATES,
-  INTERVENTION_TEMPLATES,
-  getStarterCatalogCounts,
-} from "@/lib/catalogs";
+import { getStarterCatalogCounts } from "@/lib/catalogs";
+import { ensureStarterLibrariesForOrganization } from "@/lib/org/ensure-starter-libraries";
 import { hasPermission } from "@/lib/permissions/check";
-import { UNAUTHORIZED_ACTION_MESSAGE } from "@/lib/actions/shared";
-
-async function existingNames(
-  context: ActionContext,
-  table:
-    | "intervention_library_items"
-    | "accommodation_library_items"
-    | "executive_function_skill_areas"
-    | "communication_templates",
-) {
-  const { data, error } = await context.supabase
-    .from(table)
-    .select("name")
-    .eq("organization_id", context.organizationId);
-  if (error || !data) return new Set<string>();
-  return new Set(data.map((row) => row.name));
-}
 
 export async function importStarterLibrariesAction(formData: FormData): Promise<ActionState> {
   const organizationId = String(formData.get("organizationId") ?? "");
@@ -52,85 +30,12 @@ export async function importStarterLibrariesAction(formData: FormData): Promise<
 
   try {
     const counts = getStarterCatalogCounts();
-    const [interventionNames, accommodationNames, efNames, communicationNames] = await Promise.all([
-      existingNames(context, "intervention_library_items"),
-      existingNames(context, "accommodation_library_items"),
-      existingNames(context, "executive_function_skill_areas"),
-      existingNames(context, "communication_templates"),
-    ]);
-
-    const interventions = INTERVENTION_TEMPLATES.filter(
-      (item) => !interventionNames.has(item.name),
-    ).map((item) => ({
-      organization_id: context.organizationId,
-      name: item.name,
-      category: item.category,
-      description: item.description,
-      evidence_level: item.evidenceLevel,
-      status: "active" as const,
-      created_by: context.user.id,
-    }));
-
-    const accommodations = ACCOMMODATION_TEMPLATES.filter(
-      (item) => !accommodationNames.has(item.name),
-    ).map((item) => ({
-      organization_id: context.organizationId,
-      name: item.name,
-      accommodation_area: item.accommodationArea,
-      description: item.description,
-      default_implementation_notes: item.defaultImplementationNotes,
-      status: "active" as const,
-      created_by: context.user.id,
-    }));
-
-    const efSkills = EF_SKILL_TEMPLATES.filter((item) => !efNames.has(item.name)).map((item) => ({
-      organization_id: context.organizationId,
-      name: item.name,
-      description: item.description,
-      active: true,
-      created_by: context.user.id,
-    }));
-
-    const communications = COMMUNICATION_TEMPLATES.filter(
-      (item) => !communicationNames.has(item.name),
-    ).map((item) => ({
-      organization_id: context.organizationId,
-      name: item.name,
-      default_visibility: item.defaultVisibility,
-      method: item.method,
-      subject_template: item.subjectTemplate,
-      body_template: item.bodyTemplate,
-      active: true,
-      created_by: context.user.id,
-    }));
-
-    if (interventions.length) {
-      const { error } = await context.supabase
-        .from("intervention_library_items")
-        .insert(interventions);
-      if (error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
-    }
-    if (accommodations.length) {
-      const { error } = await context.supabase
-        .from("accommodation_library_items")
-        .insert(accommodations);
-      if (error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
-    }
-    if (efSkills.length) {
-      const { error } = await context.supabase
-        .from("executive_function_skill_areas")
-        .insert(efSkills);
-      if (error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
-    }
-    if (communications.length) {
-      const { error } = await context.supabase
-        .from("communication_templates")
-        .insert(communications);
-      if (error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
-    }
-
-    const imported =
-      interventions.length + accommodations.length + efSkills.length + communications.length;
+    const result = await ensureStarterLibrariesForOrganization({
+      supabase: context.supabase,
+      organizationId: context.organizationId,
+      actorUserId: context.user.id,
+      audit: false,
+    });
 
     await auditAndRevalidate({
       organizationId: context.organizationId,
@@ -139,12 +44,12 @@ export async function importStarterLibrariesAction(formData: FormData): Promise<
       resourceType: "organization",
       resourceId: context.organizationId,
       newState: {
-        imported,
+        imported: result.imported,
         catalogTotals: counts,
-        interventions: interventions.length,
-        accommodations: accommodations.length,
-        executiveFunctionSkills: efSkills.length,
-        communicationTemplates: communications.length,
+        interventions: result.interventions,
+        accommodations: result.accommodations,
+        executiveFunctionSkills: result.executiveFunctionSkills,
+        communicationTemplates: result.communicationTemplates,
       },
       paths: [
         "/organization/settings",
@@ -157,16 +62,16 @@ export async function importStarterLibrariesAction(formData: FormData): Promise<
       ],
     });
 
-    if (imported === 0) {
+    if (result.imported === 0) {
       return {
         status: "success",
-        message: `Starter libraries already loaded. Goal starter templates (${counts.goals}) are always available when creating goals.`,
+        message: `Libraries already full (${counts.interventions} interventions, ${counts.accommodations} accommodations, ${counts.executiveFunctionSkills} EF skills, ${counts.communicationTemplates} communication templates). Goal templates (${counts.goals}) are always available when creating goals.`,
       };
     }
 
     return {
       status: "success",
-      message: `Imported ${imported} starter library items. Goal templates (${counts.goals}) are available on the student Goals page.`,
+      message: `Added ${result.imported} library items. Dropdowns across Interventions, Accommodations, Executive Function, and Family Communication are ready.`,
     };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
