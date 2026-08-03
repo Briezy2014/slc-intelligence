@@ -13,6 +13,7 @@ export const metadata: Metadata = { title: "Student accommodations" };
 
 function viewFromSlug(slug: string[]): AccommodationsView {
   if (slug[0] === "logs") return "implementation";
+  if (slug[0] === "library") return "library";
   return "dashboard";
 }
 
@@ -25,7 +26,8 @@ export default async function StudentAccommodationsPage({
   const view = viewFromSlug(slug);
   const state = await listAccommodations({
     studentId,
-    accommodationId: slug[0] && !["logs", "reviews"].includes(slug[0]) ? slug[0] : undefined,
+    accommodationId:
+      slug[0] && !["logs", "reviews", "library"].includes(slug[0]) ? slug[0] : undefined,
   });
   return (
     <main id="main-content">
@@ -38,7 +40,7 @@ export default async function StudentAccommodationsPage({
       />
       <PageHeader
         title="Student accommodations"
-        description="Assign supports for this student, then log what was used."
+        description="Pick supports from the dropdown — descriptions fill in. Add several, then save."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -50,12 +52,12 @@ export default async function StudentAccommodationsPage({
             links={[
               {
                 href: `/students/${studentId}/accommodations`,
-                label: "Supports",
-                description: "Assign library or custom supports.",
+                label: "Assign supports",
+                description: "Add one or many library supports for this student.",
               },
               {
                 href: `/students/${studentId}/accommodations/logs`,
-                label: "Implementation",
+                label: "Log use",
                 description: "Log whether a support was used.",
               },
             ]}

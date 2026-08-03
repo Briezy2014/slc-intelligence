@@ -11,7 +11,6 @@ import { TableShell } from "@/components/data-display/table-shell";
 import {
   saveAccommodationImplementationLogAction,
   saveAccommodationLibraryItemAction,
-  saveStudentAccommodationAction,
 } from "@/lib/actions/accommodations";
 import { recordFamilyCommunicationExportAction } from "@/lib/actions/communications";
 import {
@@ -20,6 +19,7 @@ import {
 } from "@/components/domain/communication-workspace-forms";
 import { CommunicationEsignPanel } from "@/components/domain/communication-esign-panel";
 import { StaffNotificationsPanel } from "@/components/domain/staff-notifications-panel";
+import { AssignStudentAccommodationsForm } from "@/components/domain/assign-student-accommodations-form";
 import { communicationLanguageLabel } from "@/lib/catalogs/communication-languages";
 import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import {
@@ -97,20 +97,22 @@ export function AccommodationsWorkspace({
   const visibleStudents = studentId
     ? data.students.filter((student) => student.id === studentId)
     : data.students;
-  const firstAccommodation = data.accommodations[0];
-  const showLibrary = view === "dashboard" || view === "library";
-  const showStudentForm = view === "dashboard" || view === "library";
-  const showImplementation = view === "dashboard" || view === "implementation";
+  const showAssign = view === "dashboard";
+  const showLibraryManage = view === "library";
+  const showImplementation = view === "implementation";
   const showList = view === "dashboard" || view === "implementation";
+  const defaultAccommodation = studentId
+    ? (data.accommodations.find((item) => item.student_id === studentId) ?? data.accommodations[0])
+    : data.accommodations[0];
 
   return (
     <div className="space-y-6">
       <Alert title="What to do on this page" tone="info">
         {view === "library"
-          ? "Pick a library support (already filled for your org), assign it to a student, save."
+          ? "Optional: add a custom support to the shared dropdown list. Day-to-day assigning is on Assign supports."
           : view === "implementation"
-            ? "After a student accommodation exists, log whether it was used in class today."
-            : "1) Open Library and assign a support. 2) Open Implementation to log what was used."}
+            ? "Pick a saved student support and log whether it was used today."
+            : "Pick a student, pick supports from the dropdown (title & description fill in), add as many as you need, then save."}
       </Alert>
 
       {visibleStudents.length === 0 ? (
@@ -123,119 +125,88 @@ export function AccommodationsWorkspace({
         </Alert>
       ) : null}
 
-      {showLibrary || showStudentForm ? (
-        <div className="grid gap-6 lg:grid-cols-2">
-          {showLibrary ? (
-            <Card>
-              <CardTitle>Accommodation library</CardTitle>
-              <CardDescription>
-                Reusable supports you can assign to students ({data.libraryItems.length} ready).
-              </CardDescription>
-              {data.permissions.canManageLibrary ? (
-                <form
-                  action={submitAction(saveAccommodationLibraryItemAction)}
-                  className="mt-4 space-y-3"
-                >
-                  <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-                  <FormField id="accommodationLibraryName" label="Name">
-                    <Input
-                      id="accommodationLibraryName"
-                      name="name"
-                      required
-                      placeholder="Extended time"
-                    />
-                  </FormField>
-                  <FormField id="accommodationArea" label="Area">
-                    <Input id="accommodationArea" name="accommodationArea" placeholder="Testing" />
-                  </FormField>
-                  <FormField id="accommodationDescription" label="Description">
-                    <Textarea
-                      id="accommodationDescription"
-                      name="description"
-                      required
-                      placeholder="What the support looks like in class"
-                    />
-                  </FormField>
-                  <Button type="submit">Save library item</Button>
-                </form>
-              ) : (
-                <PermissionNote />
-              )}
-              {data.libraryItems.length ? (
-                <TableShell
-                  className="mt-4"
-                  caption="Library items"
-                  headers={["Name", "Area"]}
-                  rows={data.libraryItems.map((item) => [
-                    item.name,
-                    item.accommodation_area || "General",
-                  ])}
-                />
-              ) : null}
-            </Card>
-          ) : null}
+      {showAssign ? (
+        data.permissions.canManageAccommodations && data.organizationId ? (
+          <AssignStudentAccommodationsForm
+            organizationId={data.organizationId}
+            students={visibleStudents}
+            libraryItems={data.libraryItems}
+            defaultStudentId={studentId ?? ""}
+          />
+        ) : (
+          <PermissionNote />
+        )
+      ) : null}
 
-          {showStudentForm ? (
-            <Card>
-              <CardTitle>Assign to a student</CardTitle>
-              <CardDescription>
-                Create a student accommodation from the library or custom text.
-              </CardDescription>
-              {data.permissions.canManageAccommodations ? (
-                <form
-                  action={submitAction(saveStudentAccommodationAction)}
-                  className="mt-4 space-y-3"
-                >
-                  <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-                  <FormField id="studentId" label="Student">
-                    <Select id="studentId" name="studentId" defaultValue={studentId ?? ""} required>
-                      <option value="">Choose student</option>
-                      {visibleStudents.map((student) => (
-                        <option key={student.id} value={student.id}>
-                          {studentName(student)}
-                        </option>
-                      ))}
-                    </Select>
-                  </FormField>
-                  <FormField id="libraryItemId" label="1. Which library support?">
-                    <Select id="libraryItemId" name="libraryItemId">
-                      <option value="">Custom accommodation</option>
-                      {data.libraryItems.map((item) => (
-                        <option key={item.id} value={item.id}>
-                          {item.name}
-                        </option>
-                      ))}
-                    </Select>
-                  </FormField>
-                  <FormField id="accommodationTitle" label="2. Title for this student">
-                    <Input id="accommodationTitle" name="title" required />
-                  </FormField>
-                  <FormField id="studentAccommodationDescription" label="Description">
-                    <Textarea id="studentAccommodationDescription" name="description" required />
-                  </FormField>
-                  <input type="hidden" name="status" value="draft" />
-                  <Button type="submit">Save accommodation</Button>
-                </form>
-              ) : (
-                <PermissionNote />
-              )}
-            </Card>
-          ) : null}
-        </div>
+      {showLibraryManage ? (
+        <Card>
+          <CardTitle>Add a custom library support</CardTitle>
+          <CardDescription>
+            Only needed if something is missing from the assign dropdown ({data.libraryItems.length}{" "}
+            already ready). You do not need to browse the full list here.
+          </CardDescription>
+          {data.permissions.canManageLibrary ? (
+            <form
+              action={submitAction(saveAccommodationLibraryItemAction)}
+              className="mt-4 space-y-3"
+            >
+              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+              <FormField id="accommodationLibraryName" label="Name">
+                <Input
+                  id="accommodationLibraryName"
+                  name="name"
+                  required
+                  placeholder="Extended time"
+                />
+              </FormField>
+              <FormField id="accommodationArea" label="Area">
+                <Input id="accommodationArea" name="accommodationArea" placeholder="Testing" />
+              </FormField>
+              <FormField id="accommodationDescription" label="Description">
+                <Textarea
+                  id="accommodationDescription"
+                  name="description"
+                  required
+                  placeholder="What the support looks like in class"
+                />
+              </FormField>
+              <Button type="submit">Add to dropdown library</Button>
+            </form>
+          ) : (
+            <PermissionNote />
+          )}
+        </Card>
       ) : null}
 
       {showImplementation ? (
         <Card>
           <CardTitle>Implementation log</CardTitle>
           <CardDescription>Record whether a saved accommodation was used.</CardDescription>
-          {firstAccommodation && data.permissions.canImplement ? (
+          {defaultAccommodation && data.permissions.canImplement ? (
             <form
               action={submitAction(saveAccommodationImplementationLogAction)}
               className="mt-4 grid gap-3 md:grid-cols-2"
             >
               <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <input type="hidden" name="accommodationId" value={firstAccommodation.id} />
-              <input type="hidden" name="studentId" value={firstAccommodation.student_id} />
+              <input type="hidden" name="studentId" value={defaultAccommodation.student_id} />
+              <FormField id="logAccommodationId" label="Which support?">
+                <Select
+                  id="logAccommodationId"
+                  name="accommodationId"
+                  defaultValue={defaultAccommodation.id}
+                  required
+                >
+                  {data.accommodations.map((item) => {
+                    const student = data.students.find((entry) => entry.id === item.student_id);
+                    return (
+                      <option key={item.id} value={item.id}>
+                        {item.title}
+                        {student ? ` · ${studentName(student)}` : ""}
+                      </option>
+                    );
+                  })}
+                </Select>
+              </FormField>
               <FormField id="logDate" label="Date">
                 <Input id="logDate" name="logDate" type="date" defaultValue={today} required />
               </FormField>
@@ -262,11 +233,11 @@ export function AccommodationsWorkspace({
             </form>
           ) : (
             <Alert title="Save a student accommodation first" tone="warning">
-              Implementation logs appear after you assign an accommodation on the{" "}
-              <Link href="/accommodations/library" className="font-semibold underline">
-                Library
-              </Link>{" "}
-              tab.
+              Implementation logs appear after you assign supports on{" "}
+              <Link href="/accommodations" className="font-semibold underline">
+                Assign supports
+              </Link>
+              .
             </Alert>
           )}
         </Card>
@@ -291,17 +262,9 @@ export function AccommodationsWorkspace({
         ) : (
           <EmptyState
             title="No student accommodations yet"
-            description="Use Library to assign a support to a student. Then come back here to see the list and log implementation."
+            description="Assign supports above — pick from the dropdown, edit if needed, and save one or many."
           />
         )
-      ) : null}
-
-      {view === "dashboard" ? (
-        <AiAssistPanel
-          domain="accommodation"
-          title="AI Assist · Accommodations"
-          description="Optional draft help for accommodation wording."
-        />
       ) : null}
     </div>
   );
