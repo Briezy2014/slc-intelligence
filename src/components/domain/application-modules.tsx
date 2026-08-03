@@ -28,12 +28,6 @@ import {
   recordMeetingAcknowledgementAction,
 } from "@/lib/actions/meetings";
 import {
-  addServiceComponentAction,
-  saveServiceDefinitionAction,
-  saveServiceDeliveryLogAction,
-  saveServicePlanAction,
-} from "@/lib/actions/services";
-import {
   saveChecklistResponseAction,
   saveExecutiveFunctionObservationAction,
   saveExecutiveFunctionPlanAction,
@@ -42,16 +36,10 @@ import {
   independencePercent,
   promptDistribution,
 } from "@/lib/analytics/executive-function-calculations";
-import {
-  describeDocumentationGap,
-  durationMinutesFromStartEnd,
-  summarizePlannedVsRecordedMinutes,
-} from "@/lib/analytics/service-calculations";
 import type { AccommodationsData } from "@/lib/data/accommodations";
 import type { CommunicationsData } from "@/lib/data/communications";
 import type { ExecutiveFunctionData } from "@/lib/data/executive-function";
 import type { MeetingsData } from "@/lib/data/meetings";
-import type { ServicesData } from "@/lib/data/services";
 
 export { ClassroomOperationsWorkspace } from "@/components/domain/classroom-operations-workspace";
 export type { ClassroomOpsSection } from "@/components/domain/classroom-operations-workspace";
@@ -270,191 +258,10 @@ export function AccommodationsWorkspace({
   );
 }
 
-export function ServicesWorkspace({ data, studentId }: { data: ServicesData; studentId?: string }) {
-  const today = new Date().toISOString().slice(0, 10);
-  const visibleStudents = studentId
-    ? data.students.filter((student) => student.id === studentId)
-    : data.students;
-  const firstPlan = data.plans[0];
-  const firstComponent = data.components.find(
-    (component) => component.service_plan_id === firstPlan?.id,
-  );
-  const totals = summarizePlannedVsRecordedMinutes({
-    plannedMinutes: data.schedules.reduce<number | null>(
-      (sum, schedule) =>
-        schedule.planned_duration_minutes == null
-          ? sum
-          : (sum ?? 0) + schedule.planned_duration_minutes,
-      null,
-    ),
-    recordedMinutes: data.deliveryLogs.reduce<number | null>((sum, log) => {
-      const minutes =
-        log.calculated_duration_minutes ??
-        durationMinutesFromStartEnd(log.start_time, log.end_time);
-      return minutes == null ? sum : (sum ?? 0) + minutes;
-    }, null),
-  });
-  return (
-    <div className="space-y-6">
-      <Alert title="Planned vs recorded disclosure" tone="info">
-        {totals.disclaimer}
-      </Alert>
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardTitle>{data.plans.length}</CardTitle>
-          <CardDescription>Service plans</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{totals.recordedMinutes ?? "Unavailable"}</CardTitle>
-          <CardDescription>Recorded minutes</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{totals.differenceMinutes ?? "Unavailable"}</CardTitle>
-          <CardDescription>{totals.label}</CardDescription>
-        </Card>
-      </div>
-      <div className="grid gap-6 lg:grid-cols-2">
-        <Card>
-          <CardTitle>Service definition</CardTitle>
-          {data.permissions.canManageDefinitions ? (
-            <form action={submitAction(saveServiceDefinitionAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <FormField id="serviceName" label="Name">
-                <Input id="serviceName" name="name" required />
-              </FormField>
-              <FormField id="serviceArea" label="Service area">
-                <Input id="serviceArea" name="serviceArea" required />
-              </FormField>
-              <FormField id="defaultDeliveryType" label="Default delivery type">
-                <Select id="defaultDeliveryType" name="defaultDeliveryType">
-                  <option value="group">Group</option>
-                  <option value="individual">Individual</option>
-                  <option value="consultation">Consultation</option>
-                </Select>
-              </FormField>
-              <Button type="submit">Save definition</Button>
-            </form>
-          ) : (
-            <PermissionNote />
-          )}
-        </Card>
-        <Card>
-          <CardTitle>Service plan</CardTitle>
-          {data.permissions.canManagePlans ? (
-            <form action={submitAction(saveServicePlanAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <FormField id="serviceStudentId" label="Student">
-                <Select
-                  id="serviceStudentId"
-                  name="studentId"
-                  defaultValue={studentId ?? ""}
-                  required
-                >
-                  <option value="">Choose student</option>
-                  {visibleStudents.map((student) => (
-                    <option key={student.id} value={student.id}>
-                      {studentName(student)}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-              <FormField id="serviceDefinitionId" label="Definition">
-                <Select id="serviceDefinitionId" name="serviceDefinitionId">
-                  <option value="">Custom service</option>
-                  {data.definitions.map((definition) => (
-                    <option key={definition.id} value={definition.id}>
-                      {definition.name}
-                    </option>
-                  ))}
-                </Select>
-              </FormField>
-              <FormField id="serviceTitle" label="Title">
-                <Input id="serviceTitle" name="title" required />
-              </FormField>
-              <input type="hidden" name="status" value="draft" />
-              <Button type="submit">Save service plan</Button>
-            </form>
-          ) : (
-            <PermissionNote />
-          )}
-        </Card>
-      </div>
-      {firstPlan ? (
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Card>
-            <CardTitle>Service component</CardTitle>
-            <form action={submitAction(addServiceComponentAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <input type="hidden" name="servicePlanId" value={firstPlan.id} />
-              <FormField id="componentName" label="Component">
-                <Input id="componentName" name="componentName" required />
-              </FormField>
-              <FormField id="serviceMinutes" label="Minutes">
-                <Input id="serviceMinutes" name="serviceMinutes" type="number" min="1" />
-              </FormField>
-              <Button type="submit" variant="secondary">
-                Add component
-              </Button>
-            </form>
-          </Card>
-          <Card>
-            <CardTitle>Provider workspace log</CardTitle>
-            <form action={submitAction(saveServiceDeliveryLogAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <input type="hidden" name="servicePlanId" value={firstPlan.id} />
-              <input type="hidden" name="serviceComponentId" value={firstComponent?.id ?? ""} />
-              <input type="hidden" name="primaryStudentId" value={firstPlan.student_id} />
-              <FormField id="serviceDate" label="Date">
-                <Input
-                  id="serviceDate"
-                  name="serviceDate"
-                  type="date"
-                  defaultValue={today}
-                  required
-                />
-              </FormField>
-              <div className="grid gap-3 sm:grid-cols-2">
-                <FormField id="startTime" label="Start">
-                  <Input id="startTime" name="startTime" type="time" />
-                </FormField>
-                <FormField id="endTime" label="End">
-                  <Input id="endTime" name="endTime" type="time" />
-                </FormField>
-              </div>
-              <FormField
-                id="participantStudentIds"
-                label="Group participant student IDs"
-                description="Comma-separated; every participant must be authorized."
-              >
-                <Input id="participantStudentIds" name="participantStudentIds" />
-              </FormField>
-              <input type="hidden" name="deliveryType" value="group" />
-              <input type="hidden" name="serviceStatus" value="delivered" />
-              <input type="hidden" name="recordStatus" value="draft" />
-              <Button type="submit" variant="secondary">
-                Save service log
-              </Button>
-            </form>
-          </Card>
-        </div>
-      ) : null}
-      <TableShell
-        caption="Service plans"
-        headers={["Plan", "Student", "Status", "Documentation"]}
-        rows={data.plans.map((plan) => {
-          const student = data.students.find((entry) => entry.id === plan.student_id);
-          const log = data.deliveryLogs.find((entry) => entry.service_plan_id === plan.id);
-          return [
-            plan.title,
-            student ? studentName(student) : "Authorized student",
-            plan.status,
-            describeDocumentationGap({ recordedMinutes: log?.calculated_duration_minutes ?? null }),
-          ];
-        })}
-      />
-    </div>
-  );
-}
+export {
+  ServicesWorkspace,
+  type ServicesView,
+} from "@/components/domain/services-workspace";
 
 export type { FamilyCommunicationView };
 
@@ -521,113 +328,254 @@ export function CommunicationsWorkspace({
   );
 }
 
-export function MeetingsWorkspace({ data, studentId }: { data: MeetingsData; studentId?: string }) {
+export type MeetingsView = "dashboard" | "action-items" | "types";
+
+export function MeetingsWorkspace({
+  data,
+  studentId,
+  view = "dashboard",
+}: {
+  data: MeetingsData;
+  studentId?: string;
+  view?: MeetingsView;
+}) {
   const visibleStudents = studentId
     ? data.students.filter((student) => student.id === studentId)
     : data.students;
   const firstMeeting = data.meetings[0];
+  const showSchedule = view === "dashboard";
+  const showActionItems = view === "action-items";
+  const showTypes = view === "types";
+
   return (
     <div className="space-y-6">
       <Alert title="Acknowledgement is not consent" tone="info">
-        Acknowledgement fields record receipt/review status only.
+        Acknowledgement fields record receipt/review status only — not legal consent.
       </Alert>
-      <Card>
-        <CardTitle>Meeting</CardTitle>
-        {data.permissions.canManage ? (
-          <form action={submitAction(saveMeetingAction)} className="mt-4 space-y-3">
-            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-            <FormField id="meetingStudentId" label="Student">
-              <Select
-                id="meetingStudentId"
-                name="studentId"
-                defaultValue={studentId ?? ""}
-                required
-              >
-                <option value="">Choose student</option>
-                {visibleStudents.map((student) => (
-                  <option key={student.id} value={student.id}>
-                    {studentName(student)}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
-            <FormField id="meetingTitle" label="Title">
-              <Input id="meetingTitle" name="title" required />
-            </FormField>
-            <input type="hidden" name="status" value="draft" />
-            <Button type="submit">Save meeting</Button>
-          </form>
-        ) : (
-          <PermissionNote />
-        )}
-      </Card>
-      {firstMeeting && data.permissions.canManage ? (
-        <div className="grid gap-6 lg:grid-cols-2">
+
+      {showSchedule ? (
+        <>
           <Card>
-            <CardTitle>External participant</CardTitle>
-            <form action={submitAction(addMeetingParticipantAction)} className="mt-4 space-y-3">
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <input type="hidden" name="meetingId" value={firstMeeting.id} />
-              <input type="hidden" name="studentId" value={firstMeeting.student_id} />
-              <input type="hidden" name="participantKind" value="external" />
-              <FormField id="externalName" label="External name">
-                <Input id="externalName" name="externalName" required />
-              </FormField>
-              <FormField id="externalRole" label="Role">
-                <Input id="externalRole" name="externalRole" />
-              </FormField>
-              <Button type="submit" variant="secondary">
-                Add external participant
-              </Button>
-            </form>
+            <CardTitle>Schedule a meeting</CardTitle>
+            <CardDescription>Student, title, optional type and time.</CardDescription>
+            {data.permissions.canManage ? (
+              <form action={submitAction(saveMeetingAction)} className="mt-4 space-y-3">
+                <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+                <FormField id="meetingStudentId" label="Student">
+                  <Select
+                    id="meetingStudentId"
+                    name="studentId"
+                    defaultValue={studentId ?? ""}
+                    required
+                  >
+                    <option value="">Choose student</option>
+                    {visibleStudents.map((student) => (
+                      <option key={student.id} value={student.id}>
+                        {studentName(student)}
+                      </option>
+                    ))}
+                  </Select>
+                </FormField>
+                {data.meetingTypes.length ? (
+                  <FormField id="meetingTypeId" label="Meeting type">
+                    <Select id="meetingTypeId" name="meetingTypeId" defaultValue="">
+                      <option value="">Choose type (optional)</option>
+                      {data.meetingTypes.map((type) => (
+                        <option key={type.id} value={type.id}>
+                          {type.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </FormField>
+                ) : null}
+                <FormField id="meetingTitle" label="Title">
+                  <Input id="meetingTitle" name="title" required placeholder="IEP annual review" />
+                </FormField>
+                <FormField id="meetingLocation" label="Location">
+                  <Input id="meetingLocation" name="location" placeholder="Room / virtual" />
+                </FormField>
+                <input type="hidden" name="status" value="draft" />
+                <Button type="submit">Save meeting</Button>
+              </form>
+            ) : (
+              <PermissionNote />
+            )}
           </Card>
-          <Card>
-            <CardTitle>Acknowledgement</CardTitle>
-            <form
-              action={submitAction(recordMeetingAcknowledgementAction)}
-              className="mt-4 space-y-3"
-            >
-              <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <input type="hidden" name="meetingId" value={firstMeeting.id} />
-              <FormField id="ackStatus" label="Status">
-                <Select id="ackStatus" name="status" defaultValue="acknowledged">
-                  <option value="acknowledged">Acknowledged</option>
-                  <option value="reviewed">Reviewed</option>
-                  <option value="requested_clarification">Requested clarification</option>
-                </Select>
-              </FormField>
-              <Button type="submit" variant="secondary">
-                Record acknowledgement
-              </Button>
-            </form>
-          </Card>
-        </div>
+          {firstMeeting && data.permissions.canManage ? (
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Card>
+                <CardTitle>External participant</CardTitle>
+                <form action={submitAction(addMeetingParticipantAction)} className="mt-4 space-y-3">
+                  <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+                  <input type="hidden" name="meetingId" value={firstMeeting.id} />
+                  <input type="hidden" name="studentId" value={firstMeeting.student_id} />
+                  <input type="hidden" name="participantKind" value="external" />
+                  <FormField id="externalName" label="External name">
+                    <Input id="externalName" name="externalName" required />
+                  </FormField>
+                  <FormField id="externalRole" label="Role">
+                    <Input id="externalRole" name="externalRole" />
+                  </FormField>
+                  <Button type="submit" variant="secondary">
+                    Add external participant
+                  </Button>
+                </form>
+              </Card>
+              <Card>
+                <CardTitle>Acknowledgement</CardTitle>
+                <form
+                  action={submitAction(recordMeetingAcknowledgementAction)}
+                  className="mt-4 space-y-3"
+                >
+                  <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+                  <input type="hidden" name="meetingId" value={firstMeeting.id} />
+                  <FormField id="ackStatus" label="Status">
+                    <Select id="ackStatus" name="status" defaultValue="acknowledged">
+                      <option value="acknowledged">Acknowledged</option>
+                      <option value="reviewed">Reviewed</option>
+                      <option value="requested_clarification">Requested clarification</option>
+                    </Select>
+                  </FormField>
+                  <Button type="submit" variant="secondary">
+                    Record acknowledgement
+                  </Button>
+                </form>
+              </Card>
+            </div>
+          ) : null}
+          <TableShell
+            caption="Meetings"
+            headers={["Title", "Student", "Status", "When"]}
+            emptyMessage="No meetings scheduled yet."
+            rows={data.meetings.map((meeting) => {
+              const student = data.students.find((entry) => entry.id === meeting.student_id);
+              return [
+                meeting.title,
+                student ? studentName(student) : "Authorized student",
+                meeting.status,
+                meeting.scheduled_start
+                  ? new Date(meeting.scheduled_start).toLocaleString()
+                  : "Not scheduled",
+              ];
+            })}
+          />
+        </>
       ) : null}
-      <TableShell
-        caption="Meetings"
-        headers={["Title", "Student", "Status", "When"]}
-        rows={data.meetings.map((meeting) => {
-          const student = data.students.find((entry) => entry.id === meeting.student_id);
-          return [
-            meeting.title,
-            student ? studentName(student) : "Authorized student",
-            meeting.status,
-            meeting.scheduled_start
-              ? new Date(meeting.scheduled_start).toLocaleString()
-              : "Not scheduled",
-          ];
-        })}
-      />
+
+      {showActionItems ? (
+        <>
+          <Card>
+            <CardTitle>Action items & acknowledgements</CardTitle>
+            <CardDescription>
+              Follow-ups from meetings. Record acknowledgements when a parent/team member reviewed
+              materials.
+            </CardDescription>
+            {firstMeeting && data.permissions.canManage ? (
+              <form
+                action={submitAction(recordMeetingAcknowledgementAction)}
+                className="mt-4 space-y-3"
+              >
+                <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+                <FormField id="ackMeetingId" label="Meeting">
+                  <Select id="ackMeetingId" name="meetingId" defaultValue={firstMeeting.id} required>
+                    {data.meetings.map((meeting) => (
+                      <option key={meeting.id} value={meeting.id}>
+                        {meeting.title}
+                      </option>
+                    ))}
+                  </Select>
+                </FormField>
+                <FormField id="ackByName" label="Acknowledged by (name)">
+                  <Input id="ackByName" name="acknowledgedByName" />
+                </FormField>
+                <FormField id="ackStatusFollowup" label="Status">
+                  <Select id="ackStatusFollowup" name="status" defaultValue="acknowledged">
+                    <option value="acknowledged">Acknowledged</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="requested_clarification">Requested clarification</option>
+                  </Select>
+                </FormField>
+                <Button type="submit" variant="secondary">
+                  Record acknowledgement
+                </Button>
+              </form>
+            ) : (
+              <p className="text-muted mt-4 text-sm">
+                Schedule a meeting first, then track acknowledgements here.
+              </p>
+            )}
+          </Card>
+          <TableShell
+            caption="Action items"
+            headers={["Meeting", "Item", "Owner", "Due", "Status"]}
+            emptyMessage="No action items yet."
+            rows={data.actionItems.map((item) => {
+              const meeting = data.meetings.find((entry) => entry.id === item.meeting_id);
+              return [
+                meeting?.title ?? "Meeting",
+                item.description,
+                item.assigned_to ?? "—",
+                item.due_date ?? "—",
+                item.status.replaceAll("_", " "),
+              ];
+            })}
+          />
+          <TableShell
+            caption="Acknowledgements"
+            headers={["Meeting", "Status", "By"]}
+            emptyMessage="No acknowledgements recorded yet."
+            rows={data.acknowledgements.map((ack) => {
+              const meeting = data.meetings.find((entry) => entry.id === ack.meeting_id);
+              return [
+                meeting?.title ?? "Meeting",
+                ack.status.replaceAll("_", " "),
+                ack.acknowledged_by_name ?? "—",
+              ];
+            })}
+          />
+        </>
+      ) : null}
+
+      {showTypes ? (
+        <Card>
+          <CardTitle>Meeting types</CardTitle>
+          <CardDescription>
+            Types available when scheduling (IEP review, transition, etc.). Contact an organization
+            admin if you need a new type added in setup.
+          </CardDescription>
+          {data.meetingTypes.length ? (
+            <div className="mt-4">
+              <TableShell
+                caption="Meeting types"
+                headers={["Name", "Status"]}
+                rows={data.meetingTypes.map((type) => [
+                  type.name,
+                  type.active ? "active" : "inactive",
+                ])}
+              />
+            </div>
+          ) : (
+            <EmptyState
+              title="No meeting types yet"
+              description="You can still schedule meetings with a free-text title. Types are optional labels."
+            />
+          )}
+        </Card>
+      ) : null}
     </div>
   );
 }
 
+export type ExecutiveFunctionView = "dashboard" | "checklists" | "schedules" | "observations";
+
 export function ExecutiveFunctionWorkspace({
   data,
   studentId,
+  view = "dashboard",
 }: {
   data: ExecutiveFunctionData;
   studentId?: string;
+  view?: ExecutiveFunctionView;
 }) {
   const today = new Date().toISOString().slice(0, 10);
   const visibleStudents = studentId
@@ -641,140 +589,213 @@ export function ExecutiveFunctionWorkspace({
   const prompts = promptDistribution(
     data.observations.map((observation) => ({ promptLevel: observation.prompt_level })),
   );
+  const showDashboard = view === "dashboard";
+  const showObservations = view === "dashboard" || view === "observations";
+  const showChecklists = view === "checklists";
+  const showSchedules = view === "schedules";
+
   return (
     <div className="space-y-6">
       <Alert title="Executive function observations are descriptive" tone="info">
-        Percentages describe observed support use and do not claim mastery.
+        Use this for organization, planning, and self-management supports. Percentages describe
+        observed support use and do not claim mastery.
       </Alert>
-      <AiAssistPanel
-        domain="executive_function"
-        title="AI Assist · Executive function"
-        description="Suggest EF skill focuses and plan titles based on the need you describe."
-      />
-      <div className="grid gap-4 md:grid-cols-3">
-        <Card>
-          <CardTitle>{data.plans.length}</CardTitle>
-          <CardDescription>EF plans</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{independence.percent ?? "Unavailable"}%</CardTitle>
-          <CardDescription>Observed independence</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{prompts.verbal}</CardTitle>
-          <CardDescription>Verbal prompts observed</CardDescription>
-        </Card>
-      </div>
-      <Card>
-        <CardTitle>Executive function plan</CardTitle>
-        {data.permissions.canManagePlans ? (
-          <form action={submitAction(saveExecutiveFunctionPlanAction)} className="mt-4 space-y-3">
-            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-            <FormField id="efStudentId" label="Student">
-              <Select id="efStudentId" name="studentId" defaultValue={studentId ?? ""} required>
-                <option value="">Choose student</option>
-                {visibleStudents.map((student) => (
-                  <option key={student.id} value={student.id}>
-                    {studentName(student)}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
-            <FormField id="efSkillAreaId" label="Skill area">
-              <Select id="efSkillAreaId" name="skillAreaId" defaultValue="">
-                <option value="">Choose skill area (optional)</option>
-                {data.skillAreas.map((skill) => (
-                  <option key={skill.id} value={skill.id}>
-                    {skill.name}
-                  </option>
-                ))}
-              </Select>
-            </FormField>
-            <FormField id="efTitle" label="Title">
-              <Input id="efTitle" name="title" required />
-            </FormField>
-            <input type="hidden" name="status" value="draft" />
-            <Button type="submit">Save EF plan</Button>
-          </form>
-        ) : (
-          <PermissionNote />
-        )}
-      </Card>
-      {firstPlan ? (
-        <div className="grid gap-6 lg:grid-cols-2">
+
+      {showDashboard ? (
+        <>
+          <AiAssistPanel
+            domain="executive_function"
+            title="AI Assist · Executive function"
+            description="Suggest EF skill focuses and plan titles based on the need you describe."
+          />
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardTitle>{data.plans.length}</CardTitle>
+              <CardDescription>EF plans</CardDescription>
+            </Card>
+            <Card>
+              <CardTitle>{independence.percent ?? "Unavailable"}%</CardTitle>
+              <CardDescription>Observed independence</CardDescription>
+            </Card>
+            <Card>
+              <CardTitle>{prompts.verbal}</CardTitle>
+              <CardDescription>Verbal prompts observed</CardDescription>
+            </Card>
+          </div>
           <Card>
-            <CardTitle>Observation</CardTitle>
-            <form
-              action={submitAction(saveExecutiveFunctionObservationAction)}
-              className="mt-4 space-y-3"
-            >
+            <CardTitle>Executive function plan</CardTitle>
+            <CardDescription>
+              Pick the student and skill area (organization, planning, etc.), then save the plan.
+            </CardDescription>
+            {data.permissions.canManagePlans ? (
+              <form action={submitAction(saveExecutiveFunctionPlanAction)} className="mt-4 space-y-3">
+                <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+                <FormField id="efStudentId" label="Student">
+                  <Select id="efStudentId" name="studentId" defaultValue={studentId ?? ""} required>
+                    <option value="">Choose student</option>
+                    {visibleStudents.map((student) => (
+                      <option key={student.id} value={student.id}>
+                        {studentName(student)}
+                      </option>
+                    ))}
+                  </Select>
+                </FormField>
+                <FormField id="efSkillAreaId" label="Skill area">
+                  <Select id="efSkillAreaId" name="skillAreaId" defaultValue="">
+                    <option value="">Choose skill area (optional)</option>
+                    {data.skillAreas.map((skill) => (
+                      <option key={skill.id} value={skill.id}>
+                        {skill.name}
+                      </option>
+                    ))}
+                  </Select>
+                </FormField>
+                <FormField id="efTitle" label="Title">
+                  <Input id="efTitle" name="title" required />
+                </FormField>
+                <input type="hidden" name="status" value="draft" />
+                <Button type="submit">Save EF plan</Button>
+              </form>
+            ) : (
+              <PermissionNote />
+            )}
+          </Card>
+        </>
+      ) : null}
+
+      {showObservations && firstPlan ? (
+        <Card>
+          <CardTitle>Observation</CardTitle>
+          <CardDescription>Log how much support the student needed today.</CardDescription>
+          <form
+            action={submitAction(saveExecutiveFunctionObservationAction)}
+            className="mt-4 space-y-3"
+          >
+            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+            <FormField id="observationPlanId" label="EF plan">
+              <Select id="observationPlanId" name="planId" defaultValue={firstPlan.id} required>
+                {data.plans.map((plan) => {
+                  const student = data.students.find((entry) => entry.id === plan.student_id);
+                  return (
+                    <option key={plan.id} value={plan.id}>
+                      {(student ? studentName(student) : "Student") + " · " + plan.title}
+                    </option>
+                  );
+                })}
+              </Select>
+            </FormField>
+            <input type="hidden" name="studentId" value={firstPlan.student_id} />
+            <FormField id="observationDate" label="Date">
+              <Input
+                id="observationDate"
+                name="observationDate"
+                type="date"
+                defaultValue={today}
+                required
+              />
+            </FormField>
+            <FormField id="promptLevel" label="Prompt level">
+              <Select id="promptLevel" name="promptLevel" defaultValue="visual">
+                <option value="independent">Independent</option>
+                <option value="visual">Visual</option>
+                <option value="verbal">Verbal</option>
+                <option value="modeled">Modeled</option>
+                <option value="not_observed">Not observed</option>
+              </Select>
+            </FormField>
+            <Button type="submit" variant="secondary">
+              Save observation
+            </Button>
+          </form>
+        </Card>
+      ) : null}
+
+      {showObservations && !firstPlan ? (
+        <EmptyState
+          title="No EF plan yet"
+          description="Create a plan on the Dashboard tab, then log observations here."
+        />
+      ) : null}
+
+      {showChecklists ? (
+        <Card>
+          <CardTitle>Checklist response</CardTitle>
+          <CardDescription>Mark yes / partial / no for EF checklist items.</CardDescription>
+          {firstChecklistItem ? (
+            <form action={submitAction(saveChecklistResponseAction)} className="mt-4 space-y-3">
               <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-              <input type="hidden" name="planId" value={firstPlan.id} />
-              <input type="hidden" name="studentId" value={firstPlan.student_id} />
-              <FormField id="observationDate" label="Date">
+              <input type="hidden" name="checklistId" value={firstChecklistItem.checklist_id} />
+              <input type="hidden" name="checklistItemId" value={firstChecklistItem.id} />
+              <input type="hidden" name="studentId" value={firstChecklistItem.student_id} />
+              <FormField id="responseDate" label="Date">
                 <Input
-                  id="observationDate"
-                  name="observationDate"
+                  id="responseDate"
+                  name="responseDate"
                   type="date"
                   defaultValue={today}
                   required
                 />
               </FormField>
-              <FormField id="promptLevel" label="Prompt level">
-                <Select id="promptLevel" name="promptLevel" defaultValue="visual">
-                  <option value="independent">Independent</option>
-                  <option value="visual">Visual</option>
-                  <option value="verbal">Verbal</option>
-                  <option value="modeled">Modeled</option>
+              <FormField id="response" label="Response">
+                <Select id="response" name="response" defaultValue="yes">
+                  <option value="yes">Yes</option>
+                  <option value="partial">Partial</option>
+                  <option value="no">No</option>
                   <option value="not_observed">Not observed</option>
                 </Select>
               </FormField>
               <Button type="submit" variant="secondary">
-                Save observation
+                Save response
               </Button>
             </form>
-          </Card>
-          {firstChecklistItem ? (
-            <Card>
-              <CardTitle>Checklist response</CardTitle>
-              <form action={submitAction(saveChecklistResponseAction)} className="mt-4 space-y-3">
-                <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-                <input type="hidden" name="checklistId" value={firstChecklistItem.checklist_id} />
-                <input type="hidden" name="checklistItemId" value={firstChecklistItem.id} />
-                <input type="hidden" name="studentId" value={firstChecklistItem.student_id} />
-                <FormField id="responseDate" label="Date">
-                  <Input
-                    id="responseDate"
-                    name="responseDate"
-                    type="date"
-                    defaultValue={today}
-                    required
-                  />
-                </FormField>
-                <FormField id="response" label="Response">
-                  <Select id="response" name="response" defaultValue="yes">
-                    <option value="yes">Yes</option>
-                    <option value="partial">Partial</option>
-                    <option value="no">No</option>
-                    <option value="not_observed">Not observed</option>
-                  </Select>
-                </FormField>
-                <Button type="submit" variant="secondary">
-                  Save response
-                </Button>
-              </form>
-            </Card>
-          ) : null}
-        </div>
+          ) : (
+            <p className="text-muted mt-4 text-sm">
+              No checklist items yet for this student. Create an EF plan first; checklist items are
+              attached as plans are built out.
+            </p>
+          )}
+        </Card>
       ) : null}
-      <TableShell
-        caption="Executive function plans"
-        headers={["Plan", "Student", "Status"]}
-        rows={data.plans.map((plan) => {
-          const student = data.students.find((entry) => entry.id === plan.student_id);
-          return [plan.title, student ? studentName(student) : "Authorized student", plan.status];
-        })}
-      />
+
+      {showSchedules ? (
+        <Card>
+          <CardTitle>Schedules</CardTitle>
+          <CardDescription>
+            Schedule blocks help teams see when EF supports overlap with the school day.
+          </CardDescription>
+          {data.scheduleBlocks.length ? (
+            <div className="mt-4">
+              <TableShell
+                caption="Schedule blocks"
+                headers={["Label", "Day", "Start", "End"]}
+                rows={data.scheduleBlocks.map((block) => [
+                  block.label,
+                  block.day_of_week != null ? String(block.day_of_week) : "—",
+                  block.start_time,
+                  block.end_time,
+                ])}
+              />
+            </div>
+          ) : (
+            <EmptyState
+              title="No schedule blocks yet"
+              description="Schedules are optional. Focus on plans and observations for day-to-day use."
+            />
+          )}
+        </Card>
+      ) : null}
+
+      {showDashboard ? (
+        <TableShell
+          caption="Executive function plans"
+          headers={["Plan", "Student", "Status"]}
+          emptyMessage="No EF plans yet."
+          rows={data.plans.map((plan) => {
+            const student = data.students.find((entry) => entry.id === plan.student_id);
+            return [plan.title, student ? studentName(student) : "Authorized student", plan.status];
+          })}
+        />
+      ) : null}
     </div>
   );
 }

@@ -10,7 +10,7 @@ export function TableShell({
 }: {
   caption: string;
   headers: string[];
-  rows: string[][];
+  rows: React.ReactNode[][];
   className?: string;
   emptyMessage?: string;
 }) {
@@ -48,7 +48,7 @@ export function TableShell({
           ) : (
             rows.map((row, index) => (
               <tr
-                key={`${row[0]}-${index}`}
+                key={`row-${index}`}
                 className="odd:bg-background-elevated even:bg-surface-subtle/40"
               >
                 {row.map((cell, cellIndex) => (

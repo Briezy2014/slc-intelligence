@@ -705,9 +705,11 @@ export function InterventionDashboard({
 export function InterventionEvidenceForms({
   data,
   planId,
+  focus = "all",
 }: {
   data: InterventionData;
   planId?: string;
+  focus?: "all" | "fidelity" | "dosage" | "reviews";
 }) {
   const plan = planId ? data.plans.find((entry) => entry.id === planId) : data.plans[0];
   if (!plan)
@@ -718,116 +720,128 @@ export function InterventionEvidenceForms({
       />
     );
   const today = new Date().toISOString().slice(0, 10);
+  const showDosage = focus === "all" || focus === "dosage";
+  const showFidelity = focus === "all" || focus === "fidelity";
+  const showReviews = focus === "all" || focus === "reviews";
+  const showComponent = focus === "all";
   return (
     <div className="grid gap-6 lg:grid-cols-2">
-      <Card>
-        <CardTitle>Component</CardTitle>
-        <form action={submitAction(addInterventionComponentAction)} className="mt-4 space-y-3">
-          <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-          <input type="hidden" name="planId" value={plan.id} />
-          <FormField id="componentLabel" label="Label">
-            <Input id="componentLabel" name="label" required />
-          </FormField>
-          <FormField id="componentDescription" label="Description">
-            <Textarea id="componentDescription" name="description" required />
-          </FormField>
-          <input type="hidden" name="sortOrder" value="1" />
-          <Button type="submit" variant="secondary">
-            Add component
-          </Button>
-        </form>
-      </Card>
-      <Card>
-        <CardTitle>Dosage log</CardTitle>
-        <form action={submitAction(saveDosageLogAction)} className="mt-4 space-y-3">
-          <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-          <input type="hidden" name="planId" value={plan.id} />
-          <input type="hidden" name="studentId" value={plan.student_id} />
-          <FormField id="logDate" label="Date">
-            <Input id="logDate" name="logDate" type="date" defaultValue={today} required />
-          </FormField>
-          <FormField id="sessionsDelivered" label="Sessions delivered">
-            <Input
-              id="sessionsDelivered"
-              name="sessionsDelivered"
-              type="number"
-              min="0"
-              defaultValue="1"
-            />
-          </FormField>
-          <FormField id="durationMinutes" label="Minutes">
-            <Input
-              id="durationMinutes"
-              name="durationMinutes"
-              type="number"
-              min="0"
-              defaultValue="0"
-            />
-          </FormField>
-          <Button type="submit" variant="secondary">
-            Add dosage
-          </Button>
-        </form>
-      </Card>
-      <Card>
-        <CardTitle>Fidelity observation</CardTitle>
-        <form action={submitAction(saveFidelityObservationAction)} className="mt-4 space-y-3">
-          <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-          <input type="hidden" name="planId" value={plan.id} />
-          <input type="hidden" name="studentId" value={plan.student_id} />
-          <FormField id="checklistId" label="Checklist">
-            <Select id="checklistId" name="checklistId" required>
-              <option value="">Choose checklist</option>
-              {data.checklists
-                .filter((checklist) => checklist.plan_id === plan.id)
-                .map((checklist) => (
-                  <option key={checklist.id} value={checklist.id}>
-                    {checklist.title}
-                  </option>
-                ))}
-            </Select>
-          </FormField>
-          <FormField id="observationDate" label="Date">
-            <Input
-              id="observationDate"
-              name="observationDate"
-              type="date"
-              defaultValue={today}
-              required
-            />
-          </FormField>
-          <input type="hidden" name="status" value="draft" />
-          <Button type="submit" variant="secondary">
-            Save fidelity
-          </Button>
-        </form>
-      </Card>
-      <Card>
-        <CardTitle>Review</CardTitle>
-        <form action={submitAction(saveInterventionReviewAction)} className="mt-4 space-y-3">
-          <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
-          <input type="hidden" name="planId" value={plan.id} />
-          <input type="hidden" name="studentId" value={plan.student_id} />
-          <FormField id="reviewDate" label="Review date">
-            <Input id="reviewDate" name="reviewDate" type="date" defaultValue={today} required />
-          </FormField>
-          <FormField id="summary" label="Summary">
-            <Textarea id="summary" name="summary" required />
-          </FormField>
-          <FormField id="outcome" label="Outcome">
-            <Select id="outcome" name="outcome" defaultValue="continue">
-              <option value="continue">Continue</option>
-              <option value="revise">Revise</option>
-              <option value="pause">Pause</option>
-              <option value="complete">Complete</option>
-              <option value="discontinue">Discontinue</option>
-            </Select>
-          </FormField>
-          <Button type="submit" variant="secondary">
-            Save review
-          </Button>
-        </form>
-      </Card>
+      {showComponent ? (
+        <Card>
+          <CardTitle>Component</CardTitle>
+          <form action={submitAction(addInterventionComponentAction)} className="mt-4 space-y-3">
+            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+            <input type="hidden" name="planId" value={plan.id} />
+            <FormField id="componentLabel" label="Label">
+              <Input id="componentLabel" name="label" required />
+            </FormField>
+            <FormField id="componentDescription" label="Description">
+              <Textarea id="componentDescription" name="description" required />
+            </FormField>
+            <input type="hidden" name="sortOrder" value="1" />
+            <Button type="submit" variant="secondary">
+              Add component
+            </Button>
+          </form>
+        </Card>
+      ) : null}
+      {showDosage ? (
+        <Card>
+          <CardTitle>Dosage log</CardTitle>
+          <form action={submitAction(saveDosageLogAction)} className="mt-4 space-y-3">
+            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+            <input type="hidden" name="planId" value={plan.id} />
+            <input type="hidden" name="studentId" value={plan.student_id} />
+            <FormField id="logDate" label="Date">
+              <Input id="logDate" name="logDate" type="date" defaultValue={today} required />
+            </FormField>
+            <FormField id="sessionsDelivered" label="Sessions delivered">
+              <Input
+                id="sessionsDelivered"
+                name="sessionsDelivered"
+                type="number"
+                min="0"
+                defaultValue="1"
+              />
+            </FormField>
+            <FormField id="durationMinutes" label="Minutes">
+              <Input
+                id="durationMinutes"
+                name="durationMinutes"
+                type="number"
+                min="0"
+                defaultValue="0"
+              />
+            </FormField>
+            <Button type="submit" variant="secondary">
+              Add dosage
+            </Button>
+          </form>
+        </Card>
+      ) : null}
+      {showFidelity ? (
+        <Card>
+          <CardTitle>Fidelity observation</CardTitle>
+          <form action={submitAction(saveFidelityObservationAction)} className="mt-4 space-y-3">
+            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+            <input type="hidden" name="planId" value={plan.id} />
+            <input type="hidden" name="studentId" value={plan.student_id} />
+            <FormField id="checklistId" label="Checklist">
+              <Select id="checklistId" name="checklistId" required>
+                <option value="">Choose checklist</option>
+                {data.checklists
+                  .filter((checklist) => checklist.plan_id === plan.id)
+                  .map((checklist) => (
+                    <option key={checklist.id} value={checklist.id}>
+                      {checklist.title}
+                    </option>
+                  ))}
+              </Select>
+            </FormField>
+            <FormField id="observationDate" label="Date">
+              <Input
+                id="observationDate"
+                name="observationDate"
+                type="date"
+                defaultValue={today}
+                required
+              />
+            </FormField>
+            <input type="hidden" name="status" value="draft" />
+            <Button type="submit" variant="secondary">
+              Save fidelity
+            </Button>
+          </form>
+        </Card>
+      ) : null}
+      {showReviews ? (
+        <Card>
+          <CardTitle>Review</CardTitle>
+          <form action={submitAction(saveInterventionReviewAction)} className="mt-4 space-y-3">
+            <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
+            <input type="hidden" name="planId" value={plan.id} />
+            <input type="hidden" name="studentId" value={plan.student_id} />
+            <FormField id="reviewDate" label="Review date">
+              <Input id="reviewDate" name="reviewDate" type="date" defaultValue={today} required />
+            </FormField>
+            <FormField id="summary" label="Summary">
+              <Textarea id="summary" name="summary" required />
+            </FormField>
+            <FormField id="outcome" label="Outcome">
+              <Select id="outcome" name="outcome" defaultValue="continue">
+                <option value="continue">Continue</option>
+                <option value="revise">Revise</option>
+                <option value="pause">Pause</option>
+                <option value="complete">Complete</option>
+                <option value="discontinue">Discontinue</option>
+              </Select>
+            </FormField>
+            <Button type="submit" variant="secondary">
+              Save review
+            </Button>
+          </form>
+        </Card>
+      ) : null}
     </div>
   );
 }

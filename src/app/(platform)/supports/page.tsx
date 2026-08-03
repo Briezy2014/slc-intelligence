@@ -34,7 +34,7 @@ export default function SupportsHubPage() {
             {
               href: "/services",
               label: "Services",
-              description: "Related services and delivery logs.",
+              description: "OT, PT, Speech, APE — student, provider, goals, and session notes.",
             },
             {
               href: "/executive-function",

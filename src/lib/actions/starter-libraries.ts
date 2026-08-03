@@ -50,6 +50,7 @@ export async function importStarterLibrariesAction(formData: FormData): Promise<
         accommodations: result.accommodations,
         executiveFunctionSkills: result.executiveFunctionSkills,
         communicationTemplates: result.communicationTemplates,
+        services: result.services,
       },
       paths: [
         "/organization/settings",
@@ -57,6 +58,7 @@ export async function importStarterLibrariesAction(formData: FormData): Promise<
         "/accommodations",
         "/executive-function",
         "/family-communication",
+        "/services",
         "/goals",
         "/progress/enter",
       ],
@@ -65,13 +67,13 @@ export async function importStarterLibrariesAction(formData: FormData): Promise<
     if (result.imported === 0) {
       return {
         status: "success",
-        message: `Libraries already full (${counts.interventions} interventions, ${counts.accommodations} accommodations, ${counts.executiveFunctionSkills} EF skills, ${counts.communicationTemplates} communication templates). Goal templates (${counts.goals}) are always available when creating goals.`,
+        message: `Libraries already full (${counts.interventions} interventions, ${counts.accommodations} accommodations, ${counts.executiveFunctionSkills} EF skills, ${counts.communicationTemplates} communication templates, ${counts.services} related services). Goal templates (${counts.goals}) are always available when creating goals.`,
       };
     }
 
     return {
       status: "success",
-      message: `Added ${result.imported} library items. Dropdowns across Interventions, Accommodations, Executive Function, and Family Communication are ready.`,
+      message: `Added ${result.imported} library items. Dropdowns across Interventions, Accommodations, Executive Function, Family Communication, and Services are ready.`,
     };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };

@@ -104,14 +104,64 @@ export async function saveServicePlanAction(formData: FormData): Promise<ActionS
       : await canService(context, "can_manage_service_plan", values.studentId);
     if (!allowed) return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
 
+    let definitionName: string | null = null;
+    let serviceArea: string | null = null;
+    let defaultDeliveryType:
+      | "push_in"
+      | "pull_out"
+      | "consultation"
+      | "individual"
+      | "group"
+      | "other"
+      | null = null;
+    if (values.serviceDefinitionId) {
+      const definition = (
+        await context.supabase
+          .from("service_definitions")
+          .select("id,name,service_area,default_delivery_type")
+          .eq("organization_id", context.organizationId)
+          .eq("id", values.serviceDefinitionId)
+          .maybeSingle()
+      ).data;
+      if (!definition) return { status: "error", message: GENERIC_ACTION_MESSAGE };
+      definitionName = definition.name;
+      serviceArea = definition.service_area;
+      defaultDeliveryType = definition.default_delivery_type;
+    }
+
+    const title = values.title?.trim() || definitionName || "Related service";
+    const notes = values.notes?.trim() || values.description?.trim() || null;
+    const deliveryType =
+      (values.deliveryType || defaultDeliveryType || null) as
+        | "push_in"
+        | "pull_out"
+        | "consultation"
+        | "individual"
+        | "group"
+        | "other"
+        | null;
+    const serviceSnapshot = {
+      title,
+      status: values.status,
+      providerUserId: values.providerUserId || null,
+      providerName: values.providerName?.trim() || null,
+      providerGoals: values.providerGoals?.trim() || null,
+      notes,
+      serviceArea,
+      definitionName,
+      frequency: values.frequency?.trim() || null,
+      serviceMinutes: values.serviceMinutes ?? null,
+      deliveryType,
+    };
+
     const payload = {
       organization_id: context.organizationId,
       student_id: values.studentId,
       iep_cycle_id: values.iepCycleId || null,
       service_definition_id: values.serviceDefinitionId || null,
-      title: values.title,
-      description: values.description ?? null,
-      service_snapshot: { title: values.title, status: values.status },
+      title,
+      description: values.providerGoals?.trim() || notes,
+      service_snapshot: serviceSnapshot,
       status: values.status,
       start_date: values.startDate || null,
       end_date: values.endDate || null,
@@ -129,6 +179,25 @@ export async function saveServicePlanAction(formData: FormData): Promise<ActionS
           .single()
       : await context.supabase.from("student_service_plans").insert(payload).select("id").single();
     if (result.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
+
+    if (
+      !values.servicePlanId &&
+      (values.serviceMinutes || values.frequency?.trim() || deliveryType || notes)
+    ) {
+      const componentResult = await context.supabase.from("service_plan_components").insert({
+        organization_id: context.organizationId,
+        service_plan_id: result.data.id,
+        component_name: definitionName || title,
+        service_minutes: values.serviceMinutes ?? null,
+        frequency: values.frequency?.trim() || null,
+        setting: null,
+        delivery_type: deliveryType,
+        notes: notes,
+        sort_order: 1,
+      });
+      if (componentResult.error) return { status: "error", message: GENERIC_ACTION_MESSAGE };
+    }
+
     await auditAndRevalidate({
       organizationId: context.organizationId,
       actorUserId: context.user.id,
@@ -138,11 +207,13 @@ export async function saveServicePlanAction(formData: FormData): Promise<ActionS
       newState: payload,
       paths: [
         "/services",
+        "/services/assign",
+        "/services/logs",
         `/students/${values.studentId}/services`,
         `/students/${values.studentId}/services/${result.data.id}`,
       ],
     });
-    return { status: "success", message: "Service plan saved." };
+    return { status: "success", message: "Student service saved." };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
   }
@@ -225,7 +296,7 @@ export async function saveServiceDeliveryLogAction(formData: FormData): Promise<
       service_plan_id: values.servicePlanId,
       service_component_id: values.serviceComponentId || null,
       primary_student_id: values.primaryStudentId,
-      provider_user_id: context.user.id,
+      provider_user_id: values.providerUserId || context.user.id,
       service_date: values.serviceDate,
       start_time: values.startTime || null,
       end_time: values.endTime || null,
