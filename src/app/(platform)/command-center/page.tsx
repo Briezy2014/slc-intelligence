@@ -98,7 +98,11 @@ export default async function CommandCenterPage() {
                 hint: "Schedules, notes, routines",
               },
               { href: "/supports", label: "Supports", hint: "Accommodations & interventions" },
-              { href: "/progress/enter", label: "Progress", hint: "Enter goal progress" },
+              {
+                href: "/progress/enter",
+                label: "Progress entry",
+                hint: "Student → goal → today’s score",
+              },
               { href: "/behavior-detective", label: "Behavior", hint: "Log what you saw" },
               {
                 href: "/family-communication",

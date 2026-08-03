@@ -25,6 +25,7 @@ import {
   CLASSROOM_SCHEDULE_TEMPLATES,
   DAILY_NOTE_TEMPLATES,
 } from "@/lib/catalogs/classroom-operations-templates";
+import { SectionExportBar } from "@/components/domain/section-export-bar";
 import { OWNER_CLASSROOM_NAME } from "@/lib/constants/owner-classroom";
 import { scheduleBlockDurationMinutes } from "@/lib/analytics/executive-function-calculations";
 import type { ClassroomOperationsData } from "@/lib/data/classroom-operations";
@@ -153,7 +154,7 @@ export function ClassroomOperationsWorkspace({
           announcements: false,
         }
       : {
-          setup: section === "daily",
+          setup: true,
           schedules: section === "daily" || section === "schedules",
           blocks: section === "daily" || section === "schedules",
           notes: section === "daily" || section === "notes",
@@ -212,32 +213,36 @@ export function ClassroomOperationsWorkspace({
       ) : null}
 
       {section === "overview" ? (
-        <Alert title="Start here" tone="info">
-          Tap <strong>Today in class</strong>, <strong>Schedules</strong>,{" "}
-          <strong>Daily notes</strong>, <strong>Routines</strong>, or <strong>Announcements</strong>
-          . Each one opens library dropdowns — usually two questions — so you are never staring at a
-          blank page.
+        <Alert title="What Classroom is for" tone="info">
+          Day-of classroom tools: schedules, student notes, routines, and staff announcements. Tap a
+          card to open the form. Each section can export to spreadsheet or PDF for your coordinator.
         </Alert>
-      ) : null}
+      ) : (
+        <Alert title="Scroll to the form below" tone="info">
+          Answer the two dropdown questions, save, then use Export if you need a spreadsheet or PDF.
+        </Alert>
+      )}
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardTitle>{data.schedules.length}</CardTitle>
-          <CardDescription>Schedules</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{data.scheduleBlocks.length}</CardTitle>
-          <CardDescription>Schedule blocks</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{data.students.length}</CardTitle>
-          <CardDescription>Students</CardDescription>
-        </Card>
-        <Card>
-          <CardTitle>{data.dailyNotes.length}</CardTitle>
-          <CardDescription>Daily notes</CardDescription>
-        </Card>
-      </div>
+      {section === "overview" ? (
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <Card>
+            <CardTitle>{data.schedules.length}</CardTitle>
+            <CardDescription>Schedules</CardDescription>
+          </Card>
+          <Card>
+            <CardTitle>{data.scheduleBlocks.length}</CardTitle>
+            <CardDescription>Schedule blocks</CardDescription>
+          </Card>
+          <Card>
+            <CardTitle>{data.students.length}</CardTitle>
+            <CardDescription>Students</CardDescription>
+          </Card>
+          <Card>
+            <CardTitle>{data.dailyNotes.length}</CardTitle>
+            <CardDescription>Daily notes</CardDescription>
+          </Card>
+        </div>
+      ) : null}
 
       {show.schedules ? (
         <Section
@@ -765,6 +770,70 @@ export function ClassroomOperationsWorkspace({
             />
           </div>
         </Section>
+      ) : null}
+
+      {show.notes ? (
+        <SectionExportBar
+          title="Daily notes"
+          filename="classroom-daily-notes"
+          headers={["Student", "Date", "Status", "Note"]}
+          rows={data.dailyNotes.map((note) => {
+            const student = data.students.find((entry) => entry.id === note.student_id);
+            return [
+              student ? studentName(student) : "Student",
+              note.note_date,
+              note.status,
+              note.note_text,
+            ];
+          })}
+        />
+      ) : null}
+      {show.schedules ? (
+        <SectionExportBar
+          title="Schedules & time blocks"
+          filename="classroom-schedules"
+          headers={["Schedule", "Block", "Day", "Start", "End", "Minutes"]}
+          rows={data.scheduleBlocks.map((block) => {
+            const schedule = data.schedules.find((entry) => entry.id === block.schedule_id);
+            return [
+              schedule?.name ?? "Schedule",
+              block.label,
+              dayLabel(block.day_of_week),
+              block.start_time,
+              block.end_time,
+              scheduleBlockDurationMinutes(block.start_time, block.end_time) ?? "",
+            ];
+          })}
+        />
+      ) : null}
+      {show.routines ? (
+        <SectionExportBar
+          title="Routines"
+          filename="classroom-routines"
+          headers={["Name", "Classroom", "Status", "Steps"]}
+          rows={data.routines.map((routine) => {
+            const classroom = data.classrooms.find((entry) => entry.id === routine.classroom_id);
+            return [
+              routine.name,
+              classroom?.name ?? "Classroom",
+              routine.status,
+              routine.description ?? "",
+            ];
+          })}
+        />
+      ) : null}
+      {show.announcements ? (
+        <SectionExportBar
+          title="Announcements"
+          filename="classroom-announcements"
+          headers={["Title", "Audience", "Status", "Body"]}
+          rows={data.announcements.map((announcement) => [
+            announcement.title,
+            announcement.audience,
+            announcement.status,
+            announcement.body,
+          ])}
+        />
       ) : null}
     </div>
   );

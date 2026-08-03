@@ -99,7 +99,7 @@ export default async function ClassroomOperationsPage({
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Classroom" }]} />
       <PageHeader
         title={sectionTitle(section)}
-        description="Tap a card, answer two dropdown questions from the library, then save. Nothing should feel blank or stuck."
+        description="Day-of classroom tools: schedules, notes, routines, announcements. Tap a card, answer two dropdowns, save, then export CSV/PDF if needed."
       />
       {!state.configured ? (
         <ConfigurationState />

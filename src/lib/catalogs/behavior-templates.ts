@@ -874,15 +874,15 @@ export const OBSERVATION_METHOD_OPTIONS: Array<{
   primary?: boolean;
 }> = [
   {
-    value: "abc",
-    label: "What happened before, during, and after",
-    help: "Best everyday choice. Write what came first, what you saw, and what happened next.",
+    value: "frequency",
+    label: "How many times it happened (+ / − count)",
+    help: "Best for daily tracking. Tap + for each hit/instance, or type the total.",
     primary: true,
   },
   {
-    value: "frequency",
-    label: "How many times it happened",
-    help: "Count each time the behavior happened while you watched.",
+    value: "abc",
+    label: "What happened before, during, and after",
+    help: "Write what came first, what you saw, and what happened next.",
     primary: true,
   },
   {

@@ -8,12 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert } from "@/components/ui/alert";
-import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
 import { saveProgressSessionAction } from "@/lib/actions/progress";
 import type { IepGoal, Student } from "@/lib/supabase/types";
 
 function submitAction(action: (formData: FormData) => Promise<unknown>) {
   return action as unknown as (formData: FormData) => void;
+}
+
+function studentLabel(student: Student) {
+  return `${student.last_name}, ${student.preferred_name || student.first_name}${
+    student.local_identifier ? ` (${student.local_identifier})` : ""
+  }`;
 }
 
 export function ProgressEntryForm({
@@ -28,6 +33,7 @@ export function ProgressEntryForm({
   const today = new Date().toISOString().slice(0, 10);
   const [studentId, setStudentId] = useState("");
   const [goalId, setGoalId] = useState("");
+  const [measurementType, setMeasurementType] = useState("percentage");
 
   const studentGoals = useMemo(
     () => (studentId ? goals.filter((goal) => goal.student_id === studentId) : []),
@@ -38,29 +44,45 @@ export function ProgressEntryForm({
 
   return (
     <div className="space-y-4">
+      <Alert title="What this page is for" tone="info">
+        Enter today’s progress numbers for a student goal (correct/total, fluency, etc.). This is
+        not a checklist generator — pick <strong>student → goal</strong>, enter the score, save. Use
+        student Goals first if none exist yet.
+      </Alert>
+
       {students.length === 0 ? (
         <Alert title="Create a student first" tone="warning">
-          Rapid Progress pulls from your student roster. Go to{" "}
+          Go to{" "}
           <Link href="/students/new" className="font-semibold underline">
             Students → New student
           </Link>
           , then create an IEP cycle and goal before entering progress.
         </Alert>
       ) : null}
+
       {students.length > 0 && goals.length === 0 ? (
         <Alert title="No goals yet" tone="warning">
-          Goals are created per student (not on this page). Open a student → Goals, pick a starter
-          template or write a custom goal, then return here.
+          Goals are created on the student record. Open{" "}
+          <Link href="/students" className="font-semibold underline">
+            Students
+          </Link>{" "}
+          → pick a student → Goals → choose a starter template, then return here.
         </Alert>
       ) : null}
-      <AiAssistPanel
-        domain="progress"
-        title="AI Assist · Rapid progress"
-        description="Generate a reviewable progress-session checklist and note prompts for the focus you enter."
-      />
+
+      {studentId && studentGoals.length === 0 ? (
+        <Alert title="This student has no goals yet" tone="warning">
+          Open{" "}
+          <Link href={`/students/${studentId}/goals`} className="font-semibold underline">
+            this student’s Goals
+          </Link>{" "}
+          to add one, then come back.
+        </Alert>
+      ) : null}
+
       <form action={submitAction(saveProgressSessionAction)} className="space-y-4">
         <input type="hidden" name="organizationId" value={organizationId} />
-        <FormField id="studentId" label="Student">
+        <FormField id="studentId" label="1. Which student?">
           <Select
             id="studentId"
             name="studentId"
@@ -74,18 +96,23 @@ export function ProgressEntryForm({
             <option value="">Choose a student</option>
             {students.map((student) => (
               <option key={student.id} value={student.id}>
-                {student.last_name}, {student.preferred_name || student.first_name}
+                {studentLabel(student)}
               </option>
             ))}
           </Select>
         </FormField>
-        <FormField id="goalId" label="Goal">
+        <FormField id="goalId" label="2. Which goal?">
           <Select
             id="goalId"
             name="goalId"
             required
             value={goalId}
-            onChange={(event) => setGoalId(event.target.value)}
+            onChange={(event) => {
+              const nextGoalId = event.target.value;
+              setGoalId(nextGoalId);
+              const goal = studentGoals.find((entry) => entry.id === nextGoalId);
+              if (goal?.measurement_type) setMeasurementType(goal.measurement_type);
+            }}
             disabled={!studentId}
           >
             <option value="">
@@ -103,11 +130,13 @@ export function ProgressEntryForm({
             ))}
           </Select>
         </FormField>
+
         {selectedGoal ? (
-          <p className="text-muted text-sm">
-            Selected measurement type suggestion: {selectedGoal.measurement_type}
-          </p>
+          <Alert title="Selected goal" tone="neutral">
+            {selectedGoal.goal_statement}
+          </Alert>
         ) : null}
+
         <div className="grid gap-4 sm:grid-cols-3">
           <FormField id="sessionDate" label="Session date">
             <Input id="sessionDate" name="sessionDate" type="date" required defaultValue={today} />
@@ -116,19 +145,18 @@ export function ProgressEntryForm({
             <Select
               id="measurementType"
               name="measurementType"
-              defaultValue={selectedGoal?.measurement_type ?? "percentage"}
-              key={selectedGoal?.id ?? "measurement-default"}
+              value={measurementType}
+              onChange={(event) => setMeasurementType(event.target.value)}
             >
-              <option value="percentage">Percentage</option>
+              <option value="percentage">Percentage (correct / opportunities)</option>
               <option value="reading_accuracy">Reading accuracy</option>
               <option value="reading_fluency">Reading fluency</option>
-              <option value="frequency">Frequency</option>
+              <option value="frequency">Frequency (count)</option>
               <option value="rate">Rate</option>
               <option value="duration">Duration</option>
               <option value="latency">Latency</option>
               <option value="rubric">Rubric</option>
               <option value="prompt_level">Prompt level</option>
-              <option value="task_analysis">Task analysis</option>
               <option value="independence">Independence</option>
               <option value="custom_numeric">Custom numeric</option>
             </Select>
@@ -140,66 +168,141 @@ export function ProgressEntryForm({
             </Select>
           </FormField>
         </div>
-        <div className="grid gap-4 sm:grid-cols-4">
-          <FormField id="correctCount" label="Correct count">
-            <Input id="correctCount" name="correctCount" type="number" min="0" defaultValue="0" />
-          </FormField>
-          <FormField id="totalOpportunities" label="Total opportunities">
-            <Input
-              id="totalOpportunities"
-              name="totalOpportunities"
-              type="number"
-              min="1"
-              defaultValue="1"
-            />
-          </FormField>
-          <FormField id="countValue" label="Count value">
-            <Input id="countValue" name="countValue" type="number" min="0" defaultValue="0" />
-          </FormField>
-          <FormField id="observationDurationSeconds" label="Duration seconds">
-            <Input
-              id="observationDurationSeconds"
-              name="observationDurationSeconds"
-              type="number"
-              min="1"
-              defaultValue="60"
-            />
-          </FormField>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-4">
-          <FormField id="wordsRead" label="Words read">
-            <Input id="wordsRead" name="wordsRead" type="number" min="0" defaultValue="0" />
-          </FormField>
-          <FormField id="errorCount" label="Errors">
-            <Input id="errorCount" name="errorCount" type="number" min="0" defaultValue="0" />
-          </FormField>
-          <FormField id="readingTimeSeconds" label="Reading seconds">
-            <Input
-              id="readingTimeSeconds"
-              name="readingTimeSeconds"
-              type="number"
-              min="1"
-              defaultValue="60"
-            />
-          </FormField>
-          <FormField id="rateUnit" label="Rate unit">
-            <Select id="rateUnit" name="rateUnit" defaultValue="per_minute">
-              <option value="per_minute">Per minute</option>
-              <option value="per_hour">Per hour</option>
-            </Select>
-          </FormField>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-4">
-          <FormField id="durationValue" label="Duration value">
+
+        {measurementType === "percentage" ||
+        measurementType === "reading_accuracy" ||
+        measurementType === "independence" ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField id="correctCount" label="Correct / independent count">
+              <Input id="correctCount" name="correctCount" type="number" min="0" defaultValue="0" />
+            </FormField>
+            <FormField id="totalOpportunities" label="Total opportunities">
+              <Input
+                id="totalOpportunities"
+                name="totalOpportunities"
+                type="number"
+                min="1"
+                defaultValue="10"
+              />
+            </FormField>
+          </div>
+        ) : null}
+
+        {measurementType === "frequency" || measurementType === "rate" ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField id="countValue" label="Count">
+              <Input id="countValue" name="countValue" type="number" min="0" defaultValue="0" />
+            </FormField>
+            <FormField id="observationDurationSeconds" label="Watch time (seconds)">
+              <Input
+                id="observationDurationSeconds"
+                name="observationDurationSeconds"
+                type="number"
+                min="1"
+                defaultValue="60"
+              />
+            </FormField>
+            {measurementType === "rate" ? (
+              <FormField id="rateUnit" label="Rate unit">
+                <Select id="rateUnit" name="rateUnit" defaultValue="per_minute">
+                  <option value="per_minute">Per minute</option>
+                  <option value="per_hour">Per hour</option>
+                </Select>
+              </FormField>
+            ) : (
+              <input type="hidden" name="rateUnit" value="per_minute" />
+            )}
+          </div>
+        ) : (
+          <>
+            <input type="hidden" name="countValue" value="0" />
+            <input type="hidden" name="observationDurationSeconds" value="60" />
+            <input type="hidden" name="rateUnit" value="per_minute" />
+          </>
+        )}
+
+        {measurementType === "reading_fluency" || measurementType === "reading_accuracy" ? (
+          <div className="grid gap-4 sm:grid-cols-3">
+            <FormField id="wordsRead" label="Words read">
+              <Input id="wordsRead" name="wordsRead" type="number" min="0" defaultValue="0" />
+            </FormField>
+            <FormField id="errorCount" label="Errors">
+              <Input id="errorCount" name="errorCount" type="number" min="0" defaultValue="0" />
+            </FormField>
+            <FormField id="readingTimeSeconds" label="Reading seconds">
+              <Input
+                id="readingTimeSeconds"
+                name="readingTimeSeconds"
+                type="number"
+                min="1"
+                defaultValue="60"
+              />
+            </FormField>
+          </div>
+        ) : (
+          <>
+            <input type="hidden" name="wordsRead" value="0" />
+            <input type="hidden" name="errorCount" value="0" />
+            <input type="hidden" name="readingTimeSeconds" value="60" />
+          </>
+        )}
+
+        {measurementType === "duration" ? (
+          <FormField id="durationValue" label="Duration (minutes)">
             <Input id="durationValue" name="durationValue" type="number" min="0" defaultValue="0" />
           </FormField>
-          <FormField id="latencyValue" label="Latency value">
+        ) : (
+          <input type="hidden" name="durationValue" value="0" />
+        )}
+
+        {measurementType === "latency" ? (
+          <FormField id="latencyValue" label="Latency (seconds)">
             <Input id="latencyValue" name="latencyValue" type="number" min="0" defaultValue="0" />
           </FormField>
+        ) : (
+          <input type="hidden" name="latencyValue" value="0" />
+        )}
+
+        {measurementType === "rubric" ? (
           <FormField id="rubricScore" label="Rubric score">
             <Input id="rubricScore" name="rubricScore" type="number" min="0" defaultValue="0" />
           </FormField>
-          <FormField id="independenceValue" label="Independence value">
+        ) : (
+          <input type="hidden" name="rubricScore" value="0" />
+        )}
+
+        {measurementType === "prompt_level" ? (
+          <FormField id="promptLevel" label="Prompt level">
+            <Input id="promptLevel" name="promptLevel" defaultValue="independent" />
+          </FormField>
+        ) : (
+          <input type="hidden" name="promptLevel" value="unspecified" />
+        )}
+
+        {measurementType === "custom_numeric" ? (
+          <div className="grid gap-4 sm:grid-cols-2">
+            <FormField id="customNumericValue" label="Value">
+              <Input
+                id="customNumericValue"
+                name="customNumericValue"
+                type="number"
+                step="any"
+                defaultValue="0"
+              />
+            </FormField>
+            <FormField id="customUnit" label="Unit">
+              <Input id="customUnit" name="customUnit" defaultValue="units" />
+            </FormField>
+          </div>
+        ) : (
+          <>
+            <input type="hidden" name="customNumericValue" value="0" />
+            <input type="hidden" name="customUnit" value="units" />
+          </>
+        )}
+
+        {measurementType === "independence" ? (
+          <FormField id="independenceValue" label="Independence value (optional override)">
             <Input
               id="independenceValue"
               name="independenceValue"
@@ -208,44 +311,37 @@ export function ProgressEntryForm({
               defaultValue="0"
             />
           </FormField>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-4">
-          <FormField id="promptLevel" label="Prompt level">
-            <Input id="promptLevel" name="promptLevel" defaultValue="unspecified" />
-          </FormField>
-          <FormField id="customNumericValue" label="Custom numeric value">
-            <Input
-              id="customNumericValue"
-              name="customNumericValue"
-              type="number"
-              step="any"
-              defaultValue="0"
-            />
-          </FormField>
-          <FormField id="customUnit" label="Custom unit">
-            <Input id="customUnit" name="customUnit" defaultValue="units" />
-          </FormField>
-          <FormField id="higherIsBetter" label="Direction">
-            <Select id="higherIsBetter" name="higherIsBetter" defaultValue="true">
-              <option value="true">Higher is better</option>
-              <option value="false">Lower is better</option>
-            </Select>
-          </FormField>
-        </div>
+        ) : (
+          <input type="hidden" name="independenceValue" value="0" />
+        )}
+
+        {!(
+          measurementType === "percentage" ||
+          measurementType === "reading_accuracy" ||
+          measurementType === "independence"
+        ) ? (
+          <>
+            <input type="hidden" name="correctCount" value="0" />
+            <input type="hidden" name="totalOpportunities" value="1" />
+          </>
+        ) : null}
+
+        <input type="hidden" name="higherIsBetter" value="true" />
         <input type="hidden" name="durationUnit" value="minutes" />
         <input type="hidden" name="latencyUnit" value="seconds" />
         <input type="hidden" name="taskIndependentSteps" value="0" />
         <input type="hidden" name="taskPromptedSteps" value="0" />
         <input type="hidden" name="taskIncorrectSteps" value="0" />
         <input type="hidden" name="taskNotAttemptedSteps" value="0" />
-        <FormField id="setting" label="Setting">
-          <Input id="setting" name="setting" />
+
+        <FormField id="setting" label="Setting (optional)">
+          <Input id="setting" name="setting" placeholder="Classroom / small group" />
         </FormField>
-        <FormField id="activity" label="Activity">
-          <Input id="activity" name="activity" />
+        <FormField id="activity" label="Activity (optional)">
+          <Input id="activity" name="activity" placeholder="What the student was doing" />
         </FormField>
-        <FormField id="notes" label="Notes">
-          <Textarea id="notes" name="notes" />
+        <FormField id="notes" label="Notes (optional)">
+          <Textarea id="notes" name="notes" placeholder="Anything the team should know" />
         </FormField>
         <Button type="submit" disabled={students.length === 0 || studentGoals.length === 0}>
           Save progress session

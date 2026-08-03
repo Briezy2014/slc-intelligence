@@ -37,7 +37,7 @@ export const PLATFORM_NAV_GROUPS: Array<{
       { href: "/command-center", label: "Home" },
       { href: "/students", label: "Students" },
       { href: "/classroom-operations", label: "Classroom" },
-      { href: "/progress/enter", label: "Progress" },
+      { href: "/progress/enter", label: "Progress entry" },
       { href: "/behavior-detective", label: "Behavior" },
       { href: "/family-communication", label: "Families" },
     ],
