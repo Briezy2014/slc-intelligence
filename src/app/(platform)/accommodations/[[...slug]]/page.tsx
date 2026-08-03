@@ -37,7 +37,7 @@ export default async function AccommodationsPage({
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Accommodations" }]} />
       <PageHeader
         title="Accommodations"
-        description="Build a support library, assign supports to students, then log what was used in class."
+        description="Assign one or many supports from the dropdown. Descriptions fill in automatically — edit if you want."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -49,18 +49,18 @@ export default async function AccommodationsPage({
             links={[
               {
                 href: "/accommodations",
-                label: "Dashboard",
-                description: "See the full workflow and student list.",
-              },
-              {
-                href: "/accommodations/library",
-                label: "Library",
-                description: "Add supports and assign them to students.",
+                label: "Assign supports",
+                description: "Student + library dropdowns. Add multiple, then save.",
               },
               {
                 href: "/accommodations/logs",
-                label: "Implementation",
-                description: "Log whether a support was used today.",
+                label: "Log use",
+                description: "Mark whether a saved support was used today.",
+              },
+              {
+                href: "/accommodations/library",
+                label: "Add custom support",
+                description: "Optional — only if something is missing from the dropdown.",
               },
             ]}
           />
