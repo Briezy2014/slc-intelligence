@@ -25,8 +25,17 @@ import {
   getBehaviorDefinitionTemplate,
   type ObservationMethodCode,
 } from "@/lib/catalogs/behavior-templates";
+import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
+import { SectionExportBar } from "@/components/domain/section-export-bar";
 import type { BehaviorData } from "@/lib/data/behavior";
 import { PermissionDeniedState } from "@/components/domain/page-states";
+
+function categoryForDefinitionName(name: string): string {
+  const match = BEHAVIOR_DEFINITION_TEMPLATES.find(
+    (template) => template.name.toLowerCase() === name.toLowerCase(),
+  );
+  return match?.category ?? "Other";
+}
 
 function submitAction(action: (formData: FormData) => Promise<unknown>) {
   return action as unknown as (formData: FormData) => void;
@@ -174,13 +183,14 @@ export function BehaviorObservationForm({
   useEffect(() => {
     if (studentId) setSelectedStudentId(studentId);
   }, [studentId]);
-  const [method, setMethod] = useState<ObservationMethodCode>("abc");
+  const [method, setMethod] = useState<ObservationMethodCode>("frequency");
   const [showAdvancedMethods, setShowAdvancedMethods] = useState(false);
   const [setting, setSetting] = useState("");
   const [activity, setActivity] = useState("");
   const [antecedent, setAntecedent] = useState("");
   const [observableBehavior, setObservableBehavior] = useState("");
   const [consequence, setConsequence] = useState("");
+  const [count, setCount] = useState(0);
   const [watchMinutes, setWatchMinutes] = useState("5");
   const [durationMinutes, setDurationMinutes] = useState("1");
   const [setupMessage, setSetupMessage] = useState<string | null>(null);
@@ -194,6 +204,26 @@ export function BehaviorObservationForm({
       ),
     [data.definitions, selectedStudentId],
   );
+
+  const definitionsByCategory = useMemo(() => {
+    const groups = new Map<string, typeof definitionsForStudent>();
+    for (const definition of definitionsForStudent) {
+      const category = categoryForDefinitionName(definition.name);
+      const list = groups.get(category) ?? [];
+      list.push(definition);
+      groups.set(category, list);
+    }
+    return [...groups.entries()].sort(([a], [b]) => a.localeCompare(b));
+  }, [definitionsForStudent]);
+
+  const selectedDefinition = definitionsForStudent.find(
+    (definition) => definition.id === behaviorDefinitionId,
+  );
+  const selectedTemplate = selectedDefinition
+    ? BEHAVIOR_DEFINITION_TEMPLATES.find(
+        (template) => template.name.toLowerCase() === selectedDefinition.name.toLowerCase(),
+      )
+    : null;
 
   const primaryMethods = OBSERVATION_METHOD_OPTIONS.filter((option) => option.primary);
   const advancedMethods = OBSERVATION_METHOD_OPTIONS.filter((option) => !option.primary);
@@ -271,7 +301,7 @@ export function BehaviorObservationForm({
       <FormField
         id="behaviorDefinitionId"
         label="Which behavior?"
-        description="Pick from this student’s saved list. Common classroom behaviors are added automatically."
+        description="Grouped by category. Common classroom behaviors are added automatically."
       >
         <Select
           id="behaviorDefinitionId"
@@ -290,13 +320,27 @@ export function BehaviorObservationForm({
                   ? "No behaviors yet — set up common ones below"
                   : "Choose behavior"}
           </option>
-          {definitionsForStudent.map((definition) => (
-            <option key={definition.id} value={definition.id}>
-              {definition.name}
-            </option>
+          {definitionsByCategory.map(([category, definitions]) => (
+            <optgroup key={category} label={category}>
+              {definitions.map((definition) => (
+                <option key={definition.id} value={definition.id}>
+                  {definition.name}
+                </option>
+              ))}
+            </optgroup>
           ))}
         </Select>
       </FormField>
+
+      {selectedTemplate?.suggestedStrategies?.length ? (
+        <Alert title="Ideas to try (from the behavior library)" tone="info">
+          <ul className="mt-1 list-disc space-y-1 pl-5">
+            {selectedTemplate.suggestedStrategies.slice(0, 4).map((strategy) => (
+              <li key={strategy}>{strategy}</li>
+            ))}
+          </ul>
+        </Alert>
+      ) : null}
 
       {selectedStudentId || studentId ? (
         <div className="flex flex-wrap gap-2">
@@ -511,9 +555,47 @@ export function BehaviorObservationForm({
       ) : null}
 
       {method === "frequency" ? (
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField id="count" label="How many times?">
-            <Input id="count" name="count" type="number" min="0" defaultValue="0" required />
+        <div className="space-y-4">
+          <FormField
+            id="count"
+            label="How many times? (use + / −)"
+            description="Example: eight hits → tap + until it shows 8."
+          >
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                aria-label="Decrease count"
+                onClick={() => setCount((current) => Math.max(0, current - 1))}
+              >
+                −
+              </Button>
+              <Input
+                id="count"
+                name="count"
+                type="number"
+                min="0"
+                required
+                className="w-24 text-center text-lg font-semibold"
+                value={count}
+                onChange={(event) => setCount(Math.max(0, Number(event.target.value) || 0))}
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                aria-label="Increase count"
+                onClick={() => setCount((current) => current + 1)}
+              >
+                +
+              </Button>
+              <Button
+                type="button"
+                variant="ghost"
+                onClick={() => setCount((current) => current + 5)}
+              >
+                +5
+              </Button>
+            </div>
           </FormField>
           <FormField id="watchMinutes" label="How long did you watch? (minutes)">
             <Input
@@ -646,6 +728,8 @@ export function BehaviorObservationForm({
 export function BehaviorQuickStart({ data }: { data: BehaviorData }) {
   const [studentId, setStudentId] = useState(data.students[0]?.id ?? "");
   const [showAddBehavior, setShowAddBehavior] = useState(false);
+  const [exportFrom, setExportFrom] = useState("");
+  const [exportTo, setExportTo] = useState("");
 
   if (data.students.length === 0) {
     return (
@@ -655,13 +739,38 @@ export function BehaviorQuickStart({ data }: { data: BehaviorData }) {
     );
   }
 
+  const sessionsForStudent = data.sessions.filter((session) => session.student_id === studentId);
+  const filteredSessions = sessionsForStudent.filter((session) => {
+    if (exportFrom && session.session_date < exportFrom) return false;
+    if (exportTo && session.session_date > exportTo) return false;
+    return true;
+  });
+  const frequencyBySession = new Map(
+    data.frequency.map((entry) => [entry.session_id, entry.count] as const),
+  );
+  const selectedStudent = data.students.find((student) => student.id === studentId);
+
   return (
     <div className="space-y-6">
+      <Alert title="What Behavior Detective is for" tone="info">
+        Track how often a behavior happens for a student (use + / −), add the date/time, save daily,
+        then export a date range to spreadsheet or email your coordinator.
+      </Alert>
+
+      <AiAssistPanel
+        domain="behavior"
+        title="AI Assist · Ideas to try"
+        description="After you pick a behavior focus, generate reviewable strategies and replacement ideas. Edit before using."
+        students={data.students}
+        studentId={studentId}
+        defaultFocusArea=""
+      />
+
       <Card>
         <CardTitle>Log what happened</CardTitle>
         <CardDescription>
-          Choose the student, pick the behavior, then record what you saw. Common behaviors are
-          created for you automatically.
+          1) Student 2) Behavior (by category) 3) Count with + / − 4) Date/time 5) Save. Common
+          behaviors are created for you automatically.
         </CardDescription>
         <div className="mt-4 space-y-4">
           <FormField id="focusStudent" label="Student">
@@ -679,6 +788,48 @@ export function BehaviorQuickStart({ data }: { data: BehaviorData }) {
             </Select>
           </FormField>
           <BehaviorObservationForm data={data} studentId={studentId} />
+        </div>
+      </Card>
+
+      <Card>
+        <CardTitle>Export a date range</CardTitle>
+        <CardDescription>
+          Choose dates, download CSV/Excel, print PDF, or open email to your coordinator (attach the
+          CSV).
+        </CardDescription>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <FormField id="exportFrom" label="From date">
+            <Input
+              id="exportFrom"
+              type="date"
+              value={exportFrom}
+              onChange={(event) => setExportFrom(event.target.value)}
+            />
+          </FormField>
+          <FormField id="exportTo" label="To date">
+            <Input
+              id="exportTo"
+              type="date"
+              value={exportTo}
+              onChange={(event) => setExportTo(event.target.value)}
+            />
+          </FormField>
+        </div>
+        <div className="mt-4">
+          <SectionExportBar
+            title={`Behavior log · ${selectedStudent ? studentName(selectedStudent) : "Student"}`}
+            filename={`behavior-${selectedStudent?.local_identifier || studentId || "student"}`}
+            headers={["Date", "Method", "Count", "Setting", "Activity", "Status"]}
+            rows={filteredSessions.map((session) => [
+              session.session_date,
+              session.measurement_method,
+              frequencyBySession.get(session.id) ?? "",
+              session.setting ?? "",
+              session.activity ?? "",
+              session.status,
+            ])}
+            emptyMessage="No observations in this range yet. Save a daily log first."
+          />
         </div>
       </Card>
 

@@ -82,6 +82,7 @@ export async function saveClassroomScheduleAction(formData: FormData): Promise<A
       paths: [
         "/classroom-operations",
         "/classroom-operations/daily",
+        "/classroom-operations/schedules",
         `/classrooms/${values.classroomId}/schedule`,
       ],
     });
@@ -131,6 +132,7 @@ export async function addClassroomScheduleBlockAction(formData: FormData): Promi
       paths: [
         "/classroom-operations",
         "/classroom-operations/daily",
+        "/classroom-operations/schedules",
         `/classrooms/${values.classroomId}/schedule`,
       ],
     });
@@ -178,6 +180,7 @@ export async function saveDailyStudentNoteAction(formData: FormData): Promise<Ac
       paths: [
         "/classroom-operations",
         "/classroom-operations/daily",
+        "/classroom-operations/notes",
         `/students/${values.studentId}/classroom-operations`,
       ],
     });
@@ -271,6 +274,7 @@ export async function saveClassroomAnnouncementAction(formData: FormData): Promi
       paths: [
         "/classroom-operations",
         "/classroom-operations/daily",
+        "/classroom-operations/announcements",
         `/classrooms/${values.classroomId}/schedule`,
       ],
     });
