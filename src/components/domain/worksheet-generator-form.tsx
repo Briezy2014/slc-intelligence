@@ -103,10 +103,10 @@ export function WorksheetGeneratorForm() {
     return firstPages
       .map((page) => {
         const escaped = escapeHtml(page.trim());
-        return replaceAiImageMarkers(
-          replaceVisualMarkersWithSvg(escaped),
-          imageAssets,
-        ).replaceAll("\n", "<br/>");
+        return replaceAiImageMarkers(replaceVisualMarkersWithSvg(escaped), imageAssets).replaceAll(
+          "\n",
+          "<br/>",
+        );
       })
       .join('<hr style="margin:16px 0;border-color:#444"/>');
   }, [resultContent, imageAssets]);
@@ -143,12 +143,14 @@ export function WorksheetGeneratorForm() {
       setResultTitle(result.packet.title);
       setResultContent(result.packet.content);
       setImageAssets(result.packet.imageAssets ?? {});
-      const hasAiImage = Boolean(result.packet.imageAssets && Object.keys(result.packet.imageAssets).length);
+      const hasAiImage = Boolean(
+        result.packet.imageAssets && Object.keys(result.packet.imageAssets).length,
+      );
       setMessage(
         hasAiImage
           ? "Packet ready with drawings and a theme illustration. Preview below, then Print / Save as PDF."
           : (result.message ??
-            "Packet ready with printable drawings. Preview below, then Print / Save as PDF."),
+              "Packet ready with printable drawings. Preview below, then Print / Save as PDF."),
       );
       setShowResults(true);
     });

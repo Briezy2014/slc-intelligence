@@ -50,19 +50,14 @@ export async function ensureStarterLibrariesForOrganization(args: {
   const { supabase, organizationId, actorUserId } = args;
   const counts = getStarterCatalogCounts();
 
-  const [
-    interventionNames,
-    accommodationNames,
-    efNames,
-    communicationNames,
-    serviceNames,
-  ] = await Promise.all([
-    existingNames(supabase, organizationId, "intervention_library_items"),
-    existingNames(supabase, organizationId, "accommodation_library_items"),
-    existingNames(supabase, organizationId, "executive_function_skill_areas"),
-    existingNames(supabase, organizationId, "communication_templates"),
-    existingNames(supabase, organizationId, "service_definitions"),
-  ]);
+  const [interventionNames, accommodationNames, efNames, communicationNames, serviceNames] =
+    await Promise.all([
+      existingNames(supabase, organizationId, "intervention_library_items"),
+      existingNames(supabase, organizationId, "accommodation_library_items"),
+      existingNames(supabase, organizationId, "executive_function_skill_areas"),
+      existingNames(supabase, organizationId, "communication_templates"),
+      existingNames(supabase, organizationId, "service_definitions"),
+    ]);
 
   // Fast path: catalogs already fully present.
   if (

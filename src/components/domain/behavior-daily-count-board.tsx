@@ -334,7 +334,10 @@ export function BehaviorDailyCountBoard({
         </div>
 
         {message ? (
-          <Alert title={status === "error" ? "Could not save" : "Saved"} tone={status === "error" ? "warning" : "info"}>
+          <Alert
+            title={status === "error" ? "Could not save" : "Saved"}
+            tone={status === "error" ? "warning" : "info"}
+          >
             {message}
           </Alert>
         ) : null}

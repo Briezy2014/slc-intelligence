@@ -144,7 +144,9 @@ export async function listServices(
       : { data: [], error: null };
     if (profilesResult.error) return safeDataError(emptyServicesData);
 
-    const profileById = new Map((profilesResult.data ?? []).map((profile) => [profile.id, profile]));
+    const profileById = new Map(
+      (profilesResult.data ?? []).map((profile) => [profile.id, profile]),
+    );
     const providers: ServiceProviderOption[] = (membershipsResult.data ?? [])
       .map((membership) => {
         const profile = profileById.get(membership.user_id);

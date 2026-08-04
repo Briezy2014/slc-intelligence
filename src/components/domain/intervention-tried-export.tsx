@@ -23,8 +23,7 @@ export function InterventionTriedExport({
   const [toDate, setToDate] = useState("");
 
   const plans = useMemo(
-    () =>
-      data.plans.filter((plan) => !studentId || plan.student_id === studentId),
+    () => data.plans.filter((plan) => !studentId || plan.student_id === studentId),
     [data.plans, studentId],
   );
 

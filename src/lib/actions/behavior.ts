@@ -341,10 +341,7 @@ export async function saveBehaviorFrequencyBatchAction(input: {
         session_id: sessionResult.data.id,
         count: entry.count,
         observation_duration_seconds: values.observationDurationSeconds,
-        calculated_rate_per_minute: calculateRate(
-          entry.count,
-          values.observationDurationSeconds,
-        ),
+        calculated_rate_per_minute: calculateRate(entry.count, values.observationDurationSeconds),
       });
       if (!freqResult.error) savedCount += 1;
     }

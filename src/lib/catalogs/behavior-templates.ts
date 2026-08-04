@@ -481,8 +481,14 @@ export const BEHAVIOR_DEFINITION_TEMPLATES: BehaviorDefinitionTemplate[] = [
     category: "Physical aggression",
     operationalDefinition:
       "Student forcefully grabs another person’s body, clothing, hair, or materials without consent and does not release with a calm redirect.",
-    examples: ["Grabs peer’s arm/shirt during conflict", "Grabs adult wrist to pull toward preferred item"],
-    nonexamples: ["Brief accidental brush in a crowd", "Holds partner’s hand during approved partner walk"],
+    examples: [
+      "Grabs peer’s arm/shirt during conflict",
+      "Grabs adult wrist to pull toward preferred item",
+    ],
+    nonexamples: [
+      "Brief accidental brush in a crowd",
+      "Holds partner’s hand during approved partner walk",
+    ],
     suggestedStrategies: [
       "Teach “hands down / ask first” replacement",
       "Practice waiting and asking for turns",

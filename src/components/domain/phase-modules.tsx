@@ -614,7 +614,9 @@ export function InterventionPlanForm({
           defaultValue={data.permissions.canActivatePlans ? "active" : "draft"}
         >
           <option value="draft">Draft</option>
-          {data.permissions.canActivatePlans ? <option value="active">Active (in use)</option> : null}
+          {data.permissions.canActivatePlans ? (
+            <option value="active">Active (in use)</option>
+          ) : null}
           <option value="paused">Paused</option>
           <option value="completed">Completed</option>
         </Select>
@@ -748,7 +750,9 @@ export function InterventionEvidenceForms({
       {showComponent ? (
         <Card>
           <CardTitle>Plan step / component</CardTitle>
-          <CardDescription>Optional pieces of the intervention (saved on the plan).</CardDescription>
+          <CardDescription>
+            Optional pieces of the intervention (saved on the plan).
+          </CardDescription>
           <form action={submitAction(addInterventionComponentAction)} className="mt-4 space-y-3">
             <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
             <input type="hidden" name="planId" value={plan.id} />
