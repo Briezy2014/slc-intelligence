@@ -32,7 +32,7 @@ export function HubLinkGrid({
               <span className="text-foreground block font-semibold">{link.label}</span>
               <span className="text-muted mt-1 block text-sm">{link.description}</span>
               <span className="text-highlight mt-2 block text-sm font-semibold">
-                {isActive ? "Open now" : "Tap to open →"}
+                {isActive ? "Working here" : "Tap to open →"}
               </span>
             </span>
             <ChevronRight

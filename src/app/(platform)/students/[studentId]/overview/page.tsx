@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-import { AssignmentForms, StudentForm } from "@/components/domain/forms";
+import { StudentForm, StudentPlacementCard } from "@/components/domain/forms";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { HubLinkGrid } from "@/components/navigation/hub-link-grid";
 import { PageHeader } from "@/components/layout/page-header";
-import { TableShell } from "@/components/data-display/table-shell";
 import { Alert } from "@/components/ui/alert";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
 import { updateStudentArchiveStatusAction } from "@/lib/actions/students";
 import { getStudent } from "@/lib/data/students";
 import { listStaff } from "@/lib/data/staff";
+import { studentDataHubLinks } from "@/lib/navigation/student-data-hub";
 
-export const metadata: Metadata = { title: "Student overview" };
+export const metadata: Metadata = { title: "Student hub" };
 
 function actionFor(action: (formData: FormData) => Promise<unknown>) {
   return action as unknown as (formData: FormData) => void;
@@ -30,22 +30,22 @@ export default async function StudentOverviewPage({
       ? staffState.data.rows.flatMap((row) => (row.profile ? [row.profile] : []))
       : [];
 
+  const studentLabel = student
+    ? `${student.last_name}, ${student.preferred_name || student.first_name}`
+    : "Student";
+
   return (
     <main id="main-content">
       <Breadcrumbs
         items={[
           { href: "/", label: "Home" },
           { href: "/students", label: "Students" },
-          { label: "Student overview" },
+          { label: studentLabel },
         ]}
       />
       <PageHeader
-        title={
-          student
-            ? `${student.last_name}, ${student.preferred_name || student.first_name}`
-            : "Student overview"
-        }
-        description="Open a daily workflow below, or edit profile and assignments further down."
+        title={studentLabel}
+        description="One place for this student’s profile and every data area — behavior, progress, families, services, and more."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -53,69 +53,79 @@ export default async function StudentOverviewPage({
         <SafeErrorState message={state.error} />
       ) : student && state.data.organizationId ? (
         <div className="space-y-6">
-          <Alert title="Daily work for this student" tone="info">
-            Tap one card. Codes like {student.local_identifier || "S1"} keep names private in class.
+          <Alert title="Student data hub" tone="info">
+            Student ID <strong>{student.local_identifier || "—"}</strong>
+            {student.grade_level ? (
+              <>
+                {" "}
+                · Grade <strong>{student.grade_level}</strong>
+              </>
+            ) : null}
+            {" · "}
+            Status <strong>{student.enrollment_status}</strong>. Tap a card below to open that
+            student’s records.
           </Alert>
-          <HubLinkGrid
-            links={[
-              {
-                href: `/students/${student.id}/interventions`,
-                label: "Interventions",
-                description: "Start or update an intervention plan.",
-              },
-              {
-                href: `/students/${student.id}/accommodations`,
-                label: "Accommodations",
-                description: "Assign supports and log what was used.",
-              },
-              {
-                href: `/students/${student.id}/behavior`,
-                label: "Behavior",
-                description: "Log what you saw and family notes.",
-              },
-              {
-                href: `/students/${student.id}/progress`,
-                label: "Progress",
-                description: "Enter goal progress data.",
-              },
-              {
-                href: `/students/${student.id}/family-communication`,
-                label: "Families",
-                description: "Write a home note from templates.",
-              },
-              {
-                href: `/students/${student.id}/executive-function`,
-                label: "Executive function",
-                description: "EF observations and plans.",
-              },
-              {
-                href: `/students/${student.id}/services`,
-                label: "Services",
-                description: "Service plans and delivery logs.",
-              },
-              {
-                href: `/students/${student.id}/goals`,
-                label: "Goals & IEP",
-                description: "Goals, IEP, and documents.",
-              },
-            ]}
-          />
+
+          <section className="space-y-3">
+            <h2 className="text-lg font-semibold">Open student data</h2>
+            <p className="text-muted text-sm">
+              Links into behavior, progress reports, family communication, service providers, and
+              the rest of this student’s file.
+            </p>
+            <HubLinkGrid
+              links={studentDataHubLinks(student.id).filter(
+                (link) => !link.href.endsWith("/overview"),
+              )}
+            />
+          </section>
+
           <Card>
             <CardTitle>Profile</CardTitle>
             <CardDescription>
-              Local identifier {student.local_identifier}; status {student.enrollment_status}.
+              Student ID {student.local_identifier}
+              {student.grade_level ? ` · Grade ${student.grade_level}` : ""}
+              {" · "}
+              Status {student.enrollment_status}. Date of birth and address can stay blank for
+              de-identified practice students.
             </CardDescription>
+            {state.data.canEdit ? (
+              <div className="mt-4">
+                <StudentForm organizationId={state.data.organizationId} student={student} />
+              </div>
+            ) : (
+              <p className="text-muted mt-4 text-sm">You can view this profile but not edit it.</p>
+            )}
           </Card>
+
           {state.data.canEdit ? (
             <Card>
-              <StudentForm organizationId={state.data.organizationId} student={student} />
+              <CardTitle>Classroom & team</CardTitle>
+              <CardDescription>
+                Assign the classroom and staff who work with this student. This replaces the old
+                program / school / class ID tables.
+              </CardDescription>
+              <div className="mt-4">
+                <StudentPlacementCard
+                  organizationId={state.data.organizationId}
+                  studentId={student.id}
+                  classrooms={state.data.classrooms}
+                  staff={staffProfiles}
+                  classroomAssignments={state.data.classroomAssignments}
+                  staffAssignments={state.data.staffAssignments}
+                />
+              </div>
             </Card>
           ) : null}
+
           {state.data.canArchive ? (
             <Card>
-              <CardTitle>Archive and restore</CardTitle>
+              <CardTitle>
+                {student.enrollment_status === "archived" ? "Restore student" : "Archive student"}
+              </CardTitle>
               <CardDescription>
-                Archive hides a student from active workflows without deleting history.
+                {student.enrollment_status === "archived"
+                  ? "Restore brings this student back into active workflows. History stays intact."
+                  : "Archive hides this student from active workflows without deleting history."}
               </CardDescription>
               <form
                 action={actionFor(updateStudentArchiveStatusAction)}
@@ -123,81 +133,26 @@ export default async function StudentOverviewPage({
               >
                 <input type="hidden" name="organizationId" value={state.data.organizationId} />
                 <input type="hidden" name="studentId" value={student.id} />
-                <button
-                  name="intent"
-                  value="archive"
-                  className="bg-danger text-danger-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold"
-                  type="submit"
-                >
-                  Archive
-                </button>
-                <button
-                  name="intent"
-                  value="restore"
-                  className="bg-background-elevated border-border rounded-[var(--radius-md)] border px-4 py-2 text-sm font-semibold"
-                  type="submit"
-                >
-                  Restore
-                </button>
+                {student.enrollment_status === "archived" ? (
+                  <button
+                    name="intent"
+                    value="restore"
+                    className="bg-accent text-accent-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold"
+                    type="submit"
+                  >
+                    Restore student
+                  </button>
+                ) : (
+                  <button
+                    name="intent"
+                    value="archive"
+                    className="bg-danger text-danger-foreground rounded-[var(--radius-md)] px-4 py-2 text-sm font-semibold"
+                    type="submit"
+                  >
+                    Archive student
+                  </button>
+                )}
               </form>
-            </Card>
-          ) : null}
-          <TableShell
-            caption="School enrollments"
-            headers={["School ID", "Status", "Start", "End"]}
-            rows={state.data.enrollments.map((row) => [
-              row.school_id,
-              row.status,
-              row.start_date,
-              row.end_date ?? "",
-            ])}
-          />
-          <TableShell
-            caption="Program assignments"
-            headers={["Program ID", "Status", "Start", "End"]}
-            rows={state.data.programAssignments.map((row) => [
-              row.program_id,
-              row.status,
-              row.start_date,
-              row.end_date ?? "",
-            ])}
-          />
-          <TableShell
-            caption="Classroom assignments"
-            headers={["Classroom ID", "Status", "Start", "End"]}
-            rows={state.data.classroomAssignments.map((row) => [
-              row.classroom_id,
-              row.status,
-              row.start_date,
-              row.end_date ?? "",
-            ])}
-          />
-          <TableShell
-            caption="Staff assignments"
-            headers={["User ID", "Role", "Status", "Start"]}
-            rows={state.data.staffAssignments.map((row) => [
-              row.user_id,
-              row.assignment_role,
-              row.status,
-              row.start_date,
-            ])}
-          />
-          {state.data.canEdit ? (
-            <Card>
-              <CardTitle>Assignments management</CardTitle>
-              <CardDescription>
-                Add active school, program, classroom, or staff assignments.
-              </CardDescription>
-              <div className="mt-4">
-                <AssignmentForms
-                  organizationId={state.data.organizationId}
-                  studentId={student.id}
-                  schools={state.data.schools}
-                  programs={state.data.programs}
-                  classrooms={state.data.classrooms}
-                  staff={staffProfiles}
-                />
-              </div>
             </Card>
           ) : null}
         </div>
