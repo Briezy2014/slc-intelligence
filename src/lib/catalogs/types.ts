@@ -44,9 +44,19 @@ export type EfSkillTemplate = {
   description: string;
 };
 
+export type CommunicationTemplateCategory =
+  | "Progress & celebration"
+  | "Meetings & IEP"
+  | "Behavior & safety"
+  | "Attendance & transportation"
+  | "Services & supports"
+  | "Home partnership"
+  | "Internal staff";
+
 export type CommunicationTemplateCatalogItem = {
   id: string;
   name: string;
+  category: CommunicationTemplateCategory;
   defaultVisibility: "family_visible" | "internal" | "restricted_admin";
   method: "phone" | "email" | "text" | "letter" | "in_person" | "portal" | "video" | "other";
   subjectTemplate: string;

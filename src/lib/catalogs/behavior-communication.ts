@@ -5,42 +5,46 @@ import {
 } from "@/lib/catalogs/behavior-templates";
 import type { CommunicationDraftContext } from "@/lib/catalogs/communication-templates";
 
-/** Parent-facing concern labels — never endorse the problem behavior itself. */
+/**
+ * Parent-facing concern labels — describe the school concern (problem area),
+ * never the desired replacement skill. These feed letter subjects/bodies such as
+ * “related to {{focusArea}}” / “The concern was {{focusArea}}.”
+ */
 const FAMILY_CONCERN_LABELS: Record<string, string> = {
-  profanity: "using school-appropriate language",
-  "verbal-threats": "using safe words during conflict",
-  "verbal-disruption": "using an expected classroom voice",
-  "name-calling": "using kind words with peers and staff",
-  "task-refusal": "starting and completing assigned work",
-  "work-avoidance-delay": "engaging in assigned work",
-  elopement: "staying with the group and in assigned areas",
-  "elopement-building": "staying in assigned areas of the building",
-  "bolting-transition": "staying with the group during transitions",
-  "aggression-hit": "keeping hands safe",
-  "aggression-kick": "keeping feet safe",
-  "aggression-bite": "keeping body safe around others",
-  "aggression-scratch-spit": "keeping body safe around others",
-  "aggression-push-shove": "keeping body safe in shared spaces",
-  "aggression-throw-objects": "using materials safely",
-  "aggression-contact": "keeping hands and body safe",
-  "property-destruction": "using materials and classroom items safely",
-  "property-furniture": "using classroom furniture safely",
-  "property-slam": "handling materials gently",
-  "self-injury": "keeping their body safe",
-  "self-injury-headbang": "keeping their body safe",
-  "noncompliance-delay": "following adult directions",
-  "attention-disruption": "participating without interrupting learning",
-  "attention-tantrum": "staying calm when frustrated",
-  "attention-calling-out": "waiting for a turn to speak",
-  "attention-leave-seat": "staying in the learning area",
-  "bullying-physical": "treating peers with respect and safety",
-  "sexualized-touch-breasts": "respecting body boundaries",
-  "sexualized-touch-buttocks": "respecting body boundaries",
-  "sexualized-touch-crotch": "respecting body boundaries",
-  "sexualized-self-touch-public": "respecting body boundaries in public spaces",
-  "sexualized-exposure": "respecting body boundaries",
-  "sexualized-comments": "using school-appropriate language",
-  "sexualized-kiss-hug": "respecting body boundaries and personal space",
+  profanity: "use of inappropriate language at school",
+  "verbal-threats": "threatening language during conflict",
+  "verbal-disruption": "calling out and disrupting instruction",
+  "name-calling": "name-calling toward peers or staff",
+  "task-refusal": "refusing to start or complete assigned work",
+  "work-avoidance-delay": "avoiding or delaying assigned work",
+  elopement: "leaving the assigned area without permission",
+  "elopement-building": "leaving assigned areas of the building",
+  "bolting-transition": "running ahead or leaving the group during transitions",
+  "aggression-hit": "physical aggression (hitting)",
+  "aggression-kick": "physical aggression (kicking)",
+  "aggression-bite": "physical aggression (biting)",
+  "aggression-scratch-spit": "physical aggression (scratching or spitting)",
+  "aggression-push-shove": "physical aggression (pushing or shoving)",
+  "aggression-throw-objects": "throwing objects in an unsafe way",
+  "aggression-contact": "unsafe physical contact with others",
+  "property-destruction": "damage to classroom materials or property",
+  "property-furniture": "unsafe use or damage of classroom furniture",
+  "property-slam": "slamming or mishandling materials",
+  "self-injury": "self-injurious behavior",
+  "self-injury-headbang": "self-injurious behavior",
+  "noncompliance-delay": "delayed or incomplete response to adult directions",
+  "attention-disruption": "disruptive behavior that interrupts learning",
+  "attention-tantrum": "intense frustration responses that interrupt learning",
+  "attention-calling-out": "calling out without waiting to be recognized",
+  "attention-leave-seat": "leaving the learning area without permission",
+  "bullying-physical": "physical peer conflict / bullying concern",
+  "sexualized-touch-breasts": "a body-boundary / safe-touch concern",
+  "sexualized-touch-buttocks": "a body-boundary / safe-touch concern",
+  "sexualized-touch-crotch": "a body-boundary / safe-touch concern",
+  "sexualized-self-touch-public": "a body-boundary concern in a public setting",
+  "sexualized-exposure": "a body-boundary / privacy concern",
+  "sexualized-comments": "inappropriate sexualized comments",
+  "sexualized-kiss-hug": "a personal-space / body-boundary concern",
 };
 
 const SENSITIVE_BEHAVIOR_IDS = new Set([
@@ -101,9 +105,9 @@ export function familyFriendlyBehaviorDescription(behavior: BehaviorDefinitionTe
     behavior.category !== "Verbal" &&
     Boolean(behavior.examples[0]?.trim());
   const exampleClause = includeExample
-    ? ` For example, staff may notice situations such as: ${behavior.examples[0]!.replace(/\.$/, "")}.`
+    ? ` Staff observed situations such as: ${behavior.examples[0]!.replace(/\.$/, "")}.`
     : "";
-  return `We are addressing a school concern related to ${concern}.${exampleClause} We respond with a calm, planned approach and teach a safer or more appropriate way for needs to be met.`;
+  return `We are writing to share a school concern regarding ${concern}.${exampleClause} Our team is responding with a calm, planned approach that prioritizes safety while we teach a safer or more appropriate way for needs to be met.`;
 }
 
 export function familyFriendlyClassroomSupports(behavior: BehaviorDefinitionTemplate): string {

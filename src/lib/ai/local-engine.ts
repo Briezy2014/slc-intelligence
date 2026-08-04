@@ -53,23 +53,20 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
         input.focusArea,
         input.behaviorTemplateId,
       );
-      const focusArea =
-        matchedBehavior?.name.toLowerCase() ||
-        input.focusArea?.trim() ||
-        "the current support focus";
       const studentFirstName =
         input.studentFirstName?.trim() ||
         input.studentContext?.trim().split(/\s+/)[0] ||
         "your student";
       const draftContext = enrichCommunicationDraftContext(
         {
-          focusArea,
+          focusArea: input.focusArea?.trim() || undefined,
           studentFirstName,
           contactFirstName: input.contactFirstName?.trim() || "family",
           staffName: "SLC Intelligence team",
         },
         matchedBehavior?.id ?? input.behaviorTemplateId,
       );
+      const focusArea = draftContext.focusArea || "the current support focus";
       const behaviorBoostTokens = matchedBehavior
         ? tokens(
             `${matchedBehavior.name} ${matchedBehavior.category} behavior support incident safety boundary bus`,
@@ -106,7 +103,7 @@ export function buildLocalSuggestions(input: AiSuggestInput): AiSuggestion[] {
             summary: draft.summary,
             visibility: draft.visibility,
             method: draft.method,
-            focusArea,
+            focusArea: draftContext.focusArea || focusArea,
             behaviorTemplateId: matchedBehavior?.id ?? "",
           },
           rationale: matchedBehavior

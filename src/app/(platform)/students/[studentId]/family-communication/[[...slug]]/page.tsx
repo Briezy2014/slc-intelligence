@@ -11,9 +11,12 @@ import { listCommunications } from "@/lib/data/communications";
 
 export const metadata: Metadata = { title: "Student family communication" };
 
+const RESERVED_SLUGS = new Set(["contacts", "communications", "templates", "exports"]);
+
 function viewFromSlug(slug: string[]): FamilyCommunicationView {
   if (slug[0] === "contacts") return "contacts";
   if (slug[0] === "communications") return "communications";
+  if (slug[0] === "templates") return "templates";
   return "dashboard";
 }
 
@@ -26,8 +29,7 @@ export default async function StudentFamilyCommunicationPage({
   const view = viewFromSlug(slug);
   const state = await listCommunications({
     studentId,
-    communicationId:
-      slug[0] && !["contacts", "communications", "exports"].includes(slug[0]) ? slug[0] : undefined,
+    communicationId: slug[0] && !RESERVED_SLUGS.has(slug[0]) ? slug[0] : undefined,
   });
   return (
     <main id="main-content">
@@ -40,7 +42,7 @@ export default async function StudentFamilyCommunicationPage({
       />
       <PageHeader
         title="Student family communication"
-        description="Tap Write a message, use the student and behavior dropdowns, then save a family-visible note."
+        description="Add contacts, browse professional templates, write a message, and track letters by date and time."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -58,12 +60,17 @@ export default async function StudentFamilyCommunicationPage({
               {
                 href: `/students/${studentId}/family-communication/contacts`,
                 label: "Contacts",
-                description: "Who can receive messages for this student.",
+                description: "Add and review who can receive messages for this student.",
+              },
+              {
+                href: `/students/${studentId}/family-communication/templates`,
+                label: "Message templates",
+                description: "Dozens of professional family letters ready to customize.",
               },
               {
                 href: `/students/${studentId}/family-communication/communications`,
                 label: "Write a message",
-                description: "Student + behavior dropdowns, draft, and save.",
+                description: "Template, date/time, draft, and save for this student.",
               },
               {
                 href: "/parent-share",
