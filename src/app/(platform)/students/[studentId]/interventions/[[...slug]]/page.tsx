@@ -10,6 +10,7 @@ import {
   InterventionEvidenceForms,
   InterventionPlanForm,
 } from "@/components/domain/phase-modules";
+import { InterventionTriedExport } from "@/components/domain/intervention-tried-export";
 import { listInterventions } from "@/lib/data/interventions";
 
 export const metadata: Metadata = { title: "Student interventions" };
@@ -21,7 +22,7 @@ export default async function StudentInterventionsPage({
 }) {
   const { studentId, slug = [] } = await params;
   const planId =
-    slug[0] && !["fidelity", "dosage", "analytics", "reviews"].includes(slug[0])
+    slug[0] && !["fidelity", "dosage", "analytics", "reviews", "tried", "export"].includes(slug[0])
       ? slug[0]
       : undefined;
   const state = await listInterventions({ studentId, planId });
@@ -38,7 +39,7 @@ export default async function StudentInterventionsPage({
       />
       <PageHeader
         title="Student interventions"
-        description="Answer two dropdowns to start a plan, then log fidelity or dosage when you use it."
+        description="What we tried for this student — start a strategy, log when you used it, and export the saved record."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -51,42 +52,50 @@ export default async function StudentInterventionsPage({
               {
                 href: `/students/${studentId}/interventions`,
                 label: "Plans",
-                description: "Start or review intervention plans.",
+                description: "Start or review what we’re trying.",
+              },
+              {
+                href: `/students/${studentId}/interventions/dosage`,
+                label: "Log use",
+                description: "Sessions / minutes when you tried it.",
               },
               {
                 href: `/students/${studentId}/interventions/fidelity`,
                 label: "Fidelity",
-                description: "Log whether the plan was followed.",
-              },
-              {
-                href: `/students/${studentId}/interventions/dosage`,
-                label: "Dosage",
-                description: "Record sessions / minutes delivered.",
+                description: "Did we follow the plan as written?",
               },
               {
                 href: `/students/${studentId}/interventions/reviews`,
                 label: "Reviews",
-                description: "Team review outcomes and next dates.",
+                description: "Team outcome and next steps.",
+              },
+              {
+                href: `/students/${studentId}/interventions/tried`,
+                label: "What we tried / export",
+                description: "Full saved trail — CSV, PDF, email.",
               },
             ]}
           />
           {section === "overview" ? (
             <Card>
-              <CardTitle>Start / update a plan</CardTitle>
+              <CardTitle>Start what we’re trying</CardTitle>
               <CardDescription>
-                1) Confirm student. 2) Pick a library intervention. Save as draft, then activate
-                when ready.
+                1) Confirm student. 2) Pick the intervention. Save so dosage and reviews attach to
+                it.
               </CardDescription>
               <div className="mt-4">
                 <InterventionPlanForm data={state.data} studentId={studentId} />
               </div>
             </Card>
           ) : null}
+          {section === "tried" || section === "export" ? (
+            <InterventionTriedExport data={state.data} studentId={studentId} />
+          ) : null}
           {["fidelity", "dosage", "reviews"].includes(section) || planId ? (
             <>
-              <Alert title="Log against an existing plan" tone="info">
-                Use the forms below after a plan exists. If nothing appears, go back to Plans and
-                save one first.
+              <Alert title="Log against a saved plan" tone="info">
+                These forms save to the student’s intervention record. Export everything from What
+                we tried.
               </Alert>
               <InterventionEvidenceForms
                 data={state.data}
@@ -99,10 +108,12 @@ export default async function StudentInterventionsPage({
               />
             </>
           ) : null}
-          <InterventionDashboard
-            data={state.data}
-            focus={section === "overview" ? "plans" : "all"}
-          />
+          {section !== "tried" && section !== "export" ? (
+            <InterventionDashboard
+              data={state.data}
+              focus={section === "overview" ? "plans" : "all"}
+            />
+          ) : null}
         </div>
       )}
     </main>

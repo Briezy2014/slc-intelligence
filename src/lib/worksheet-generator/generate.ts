@@ -1,6 +1,6 @@
 import { getAiProviderConfig } from "@/lib/ai/config";
+import { aiImageMarker, generateThemeImageDataUrl } from "@/lib/worksheet-generator/ai-images";
 import {
-  WORKSHEET_PACKET_FOOTER,
   parsePacketPageCount,
   type WorksheetType,
 } from "@/lib/worksheet-generator/options";
@@ -45,6 +45,8 @@ export type WorksheetGeneratorResult = {
   content: string;
   pageCount: number;
   mode: "model_assist" | "local_intelligence";
+  /** Optional AI-generated theme images (data URLs) keyed by marker id. */
+  imageAssets?: Record<string, string>;
 };
 
 function resolvedInstructionalLevel(input: WorksheetGeneratorInput): string {
@@ -63,9 +65,6 @@ function pageBreak(): string {
   return "\n\n---------- PAGE BREAK ----------\n\n";
 }
 
-function footerBlock(): string {
-  return `\n\n${WORKSHEET_PACKET_FOOTER}`;
-}
 
 function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorResult {
   const pageCount = parsePacketPageCount(input.packetLength, input.customPages);
@@ -107,7 +106,6 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
       "3. Complete guided items together.",
       "4. Assign independent items.",
       "5. Collect data on the goal criterion.",
-      footerBlock(),
     ].join("\n"),
   );
 
@@ -125,7 +123,6 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
       "",
       `Theme cue: ${theme}`,
       `Goal check: ${input.learningGoal}`,
-      footerBlock(),
     ].join("\n"),
   );
 
@@ -156,8 +153,7 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
           isMax ? "\nChoices shown with pictures / reduced options." : "",
           "",
           `Goal check: ${input.learningGoal}`,
-          footerBlock(),
-        ].join("\n"),
+                  ].join("\n"),
       );
       continue;
     }
@@ -184,8 +180,7 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
           isMin
             ? "4. Explain your answer in one sentence: _______________________________"
             : "4. _______________________________________________",
-          footerBlock(),
-        ].join("\n"),
+                  ].join("\n"),
       );
       continue;
     }
@@ -211,8 +206,7 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
           "4. Goal-aligned item: __________________________________________",
           "",
           `Learning goal: ${input.learningGoal}`,
-          footerBlock(),
-        ].join("\n"),
+                  ].join("\n"),
       );
       continue;
     }
@@ -238,8 +232,7 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
           "",
           "Score: ____ / 5    % correct: ____",
           `Goal: ${input.learningGoal}`,
-          footerBlock(),
-        ].join("\n"),
+                  ].join("\n"),
       );
       continue;
     }
@@ -263,8 +256,7 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
           "10    |        |     |        |",
           "",
           `% correct: ____   Goal: ${input.learningGoal}`,
-          footerBlock(),
-        ].join("\n"),
+                  ].join("\n"),
       );
       continue;
     }
@@ -291,8 +283,7 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
           : "Response mode: write, choose, or explain as appropriate.",
         "",
         `Theme: ${theme}`,
-        footerBlock(),
-      ].join("\n"),
+              ].join("\n"),
     );
   }
 
@@ -306,8 +297,7 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
         "Probe 1: ____   Probe 2: ____   Probe 3: ____",
         "Accuracy: ____%   Independence: ____%",
         "Notes: ______________________________________________",
-        footerBlock(),
-      ].join("\n"),
+              ].join("\n"),
     );
   }
 
@@ -323,8 +313,7 @@ function buildLocalPacket(input: WorksheetGeneratorInput): WorksheetGeneratorRes
         "For multiple choice/matching: award credit for the accurate selection.",
         "For open responses: award credit for accurate, goal-aligned answers.",
         "Adjust keys after you customize student-facing items.",
-        footerBlock(),
-      ].join("\n"),
+              ].join("\n"),
     );
   }
 
@@ -364,11 +353,12 @@ async function generateModelPacket(
     "Use clear directions. Keep content age-respectful.",
     "Avoid unnecessary filler pages.",
     `Separate pages with exactly: ${pageBreak().trim()}`,
-    `Every page must end with this footer line: ${WORKSHEET_PACKET_FOOTER}`,
+    "Do NOT include any AI disclaimer, bulb icon, review-for-accuracy footer, or meta notes on student pages.",
+    "Student pages are for students only — no educator reminders.",
     "If answer key is requested, include a final answer key section.",
     "If progress monitoring is requested, include a progress-monitoring page.",
-    "Include printable visual markers on student pages using exactly this syntax: [[VISUAL:coin-penny]], [[VISUAL:coin-nickel]], [[VISUAL:coin-dime]], [[VISUAL:coin-quarter]], [[VISUAL:coins-set]], [[VISUAL:space-rocket]], [[VISUAL:space-planet]], [[VISUAL:space-stars]], [[VISUAL:animal-dog]], [[VISUAL:animal-cat]], [[VISUAL:sports-ball]], [[VISUAL:cooking-apple]], [[VISUAL:number-card]], [[VISUAL:shape-set]], [[VISUAL:theme-banner]].",
-    "Choose visuals that match the topic and theme. Include a Visual supports page near the beginning.",
+    "Include printable visual markers on student pages using exactly this syntax: [[VISUAL:coin-penny]], [[VISUAL:coin-nickel]], [[VISUAL:coin-dime]], [[VISUAL:coin-quarter]], [[VISUAL:coins-set]], [[VISUAL:space-rocket]], [[VISUAL:space-planet]], [[VISUAL:space-stars]], [[VISUAL:animal-dog]], [[VISUAL:animal-cat]], [[VISUAL:sports-ball]], [[VISUAL:cooking-apple]], [[VISUAL:number-card]], [[VISUAL:shape-set]], [[VISUAL:bus]], [[VISUAL:school]], [[VISUAL:hands-wash]], [[VISUAL:emotion-happy]], [[VISUAL:emotion-calm]], [[VISUAL:theme-banner]].",
+    "Put at least one [[VISUAL:...]] marker on every student practice page. Choose visuals that match the topic and theme.",
   ].join(" ");
 
   const user = [
@@ -419,12 +409,9 @@ async function generateModelPacket(
     };
     const content = (parsed.content ?? "").trim();
     if (!content) return null;
-    const withFooter = content.includes(WORKSHEET_PACKET_FOOTER)
-      ? content
-      : `${content}${footerBlock()}`;
     return {
       title: parsed.title?.trim() || title,
-      content: withFooter,
+      content,
       pageCount: Number(parsed.pageCount) || pageCount,
       mode: "model_assist",
     };
@@ -433,30 +420,80 @@ async function generateModelPacket(
   }
 }
 
+const DISCLAIMER_LINE_RE =
+  /^\s*(AI-generated instructional material\.?\s*)?Review for accuracy and appropriateness before student use\.?\s*$/gim;
+
+function stripStudentPageDisclaimers(content: string): string {
+  return content
+    .replace(DISCLAIMER_LINE_RE, "")
+    .replace(/AI-generated instructional material\.?/gi, "")
+    .replace(/\n{3,}/g, "\n\n")
+    .trim();
+}
+
 function ensureVisualMarkers(
   packet: WorksheetGeneratorResult,
   input: WorksheetGeneratorInput,
 ): WorksheetGeneratorResult {
-  if (hasVisualMarkers(packet.content)) return packet;
-  const visualPage = [
-    `${packet.title} · Visual supports`,
-    "Worksheet type: Visual supports",
-    "",
-    "Directions: Look at each picture. Name it. Point to or circle the matching item when prompted.",
-    "",
-    visualsForPage(input, 0),
-    "",
-    visualsForPage(input, 1),
-    "",
-    `Theme cue: ${input.studentInterestOrTheme?.trim() || "classroom examples"}`,
-    footerBlock(),
-  ].join("\n");
-  const parts = packet.content.split(pageBreak());
-  const next = [parts[0] ?? packet.content, visualPage, ...parts.slice(1)].join(pageBreak());
+  const cleaned = stripStudentPageDisclaimers(packet.content);
+  const parts = cleaned.split(pageBreak()).map((part) => part.trim()).filter(Boolean);
+
+  const withVisuals = parts.map((page, index) => {
+    if (hasVisualMarkers(page)) return page;
+    // Answer keys can stay text-only; student practice pages get drawings.
+    if (/answer key/i.test(page) && !/visual support/i.test(page)) return page;
+    return `${page}\n\nPictures for this page:\n${visualsForPage(input, index)}`;
+  });
+
+  if (!withVisuals.some((page) => hasVisualMarkers(page))) {
+    withVisuals.splice(1, 0, [
+      `${packet.title} · Visual supports`,
+      "Worksheet type: Visual supports",
+      "",
+      "Directions: Look at each picture. Name it. Point to or circle the matching item when prompted.",
+      "",
+      visualsForPage(input, 0),
+      "",
+      visualsForPage(input, 1),
+      "",
+      `Theme cue: ${input.studentInterestOrTheme?.trim() || "classroom examples"}`,
+    ].join("\n"));
+  }
+
   return {
     ...packet,
-    content: next,
-    pageCount: packet.pageCount + 1,
+    content: withVisuals.join(pageBreak()),
+    pageCount: withVisuals.length,
+  };
+}
+
+async function attachThemeAiImage(
+  packet: WorksheetGeneratorResult,
+  input: WorksheetGeneratorInput,
+): Promise<WorksheetGeneratorResult> {
+  const dataUrl = await generateThemeImageDataUrl({
+    subject: input.subject,
+    topicOrSkill: input.topicOrSkill,
+    theme: input.studentInterestOrTheme,
+  });
+  if (!dataUrl) return packet;
+
+  const marker = aiImageMarker("theme-hero");
+  const parts = packet.content.split(pageBreak());
+  // Put the AI theme image on the first content/visual page.
+  const targetIndex = parts.findIndex((page) =>
+    /visual support|page 2|cover visuals/i.test(page),
+  );
+  const index = targetIndex >= 0 ? targetIndex : Math.min(1, Math.max(parts.length - 1, 0));
+  const page = parts[index] ?? "";
+  if (!page.includes("[[AIIMAGE:")) {
+    parts[index] = `${marker}\n\n${page}`;
+  }
+
+  return {
+    ...packet,
+    content: parts.join(pageBreak()),
+    imageAssets: { ...(packet.imageAssets ?? {}), "theme-hero": dataUrl },
   };
 }
 
@@ -464,6 +501,6 @@ export async function generateWorksheetPacket(
   input: WorksheetGeneratorInput,
 ): Promise<WorksheetGeneratorResult> {
   const model = await generateModelPacket(input);
-  const packet = model ?? buildLocalPacket(input);
-  return ensureVisualMarkers(packet, input);
+  const packet = ensureVisualMarkers(model ?? buildLocalPacket(input), input);
+  return attachThemeAiImage(packet, input);
 }

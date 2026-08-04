@@ -559,6 +559,7 @@ export function InterventionPlanForm({
   data: InterventionData;
   studentId?: string;
 }) {
+  const today = new Date().toISOString().slice(0, 10);
   if (!data.permissions.canManagePlans)
     return <PermissionDeniedState message="Plan manage permission is required." />;
   return (
@@ -574,7 +575,11 @@ export function InterventionPlanForm({
           ))}
         </Select>
       </FormField>
-      <FormField id="libraryItemId" label="2. Which intervention from the library?">
+      <FormField
+        id="libraryItemId"
+        label="2. What are you trying? (library intervention)"
+        description="This is the support or strategy you will use with the student."
+      >
         <Select id="libraryItemId" name="libraryItemId">
           <option value="">Custom (type a title below)</option>
           {data.libraryItems.map((item) => (
@@ -592,15 +597,29 @@ export function InterventionPlanForm({
           placeholder="Can match the library name or be student-specific"
         />
       </FormField>
-      <FormField id="description" label="Notes (optional)">
+      <FormField id="description" label="What this looks like for this student (optional)">
         <Textarea
           id="description"
           name="description"
-          placeholder="What this looks like for this student"
+          placeholder="How you will try it / what success looks like"
         />
       </FormField>
-      <input type="hidden" name="status" value="draft" />
-      <Button type="submit">Save intervention plan</Button>
+      <FormField id="startDate" label="Start date">
+        <Input id="startDate" name="startDate" type="date" defaultValue={today} />
+      </FormField>
+      <FormField id="status" label="Status">
+        <Select
+          id="status"
+          name="status"
+          defaultValue={data.permissions.canActivatePlans ? "active" : "draft"}
+        >
+          <option value="draft">Draft</option>
+          {data.permissions.canActivatePlans ? <option value="active">Active (in use)</option> : null}
+          <option value="paused">Paused</option>
+          <option value="completed">Completed</option>
+        </Select>
+      </FormField>
+      <Button type="submit">Save what we are trying</Button>
     </form>
   );
 }
@@ -716,19 +735,20 @@ export function InterventionEvidenceForms({
     return (
       <EmptyState
         title="No intervention plan selected"
-        description="Create a plan before adding fidelity, dosage, or review records."
+        description="Start what you’re trying before logging dosage, fidelity, or reviews."
       />
     );
   const today = new Date().toISOString().slice(0, 10);
+  const showComponent = focus === "all";
   const showDosage = focus === "all" || focus === "dosage";
   const showFidelity = focus === "all" || focus === "fidelity";
   const showReviews = focus === "all" || focus === "reviews";
-  const showComponent = focus === "all";
   return (
     <div className="grid gap-6 lg:grid-cols-2">
       {showComponent ? (
         <Card>
-          <CardTitle>Component</CardTitle>
+          <CardTitle>Plan step / component</CardTitle>
+          <CardDescription>Optional pieces of the intervention (saved on the plan).</CardDescription>
           <form action={submitAction(addInterventionComponentAction)} className="mt-4 space-y-3">
             <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
             <input type="hidden" name="planId" value={plan.id} />
@@ -740,14 +760,17 @@ export function InterventionEvidenceForms({
             </FormField>
             <input type="hidden" name="sortOrder" value="1" />
             <Button type="submit" variant="secondary">
-              Add component
+              Save component
             </Button>
           </form>
         </Card>
       ) : null}
       {showDosage ? (
         <Card>
-          <CardTitle>Dosage log</CardTitle>
+          <CardTitle>Log use (dosage)</CardTitle>
+          <CardDescription>
+            Record that you tried it today — sessions and minutes are saved for export.
+          </CardDescription>
           <form action={submitAction(saveDosageLogAction)} className="mt-4 space-y-3">
             <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
             <input type="hidden" name="planId" value={plan.id} />
@@ -773,15 +796,21 @@ export function InterventionEvidenceForms({
                 defaultValue="0"
               />
             </FormField>
+            <FormField id="dosageNotes" label="Notes (optional)">
+              <Textarea id="dosageNotes" name="notes" placeholder="What you tried / how it went" />
+            </FormField>
             <Button type="submit" variant="secondary">
-              Add dosage
+              Save use log
             </Button>
           </form>
         </Card>
       ) : null}
       {showFidelity ? (
         <Card>
-          <CardTitle>Fidelity observation</CardTitle>
+          <CardTitle>Fidelity check</CardTitle>
+          <CardDescription>
+            Did we follow the plan as written? Saved on the student record.
+          </CardDescription>
           <form action={submitAction(saveFidelityObservationAction)} className="mt-4 space-y-3">
             <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
             <input type="hidden" name="planId" value={plan.id} />
@@ -807,6 +836,9 @@ export function InterventionEvidenceForms({
                 required
               />
             </FormField>
+            <FormField id="fidelityNotes" label="Notes (optional)">
+              <Textarea id="fidelityNotes" name="notes" />
+            </FormField>
             <input type="hidden" name="status" value="draft" />
             <Button type="submit" variant="secondary">
               Save fidelity
@@ -816,7 +848,10 @@ export function InterventionEvidenceForms({
       ) : null}
       {showReviews ? (
         <Card>
-          <CardTitle>Review</CardTitle>
+          <CardTitle>Review / decision</CardTitle>
+          <CardDescription>
+            Team outcome after trying the intervention — saved for export.
+          </CardDescription>
           <form action={submitAction(saveInterventionReviewAction)} className="mt-4 space-y-3">
             <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
             <input type="hidden" name="planId" value={plan.id} />
