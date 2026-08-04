@@ -359,7 +359,9 @@ export function ContactAndCommunicationForms({
                   const result = await saveContactAction(formData);
                   setContactMessage({
                     tone: result.status === "success" ? "success" : "danger",
-                    text: result.message ?? (result.status === "success" ? "Contact saved." : "Could not save contact."),
+                    text:
+                      result.message ??
+                      (result.status === "success" ? "Contact saved." : "Could not save contact."),
                   });
                   if (result.status === "success") {
                     form.reset();
@@ -417,7 +419,12 @@ export function ContactAndCommunicationForms({
                   <Input id="email" name="email" type="email" placeholder="name@example.com" />
                 </FormField>
                 <FormField id="phonePrimary" label="Primary phone">
-                  <Input id="phonePrimary" name="phonePrimary" type="tel" placeholder="(555) 555-5555" />
+                  <Input
+                    id="phonePrimary"
+                    name="phonePrimary"
+                    type="tel"
+                    placeholder="(555) 555-5555"
+                  />
                 </FormField>
               </div>
               <div className="grid gap-3 sm:grid-cols-2">
@@ -463,7 +470,7 @@ export function ContactAndCommunicationForms({
                 No contacts yet{contactStudentId ? " for this student" : ""}. Add one above.
               </p>
             ) : (
-              <ul className="mt-3 divide-border divide-y">
+              <ul className="divide-border mt-3 divide-y">
                 {contactsForContactStudent.map((contact) => {
                   const student = students.find((entry) => entry.id === contact.student_id);
                   return (
@@ -493,8 +500,8 @@ export function ContactAndCommunicationForms({
         <div className="border-border bg-background-elevated rounded-[var(--radius-lg)] border p-4">
           <h3 className="text-lg font-semibold">Write a message</h3>
           <p className="text-muted mt-1 text-sm">
-            Choose a template, insert a professional draft, set the date and time this
-            communication occurred, then save. Saved letters are tracked below.
+            Choose a template, insert a professional draft, set the date and time this communication
+            occurred, then save. Saved letters are tracked below.
           </p>
           {canEnterCommunication ? (
             <div className="mt-4 space-y-4">
@@ -596,8 +603,8 @@ export function ContactAndCommunicationForms({
                     </Button>
                   </div>
                   <p className="text-muted text-sm">
-                    Translation uses AI Assist when configured. Always have a bilingual staff
-                    member or interpreter review before family delivery.
+                    Translation uses AI Assist when configured. Always have a bilingual staff member
+                    or interpreter review before family delivery.
                   </p>
                   {translateMessage ? (
                     <Alert title="Draft language status" tone="info">
@@ -767,8 +774,8 @@ export function ContactAndCommunicationForms({
                     />
                   </FormField>
                   <p className="text-muted text-sm">
-                    Current language: {communicationLanguageLabel(languageCode)}. Use the Template
-                    & language tab to translate English drafts. After saving a family-visible note,
+                    Current language: {communicationLanguageLabel(languageCode)}. Use the Template &
+                    language tab to translate English drafts. After saving a family-visible note,
                     use Parent e-signature below to create a sign link or capture a signature.
                   </p>
                   {translateMessage ? (

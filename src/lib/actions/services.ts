@@ -107,13 +107,7 @@ export async function saveServicePlanAction(formData: FormData): Promise<ActionS
     let definitionName: string | null = null;
     let serviceArea: string | null = null;
     let defaultDeliveryType:
-      | "push_in"
-      | "pull_out"
-      | "consultation"
-      | "individual"
-      | "group"
-      | "other"
-      | null = null;
+      "push_in" | "pull_out" | "consultation" | "individual" | "group" | "other" | null = null;
     if (values.serviceDefinitionId) {
       const definition = (
         await context.supabase
@@ -131,15 +125,8 @@ export async function saveServicePlanAction(formData: FormData): Promise<ActionS
 
     const title = values.title?.trim() || definitionName || "Related service";
     const notes = values.notes?.trim() || values.description?.trim() || null;
-    const deliveryType =
-      (values.deliveryType || defaultDeliveryType || null) as
-        | "push_in"
-        | "pull_out"
-        | "consultation"
-        | "individual"
-        | "group"
-        | "other"
-        | null;
+    const deliveryType = (values.deliveryType || defaultDeliveryType || null) as
+      "push_in" | "pull_out" | "consultation" | "individual" | "group" | "other" | null;
     const serviceSnapshot = {
       title,
       status: values.status,

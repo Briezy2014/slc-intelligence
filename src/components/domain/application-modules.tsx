@@ -258,10 +258,7 @@ export function AccommodationsWorkspace({
   );
 }
 
-export {
-  ServicesWorkspace,
-  type ServicesView,
-} from "@/components/domain/services-workspace";
+export { ServicesWorkspace, type ServicesView } from "@/components/domain/services-workspace";
 
 export type { FamilyCommunicationView };
 
@@ -509,7 +506,12 @@ export function MeetingsWorkspace({
               >
                 <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
                 <FormField id="ackMeetingId" label="Meeting">
-                  <Select id="ackMeetingId" name="meetingId" defaultValue={firstMeeting.id} required>
+                  <Select
+                    id="ackMeetingId"
+                    name="meetingId"
+                    defaultValue={firstMeeting.id}
+                    required
+                  >
                     {data.meetings.map((meeting) => (
                       <option key={meeting.id} value={meeting.id}>
                         {meeting.title}
@@ -660,7 +662,10 @@ export function ExecutiveFunctionWorkspace({
               Pick the student and skill area (organization, planning, etc.), then save the plan.
             </CardDescription>
             {data.permissions.canManagePlans ? (
-              <form action={submitAction(saveExecutiveFunctionPlanAction)} className="mt-4 space-y-3">
+              <form
+                action={submitAction(saveExecutiveFunctionPlanAction)}
+                className="mt-4 space-y-3"
+              >
                 <input type="hidden" name="organizationId" value={data.organizationId ?? ""} />
                 <FormField id="efStudentId" label="Student">
                   <Select id="efStudentId" name="studentId" defaultValue={studentId ?? ""} required>

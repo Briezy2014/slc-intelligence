@@ -3,10 +3,7 @@ import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import { ModuleLinkGrid } from "@/components/navigation/module-link-grid";
-import {
-  ServicesWorkspace,
-  type ServicesView,
-} from "@/components/domain/services-workspace";
+import { ServicesWorkspace, type ServicesView } from "@/components/domain/services-workspace";
 import { listServices } from "@/lib/data/services";
 
 export const metadata: Metadata = { title: "Student services" };

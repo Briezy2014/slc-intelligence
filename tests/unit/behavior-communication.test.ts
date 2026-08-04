@@ -36,9 +36,15 @@ describe("family behavior communication wording", () => {
       staffName: "Ms. Rivera",
       ...context,
     });
-    expect(draft.summary).toContain("The concern relates to refusing to start or complete assigned work");
-    expect(draft.summary).toContain("school concern regarding refusing to start or complete assigned work");
-    expect(draft.summary.toLowerCase()).not.toContain("related to starting and completing assigned work");
+    expect(draft.summary).toContain(
+      "The concern relates to refusing to start or complete assigned work",
+    );
+    expect(draft.summary).toContain(
+      "school concern regarding refusing to start or complete assigned work",
+    );
+    expect(draft.summary.toLowerCase()).not.toContain(
+      "related to starting and completing assigned work",
+    );
     expect(draft.summary).not.toContain("{{");
   });
 });
