@@ -41,6 +41,10 @@ export const behaviorObservationSchema = z.discriminatedUnion("measurementMethod
     measurementMethod: z.literal("frequency"),
     count: z.coerce.number().int().min(0),
     observationDurationSeconds: z.coerce.number().positive(),
+    recordedAntecedent: z.string().trim().max(1000).optional(),
+    observableBehavior: z.string().trim().max(1000).optional(),
+    recordedConsequence: z.string().trim().max(1000).optional(),
+    durationSeconds: z.coerce.number().min(0).optional(),
   }),
   baseObservationSchema.extend({
     measurementMethod: z.literal("duration"),

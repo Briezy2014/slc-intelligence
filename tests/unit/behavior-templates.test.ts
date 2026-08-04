@@ -31,10 +31,21 @@ describe("behavior templates", () => {
   });
 
   it("exposes common classroom starters and plain-language methods", () => {
-    expect(COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS.length).toBeGreaterThanOrEqual(5);
+    expect(COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS.length).toBeGreaterThanOrEqual(15);
     for (const id of COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS) {
       expect(getBehaviorDefinitionTemplate(id)).toBeTruthy();
     }
+    expect(COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS).toEqual(
+      expect.arrayContaining([
+        "aggression-hit-peer",
+        "aggression-hit-teacher",
+        "aggression-throw-objects",
+        "tearing-room",
+        "grabbing-others",
+        "elopement",
+        "profanity",
+      ]),
+    );
     expect(
       OBSERVATION_METHOD_OPTIONS.some((option) => option.value === "abc" && option.primary),
     ).toBe(true);

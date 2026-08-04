@@ -20,12 +20,15 @@ import {
   BEHAVIOR_ANTECEDENT_OPTIONS,
   BEHAVIOR_CONSEQUENCE_OPTIONS,
   BEHAVIOR_DEFINITION_TEMPLATES,
+  BEHAVIOR_DURING_OPTIONS,
   BEHAVIOR_SETTING_OPTIONS,
+  BEHAVIOR_TRY_NEXT_SUGGESTIONS,
   OBSERVATION_METHOD_OPTIONS,
   getBehaviorDefinitionTemplate,
   type ObservationMethodCode,
 } from "@/lib/catalogs/behavior-templates";
 import { AiAssistPanel } from "@/components/domain/ai-assist-panel";
+import { BehaviorDailyCountBoard } from "@/components/domain/behavior-daily-count-board";
 import { SectionExportBar } from "@/components/domain/section-export-bar";
 import type { BehaviorData } from "@/lib/data/behavior";
 import { PermissionDeniedState } from "@/components/domain/page-states";
@@ -190,7 +193,7 @@ export function BehaviorObservationForm({
   const [antecedent, setAntecedent] = useState("");
   const [observableBehavior, setObservableBehavior] = useState("");
   const [consequence, setConsequence] = useState("");
-  const [count, setCount] = useState(0);
+  const [count, setCount] = useState(1);
   const [watchMinutes, setWatchMinutes] = useState("5");
   const [durationMinutes, setDurationMinutes] = useState("1");
   const [setupMessage, setSetupMessage] = useState<string | null>(null);
@@ -232,26 +235,20 @@ export function BehaviorObservationForm({
 
   useEffect(() => {
     if (!selectedStudentId || !data.organizationId || !data.permissions.canDefine) return;
-    if (definitionsForStudent.length > 0) return;
     if (autoSetupTriedFor.current === selectedStudentId) return;
     autoSetupTriedFor.current = selectedStudentId;
 
     startSetup(async () => {
-      setSetupMessage("Setting up common classroom behaviors…");
       const result = await ensureCommonBehaviorDefinitionsAction({
         organizationId: data.organizationId!,
         studentId: selectedStudentId,
       });
-      setSetupMessage(result.message ?? null);
-      router.refresh();
+      if ((result.createdCount ?? 0) > 0) {
+        setSetupMessage(result.message ?? null);
+        router.refresh();
+      }
     });
-  }, [
-    selectedStudentId,
-    data.organizationId,
-    data.permissions.canDefine,
-    definitionsForStudent.length,
-    router,
-  ]);
+  }, [selectedStudentId, data.organizationId, data.permissions.canDefine, router]);
 
   useEffect(() => {
     if (
@@ -301,7 +298,7 @@ export function BehaviorObservationForm({
       <FormField
         id="behaviorDefinitionId"
         label="Which behavior?"
-        description="Grouped by category. Common classroom behaviors are added automatically."
+        description="Common ones load automatically: hitting, throwing, tearing up the room, eloping, cussing, grabbing, and more."
       >
         <Select
           id="behaviorDefinitionId"
@@ -332,16 +329,6 @@ export function BehaviorObservationForm({
         </Select>
       </FormField>
 
-      {selectedTemplate?.suggestedStrategies?.length ? (
-        <Alert title="Ideas to try (from the behavior library)" tone="info">
-          <ul className="mt-1 list-disc space-y-1 pl-5">
-            {selectedTemplate.suggestedStrategies.slice(0, 4).map((strategy) => (
-              <li key={strategy}>{strategy}</li>
-            ))}
-          </ul>
-        </Alert>
-      ) : null}
-
       {selectedStudentId || studentId ? (
         <div className="flex flex-wrap gap-2">
           <Button
@@ -352,6 +339,7 @@ export function BehaviorObservationForm({
             onClick={() => {
               const sid = studentId || selectedStudentId;
               if (!sid || !data.organizationId) return;
+              autoSetupTriedFor.current = null;
               startSetup(async () => {
                 setSetupMessage(null);
                 const result = await ensureCommonBehaviorDefinitionsAction({
@@ -363,7 +351,7 @@ export function BehaviorObservationForm({
               });
             }}
           >
-            {pendingSetup ? "Setting up…" : "Set up common classroom behaviors"}
+            {pendingSetup ? "Setting up…" : "Refresh common behaviors"}
           </Button>
           <Select
             aria-label="Add another starter behavior"
@@ -388,10 +376,10 @@ export function BehaviorObservationForm({
               });
             }}
           >
-            <option value="">Add another starter…</option>
+            <option value="">Add another from full library…</option>
             {BEHAVIOR_DEFINITION_TEMPLATES.map((template) => (
               <option key={template.id} value={template.id}>
-                {template.name}
+                {template.category} · {template.name}
               </option>
             ))}
           </Select>
@@ -403,38 +391,40 @@ export function BehaviorObservationForm({
         </Alert>
       ) : null}
 
-      <FormField
-        id="measurementMethod"
-        label="What are you recording today?"
-        description={methodHelp}
-      >
-        <Select
+      {showAdvancedMethods ? (
+        <FormField
           id="measurementMethod"
-          name="measurementMethod"
-          value={method}
-          onChange={(event) => setMethod(event.target.value as ObservationMethodCode)}
+          label="Advanced recording type"
+          description={methodHelp}
         >
-          {primaryMethods.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-          {showAdvancedMethods
-            ? advancedMethods.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))
-            : null}
-        </Select>
-      </FormField>
+          <Select
+            id="measurementMethod"
+            name="measurementMethod"
+            value={method}
+            onChange={(event) => setMethod(event.target.value as ObservationMethodCode)}
+          >
+            {primaryMethods.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+            {advancedMethods.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </Select>
+        </FormField>
+      ) : (
+        <input type="hidden" name="measurementMethod" value="frequency" />
+      )}
       {!showAdvancedMethods ? (
         <button
           type="button"
           className="text-highlight text-sm font-semibold underline"
           onClick={() => setShowAdvancedMethods(true)}
         >
-          Show advanced options
+          Show advanced recording types
         </button>
       ) : null}
 
@@ -486,80 +476,70 @@ export function BehaviorObservationForm({
         </FormField>
       </div>
 
-      {method === "abc" ? (
+      {!showAdvancedMethods || method === "frequency" || method === "abc" || method === "duration" ? (
         <div className="space-y-4">
           <FormField
             id="recordedAntecedent"
             label="Before (what happened first)"
-            description="Pick a suggestion or type your own."
+            description="Choose from the dropdown."
           >
             <Select
-              id="recordedAntecedentSelect"
-              value=""
-              onChange={(event) => {
-                if (event.target.value) setAntecedent(event.target.value);
-              }}
+              id="recordedAntecedent"
+              name="recordedAntecedent"
+              value={antecedent}
+              onChange={(event) => setAntecedent(event.target.value)}
             >
-              <option value="">Choose a suggestion…</option>
+              <option value="">Choose what happened before…</option>
               {BEHAVIOR_ANTECEDENT_OPTIONS.map((option) => (
                 <option key={option} value={option}>
                   {option}
                 </option>
               ))}
             </Select>
-            <Textarea
-              className="mt-2"
-              id="recordedAntecedent"
-              name="recordedAntecedent"
-              required
-              value={antecedent}
-              onChange={(e) => setAntecedent(e.target.value)}
-            />
           </FormField>
-          <FormField id="observableBehavior" label="During (what you saw or heard)">
-            <Textarea
+          <FormField
+            id="observableBehavior"
+            label="During (what you saw or heard)"
+            description="Choose the observable behavior."
+          >
+            <Select
               id="observableBehavior"
               name="observableBehavior"
-              required
               value={observableBehavior}
-              onChange={(e) => setObservableBehavior(e.target.value)}
-              placeholder="Describe only what you saw or heard"
-            />
-          </FormField>
-          <FormField id="recordedConsequence" label="After (what happened next)">
-            <Select
-              id="recordedConsequenceSelect"
-              value=""
-              onChange={(event) => {
-                if (event.target.value) setConsequence(event.target.value);
-              }}
+              onChange={(event) => setObservableBehavior(event.target.value)}
             >
-              <option value="">Choose a suggestion…</option>
+              <option value="">Choose what happened during…</option>
+              {BEHAVIOR_DURING_OPTIONS.map((option) => (
+                <option key={option} value={option}>
+                  {option}
+                </option>
+              ))}
+            </Select>
+          </FormField>
+          <FormField
+            id="recordedConsequence"
+            label="After (what happened next)"
+            description="Choose from the dropdown."
+          >
+            <Select
+              id="recordedConsequence"
+              name="recordedConsequence"
+              value={consequence}
+              onChange={(event) => setConsequence(event.target.value)}
+            >
+              <option value="">Choose what happened after…</option>
               {BEHAVIOR_CONSEQUENCE_OPTIONS.map((option) => (
                 <option key={option} value={option}>
                   {option}
                 </option>
               ))}
             </Select>
-            <Textarea
-              className="mt-2"
-              id="recordedConsequence"
-              name="recordedConsequence"
-              required
-              value={consequence}
-              onChange={(e) => setConsequence(e.target.value)}
-            />
           </FormField>
-          <input type="hidden" name="replacementObserved" value="false" />
-        </div>
-      ) : null}
 
-      {method === "frequency" ? (
-        <div className="space-y-4">
           <FormField
             id="count"
             label="How many times? (use + / −)"
-            description="Example: eight hits → tap + until it shows 8."
+            description="Example: eight hits → tap + until it shows 8. Use +5 for fast counting."
           >
             <div className="flex flex-wrap items-center gap-3">
               <Button
@@ -597,6 +577,47 @@ export function BehaviorObservationForm({
               </Button>
             </div>
           </FormField>
+
+          <FormField
+            id="durationMinutes"
+            label="How long did it last? (minutes)"
+            description="Use + / − for episode length."
+          >
+            <div className="flex flex-wrap items-center gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                aria-label="Decrease minutes"
+                onClick={() =>
+                  setDurationMinutes((current) =>
+                    String(Math.max(0, Number(current || "0") - 1)),
+                  )
+                }
+              >
+                −
+              </Button>
+              <Input
+                id="durationMinutes"
+                type="number"
+                min="0"
+                step="0.5"
+                className="w-24 text-center text-lg font-semibold"
+                value={durationMinutes}
+                onChange={(event) => setDurationMinutes(event.target.value)}
+              />
+              <Button
+                type="button"
+                variant="secondary"
+                aria-label="Increase minutes"
+                onClick={() =>
+                  setDurationMinutes((current) => String(Number(current || "0") + 1))
+                }
+              >
+                +
+              </Button>
+            </div>
+          </FormField>
+          <input type="hidden" name="durationSeconds" value={totalDurationSeconds} />
           <FormField id="watchMinutes" label="How long did you watch? (minutes)">
             <Input
               id="watchMinutes"
@@ -609,23 +630,13 @@ export function BehaviorObservationForm({
             />
           </FormField>
           <input type="hidden" name="observationDurationSeconds" value={observationSeconds} />
+          <input type="hidden" name="replacementObserved" value="false" />
         </div>
       ) : null}
 
-      {method === "duration" ? (
+      {showAdvancedMethods && method === "duration" ? (
         <div className="grid gap-4 sm:grid-cols-2">
-          <FormField id="durationMinutes" label="How long did it last? (minutes)">
-            <Input
-              id="durationMinutes"
-              type="number"
-              min="0"
-              step="0.5"
-              value={durationMinutes}
-              onChange={(event) => setDurationMinutes(event.target.value)}
-              required
-            />
-          </FormField>
-          <FormField id="episodeCount" label="How many separate times?">
+          <FormField id="episodeCount" label="How many separate episodes?">
             <Input
               id="episodeCount"
               name="episodeCount"
@@ -721,6 +732,17 @@ export function BehaviorObservationForm({
       <Button type="submit" disabled={!behaviorDefinitionId || pendingSetup}>
         Save observation
       </Button>
+
+      <Alert title="Ideas to try next (how to support / reduce the behavior)" tone="info">
+        <ul className="mt-1 list-disc space-y-1 pl-5">
+          {(selectedTemplate?.suggestedStrategies?.length
+            ? selectedTemplate.suggestedStrategies
+            : BEHAVIOR_TRY_NEXT_SUGGESTIONS.slice(0, 5)
+          ).map((strategy) => (
+            <li key={strategy}>{strategy}</li>
+          ))}
+        </ul>
+      </Alert>
     </form>
   );
 }
@@ -753,26 +775,14 @@ export function BehaviorQuickStart({ data }: { data: BehaviorData }) {
   return (
     <div className="space-y-6">
       <Alert title="What Behavior Detective is for" tone="info">
-        Track how often a behavior happens for a student (use + / −), add the date/time, save daily,
-        then export a date range to spreadsheet or email your coordinator.
+        Quick-count common behaviors with + / − (hitting, throwing, eloping, cussing, and more),
+        optionally add before/during/after details, then export a date range for your team.
       </Alert>
 
-      <AiAssistPanel
-        domain="behavior"
-        title="AI Assist · Ideas to try"
-        description="After you pick a behavior focus, generate reviewable strategies and replacement ideas. Edit before using."
-        students={data.students}
-        studentId={studentId}
-        defaultFocusArea=""
-      />
-
       <Card>
-        <CardTitle>Log what happened</CardTitle>
-        <CardDescription>
-          1) Student 2) Behavior (by category) 3) Count with + / − 4) Date/time 5) Save. Common
-          behaviors are created for you automatically.
-        </CardDescription>
-        <div className="mt-4 space-y-4">
+        <CardTitle>Student</CardTitle>
+        <CardDescription>Everything below uses this student.</CardDescription>
+        <div className="mt-4">
           <FormField id="focusStudent" label="Student">
             <Select
               id="focusStudent"
@@ -787,6 +797,27 @@ export function BehaviorQuickStart({ data }: { data: BehaviorData }) {
               ))}
             </Select>
           </FormField>
+        </div>
+      </Card>
+
+      <BehaviorDailyCountBoard data={data} studentId={studentId || undefined} />
+
+      <AiAssistPanel
+        domain="behavior"
+        title="AI Assist · Ideas to try"
+        description="After you pick a behavior focus, generate reviewable strategies and replacement ideas. Edit before using."
+        students={data.students}
+        studentId={studentId}
+        defaultFocusArea=""
+      />
+
+      <Card>
+        <CardTitle>Episode details (before / during / after)</CardTitle>
+        <CardDescription>
+          For one behavior: use dropdowns for before/during/after, count with + / −, note how long
+          it lasted, then save. Tips appear at the bottom.
+        </CardDescription>
+        <div className="mt-4">
           <BehaviorObservationForm data={data} studentId={studentId} />
         </div>
       </Card>

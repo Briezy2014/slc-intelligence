@@ -10,6 +10,7 @@ import {
   FbaWorkspaceForm,
   ModuleLinkGrid,
 } from "@/components/domain/phase-modules";
+import { BehaviorDailyCountBoard } from "@/components/domain/behavior-daily-count-board";
 import { listBehavior } from "@/lib/data/behavior";
 
 export const metadata: Metadata = { title: "Student behavior" };
@@ -37,7 +38,7 @@ export default async function StudentBehaviorPage({
       />
       <PageHeader
         title="Student behavior"
-        description="Log what you saw. Common classroom behaviors are set up for you."
+        description="Quick-count hitting, throwing, eloping, cussing, and more with + / −. Add before/during/after details when you need them."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -49,8 +50,8 @@ export default async function StudentBehaviorPage({
             links={[
               {
                 href: `/students/${studentId}/behavior/observations/new`,
-                label: "Log observation",
-                description: "Record what happened today.",
+                label: "Log today",
+                description: "Quick + / − counts and episode details.",
               },
               {
                 href: `/students/${studentId}/behavior/definitions`,
@@ -78,17 +79,25 @@ export default async function StudentBehaviorPage({
               </div>
             </Card>
           ) : section === "observations" && slug[1] === "new" ? (
-            <Card>
-              <CardTitle>Log observation</CardTitle>
-              <CardDescription>Pick the behavior, then record what you saw.</CardDescription>
-              <div className="mt-4">
-                <BehaviorObservationForm data={state.data} studentId={studentId} />
-              </div>
-            </Card>
+            <div className="space-y-6">
+              <BehaviorDailyCountBoard data={state.data} studentId={studentId} />
+              <Card>
+                <CardTitle>Episode details (before / during / after)</CardTitle>
+                <CardDescription>
+                  Dropdowns for before, during, and after — plus how many times and how long.
+                </CardDescription>
+                <div className="mt-4">
+                  <BehaviorObservationForm data={state.data} studentId={studentId} />
+                </div>
+              </Card>
+            </div>
           ) : section === "fba-support" ? (
             <FbaWorkspaceForm data={state.data} studentId={studentId} />
           ) : (
-            <BehaviorDashboard data={state.data} studentId={studentId} />
+            <div className="space-y-6">
+              <BehaviorDailyCountBoard data={state.data} studentId={studentId} />
+              <BehaviorDashboard data={state.data} studentId={studentId} />
+            </div>
           )}
         </div>
       )}
