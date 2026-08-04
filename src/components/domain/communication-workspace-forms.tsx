@@ -143,10 +143,12 @@ export function ContactAndCommunicationForms({
     if (behavior) setFocusArea(familyFriendlyConcernLabel(behavior));
   }
 
-  function useTemplate(id: string) {
+  function selectTemplate(id: string) {
     setTemplateId(id);
     setComposeTab("template_language");
-    setTranslateMessage(`Selected “${getCommunicationTemplate(id)?.name ?? "template"}”. Choose student/behavior if needed, then insert the draft.`);
+    setTranslateMessage(
+      `Selected “${getCommunicationTemplate(id)?.name ?? "template"}”. Choose student/behavior if needed, then insert the draft.`,
+    );
   }
 
   function insertDraft() {
@@ -295,7 +297,7 @@ export function ContactAndCommunicationForms({
                           .replaceAll("{{homePartnership}}", "Home partnership invitation.")}
                       </p>
                       <div className="mt-3 flex flex-wrap gap-2">
-                        <Button type="button" size="sm" onClick={() => useTemplate(template.id)}>
+                        <Button type="button" size="sm" onClick={() => selectTemplate(template.id)}>
                           Use this template
                         </Button>
                         <span className="text-muted self-center text-xs uppercase">
