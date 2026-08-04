@@ -120,6 +120,35 @@ export const BEHAVIOR_CONSEQUENCE_OPTIONS = [
   "Bus / transportation consequence applied",
 ] as const;
 
+/** What staff saw/heard during the episode (plain-language dropdown). */
+export const BEHAVIOR_DURING_OPTIONS = [
+  "Hit / struck a peer",
+  "Hit / struck a teacher or staff",
+  "Grabbed another person’s body or clothing",
+  "Pushed / shoved someone",
+  "Kicked someone",
+  "Threw objects (at people or across the room)",
+  "Tore materials / ripped papers",
+  "Threw or flipped furniture / tore up the area",
+  "Left the room or assigned area without permission",
+  "Ran / bolted during transition",
+  "Used profanity / cussing",
+  "Yelled / screamed / loud disruption",
+  "Called names / verbal threats",
+  "Refused the task / said no and stopped",
+  "Dropped to floor / flopped",
+  "Touched another person’s private body parts inappropriately",
+  "Touched own private body parts in public",
+  "Scratched / spit at someone",
+  "Bit someone",
+  "Destroyed materials (Chromebook, books, supplies)",
+  "Left seat / wandered the room",
+  "Called out repeatedly for attention",
+  "Shut down / stopped responding",
+  "Climbed on furniture / unsafe climbing",
+  "Other observable behavior (describe in notes)",
+] as const;
+
 export const BEHAVIOR_TRY_NEXT_SUGGESTIONS = [
   "Precorrect expectations before the trigger setting",
   "Teach and practice a replacement request (help, break, wait)",
@@ -416,6 +445,65 @@ export const BEHAVIOR_DEFINITION_TEMPLATES: BehaviorDefinitionTemplate[] = [
       "Safety protocol + crisis plan",
       "Teach alternative protest/communication",
       "Increase staff proximity during triggers",
+    ],
+  },
+  {
+    id: "aggression-hit-peer",
+    name: "Hitting a peer",
+    category: "Physical aggression",
+    operationalDefinition:
+      "Student hits, slaps, or punches a peer with force that is not accidental play contact.",
+    examples: ["Hits peer on the arm during conflict", "Slaps classmate after losing a turn"],
+    nonexamples: ["High-five during approved social routine", "Accidental bump in line"],
+    suggestedStrategies: [
+      "Separate safely; follow crisis plan if needed",
+      "Teach protest / wait / help card instead of hitting",
+      "Increase active supervision during peer conflict times",
+    ],
+  },
+  {
+    id: "aggression-hit-teacher",
+    name: "Hitting a teacher / staff",
+    category: "Physical aggression",
+    operationalDefinition:
+      "Student hits, slaps, or punches a teacher or staff member with force that is not accidental contact.",
+    examples: ["Hits teacher when redirected", "Slaps para during a demand"],
+    nonexamples: ["Reaches for adult hand for support without force"],
+    suggestedStrategies: [
+      "Safety positioning and crisis protocol",
+      "Teach early break/help request before escalation",
+      "Review staffing and proximity during known triggers",
+    ],
+  },
+  {
+    id: "grabbing-others",
+    name: "Grabbing others",
+    category: "Physical aggression",
+    operationalDefinition:
+      "Student forcefully grabs another person’s body, clothing, hair, or materials without consent and does not release with a calm redirect.",
+    examples: ["Grabs peer’s arm/shirt during conflict", "Grabs adult wrist to pull toward preferred item"],
+    nonexamples: ["Brief accidental brush in a crowd", "Holds partner’s hand during approved partner walk"],
+    suggestedStrategies: [
+      "Teach “hands down / ask first” replacement",
+      "Practice waiting and asking for turns",
+      "Increase proximity and precorrection before high-risk times",
+    ],
+  },
+  {
+    id: "tearing-room",
+    name: "Tearing up the room / area",
+    category: "Property destruction",
+    operationalDefinition:
+      "Student rapidly damages or disrupts the environment by tearing materials, dumping bins, throwing multiple items, and/or overturning furniture across the area.",
+    examples: [
+      "Sweeps materials off desks and tears papers",
+      "Dumps bins and flips a chair during escalation",
+    ],
+    nonexamples: ["Tidies area as directed", "Drops one item accidentally"],
+    suggestedStrategies: [
+      "Safety clear of peers; follow crisis plan",
+      "Teach early protest/break signal before escalation",
+      "Reduce loose throwable materials when student is escalating",
     ],
   },
   {
@@ -851,16 +939,36 @@ export function getBehaviorDefinitionTemplate(id: string) {
   return BEHAVIOR_DEFINITION_TEMPLATES.find((entry) => entry.id === id) ?? null;
 }
 
-/** Common classroom starters auto-created when a student has no saved behaviors yet. */
+/**
+ * High-frequency classroom behaviors auto-created for each student.
+ * Includes aggression, elopement, property damage, profanity, and boundary concerns
+ * teachers report most often day to day.
+ */
 export const COMMON_CLASSROOM_BEHAVIOR_TEMPLATE_IDS = [
+  "aggression-hit-peer",
+  "aggression-hit-teacher",
+  "aggression-hit",
+  "aggression-throw-objects",
+  "grabbing-others",
+  "aggression-push-shove",
+  "aggression-kick",
+  "property-destruction",
+  "property-furniture",
+  "tearing-room",
+  "elopement",
+  "bolting-transition",
+  "profanity",
+  "verbal-disruption",
+  "name-calling",
+  "attention-calling-out",
   "task-refusal",
   "work-avoidance-delay",
-  "attention-calling-out",
-  "elopement",
-  "verbal-disruption",
-  "flopping",
-  "bolting-transition",
   "noncompliance-delay",
+  "flopping",
+  "sexualized-touch-breasts",
+  "sexualized-touch-crotch",
+  "sexualized-self-touch-public",
+  "aggression-contact",
 ] as const;
 
 export type ObservationMethodCode =

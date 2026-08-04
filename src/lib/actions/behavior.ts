@@ -199,6 +199,20 @@ export async function saveBehaviorObservationAction(formData: FormData): Promise
         observation_duration_seconds: values.observationDurationSeconds,
         calculated_rate_per_minute: calculateRate(values.count, values.observationDurationSeconds),
       });
+      if (
+        values.recordedAntecedent?.trim() &&
+        values.observableBehavior?.trim() &&
+        values.recordedConsequence?.trim()
+      ) {
+        await context.supabase.from("abc_observations").insert({
+          session_id: sessionId,
+          recorded_antecedent: values.recordedAntecedent.trim(),
+          observable_behavior: values.observableBehavior.trim(),
+          recorded_consequence: values.recordedConsequence.trim(),
+          duration_seconds: values.durationSeconds ?? null,
+          replacement_observed: false,
+        });
+      }
     } else if (values.measurementMethod === "duration") {
       await context.supabase.from("duration_observations").insert({
         session_id: sessionId,
@@ -250,6 +264,112 @@ export async function saveBehaviorObservationAction(formData: FormData): Promise
       ],
     });
     return { status: "success", message: "Behavior observation saved." };
+  } catch {
+    return { status: "error", message: GENERIC_ACTION_MESSAGE };
+  }
+}
+
+/** Save multiple frequency counts for one student/day (quick +/- board). */
+export async function saveBehaviorFrequencyBatchAction(input: {
+  organizationId: string;
+  studentId: string;
+  sessionDate: string;
+  sessionTime?: string;
+  setting?: string;
+  activity?: string;
+  observationDurationSeconds?: number;
+  counts: Array<{ behaviorDefinitionId: string; count: number }>;
+}): Promise<ActionState & { savedCount?: number }> {
+  const parsed = z
+    .object({
+      organizationId: z.string().uuid(),
+      studentId: z.string().uuid(),
+      sessionDate: z.string().date(),
+      sessionTime: z.string().optional(),
+      setting: z.string().trim().max(160).optional(),
+      activity: z.string().trim().max(160).optional(),
+      observationDurationSeconds: z.coerce.number().positive().default(300),
+      counts: z
+        .array(
+          z.object({
+            behaviorDefinitionId: z.string().uuid(),
+            count: z.coerce.number().int().min(0),
+          }),
+        )
+        .min(1),
+    })
+    .safeParse(input);
+  if (!parsed.success) return validationError(parsed.error);
+
+  const values = parsed.data;
+  const context = await getActionContext(values.organizationId);
+  if (!("supabase" in context)) return context;
+
+  try {
+    if (!(await canBehavior(context, "can_observe_behavior", values.studentId))) {
+      return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
+    }
+
+    const entries = values.counts.filter((entry) => entry.count > 0);
+    if (!entries.length) {
+      return { status: "error", message: "Tap + on at least one behavior before saving." };
+    }
+
+    let savedCount = 0;
+    for (const entry of entries) {
+      const sessionResult = await context.supabase
+        .from("behavior_observation_sessions")
+        .insert({
+          organization_id: context.organizationId,
+          student_id: values.studentId,
+          behavior_definition_id: entry.behaviorDefinitionId,
+          measurement_method: "frequency",
+          session_date: values.sessionDate,
+          session_time: values.sessionTime || null,
+          observer_user_id: context.user.id,
+          setting: values.setting ?? null,
+          activity: values.activity ?? null,
+          status: "draft",
+          notes: "Quick daily count board",
+          created_by: context.user.id,
+        })
+        .select("id")
+        .single();
+      if (sessionResult.error) continue;
+
+      const freqResult = await context.supabase.from("frequency_observations").insert({
+        session_id: sessionResult.data.id,
+        count: entry.count,
+        observation_duration_seconds: values.observationDurationSeconds,
+        calculated_rate_per_minute: calculateRate(
+          entry.count,
+          values.observationDurationSeconds,
+        ),
+      });
+      if (!freqResult.error) savedCount += 1;
+    }
+
+    if (!savedCount) return { status: "error", message: GENERIC_ACTION_MESSAGE };
+
+    await auditAndRevalidate({
+      organizationId: context.organizationId,
+      actorUserId: context.user.id,
+      actionType: "behavior_observation.batch_frequency",
+      resourceType: "behavior_observation_session",
+      resourceId: values.studentId,
+      newState: { savedCount, sessionDate: values.sessionDate },
+      paths: [
+        "/behavior-detective",
+        `/students/${values.studentId}/behavior/observations`,
+        `/students/${values.studentId}/behavior/analytics`,
+      ],
+    });
+
+    return {
+      status: "success",
+      message: `Saved ${savedCount} behavior count${savedCount === 1 ? "" : "s"} for today.`,
+      savedCount,
+    };
   } catch {
     return { status: "error", message: GENERIC_ACTION_MESSAGE };
   }

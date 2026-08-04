@@ -14,7 +14,7 @@ export default async function BehaviorDetectivePage() {
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Behavior Detective" }]} />
       <PageHeader
         title="Behavior Detective"
-        description="Track student behavior counts with +/−, add date/time, save daily, and export a spreadsheet for your coordinator."
+        description="Quick-count hitting, throwing, eloping, cussing, and more with + / −. Add before/during/after details when needed, then export for your team."
       />
       {!state.configured ? (
         <ConfigurationState />
