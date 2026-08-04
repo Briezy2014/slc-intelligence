@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState, useTransition } from "react";
+import { useEffect, useMemo, useState, useTransition } from "react";
 import { Alert } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Card, CardDescription, CardTitle } from "@/components/ui/card";
@@ -26,6 +26,12 @@ import {
   type WorksheetType,
 } from "@/lib/worksheet-generator/options";
 import { downloadPrintableHtmlFile, openPrintablePacket } from "@/lib/worksheet-generator/print";
+import {
+  accuracyPercentForDifferentiation,
+  buildIepLearningGoal,
+  getWorksheetTopic,
+  listTopicsForFilters,
+} from "@/lib/worksheet-generator/topics";
 import { hasVisualMarkers, replaceVisualMarkersWithSvg } from "@/lib/worksheet-generator/visuals";
 
 function toggleValue(list: string[], value: string, checked: boolean): string[] {
@@ -43,11 +49,7 @@ function escapeHtml(value: string): string {
 
 export function WorksheetGeneratorForm() {
   const [packetTitle, setPacketTitle] = useState("");
-  const [subject, setSubject] = useState<(typeof WORKSHEET_SUBJECTS)[number]>("Math");
-  const [topicOrSkill, setTopicOrSkill] = useState("Identifying coins");
-  const [learningGoal, setLearningGoal] = useState(
-    "The student will identify the name and value of a penny, nickel, dime, and quarter with 80% accuracy.",
-  );
+  const [subject, setSubject] = useState<(typeof WORKSHEET_SUBJECTS)[number]>("Reading");
   const [gradeBand, setGradeBand] = useState<(typeof GRADE_BANDS)[number]>("Grades 6–8");
   const [instructionalLevel, setInstructionalLevel] =
     useState<(typeof INSTRUCTIONAL_LEVELS)[number]>("Grade 2");
@@ -59,8 +61,11 @@ export function WorksheetGeneratorForm() {
   const [supportNeeds, setSupportNeeds] = useState<string[]>([
     "Visual supports",
     "Simplified directions",
-    "Reduced answer choices",
   ]);
+  const [topicId, setTopicId] = useState("");
+  const [learningGoal, setLearningGoal] = useState("");
+  const [goalLocked, setGoalLocked] = useState(true);
+
   const [worksheetTypes, setWorksheetTypes] = useState<string[]>([
     "Skill introduction",
     "Guided practice",
@@ -85,6 +90,41 @@ export function WorksheetGeneratorForm() {
   const [resultContent, setResultContent] = useState("");
   const [imageAssets, setImageAssets] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
+
+  const availableTopics = useMemo(
+    () =>
+      listTopicsForFilters({
+        subject,
+        gradeBand,
+        instructionalLevel,
+        differentiationLevel,
+        supportNeeds,
+      }),
+    [subject, gradeBand, instructionalLevel, differentiationLevel, supportNeeds],
+  );
+
+  const selectedTopic = topicId ? getWorksheetTopic(topicId) : undefined;
+  const topicOrSkill = selectedTopic?.label ?? "";
+
+  useEffect(() => {
+    if (availableTopics.length === 0) {
+      setTopicId("");
+      return;
+    }
+    if (!availableTopics.some((topic) => topic.id === topicId)) {
+      setTopicId(availableTopics[0]!.id);
+    }
+  }, [availableTopics, topicId]);
+
+  useEffect(() => {
+    if (!selectedTopic || !goalLocked) return;
+    setLearningGoal(
+      buildIepLearningGoal({
+        topic: selectedTopic,
+        differentiationLevel,
+      }),
+    );
+  }, [selectedTopic, differentiationLevel, goalLocked]);
 
   const recommendedPreview = useMemo(
     () =>
@@ -115,6 +155,10 @@ export function WorksheetGeneratorForm() {
     setError(null);
     setMessage(null);
     setPrintMessage(null);
+    if (!topicOrSkill.trim() || !learningGoal.trim()) {
+      setError("Choose a topic/skill so a learning goal can be generated.");
+      return;
+    }
     startTransition(async () => {
       const result = await generateWorksheetPacketAction({
         packetTitle,
@@ -206,8 +250,8 @@ export function WorksheetGeneratorForm() {
         <Card>
           <CardTitle>Worksheet packet options</CardTitle>
           <CardDescription>
-            Enter a learning goal and options. Generate a printable packet with large drawings (and
-            a theme illustration when your API key supports images), then Print or Save as PDF.
+            Choose subject, grade band, instructional level, supports, then a topic/skill. The
+            learning goal is auto-filled in IEP format and stays editable.
           </CardDescription>
 
           <div className="mt-4 space-y-4">
@@ -216,17 +260,18 @@ export function WorksheetGeneratorForm() {
                 id="packetTitle"
                 value={packetTitle}
                 onChange={(event) => setPacketTitle(event.target.value)}
-                placeholder="Coin identification practice pack"
+                placeholder="Sight words practice pack"
               />
             </FormField>
 
-            <FormField id="subject" label="Subject">
+            <FormField id="subject" label="1. Subject">
               <Select
                 id="subject"
                 value={subject}
-                onChange={(event) =>
-                  setSubject(event.target.value as (typeof WORKSHEET_SUBJECTS)[number])
-                }
+                onChange={(event) => {
+                  setSubject(event.target.value as (typeof WORKSHEET_SUBJECTS)[number]);
+                  setGoalLocked(true);
+                }}
               >
                 {WORKSHEET_SUBJECTS.map((option) => (
                   <option key={option} value={option}>
@@ -236,36 +281,15 @@ export function WorksheetGeneratorForm() {
               </Select>
             </FormField>
 
-            <FormField
-              id="topicOrSkill"
-              label="Topic or skill"
-              description="Examples: Identifying coins, Main idea, Reading grocery store signs"
-            >
-              <Input
-                id="topicOrSkill"
-                value={topicOrSkill}
-                onChange={(event) => setTopicOrSkill(event.target.value)}
-                required
-              />
-            </FormField>
-
-            <FormField id="learningGoal" label="Learning goal">
-              <Textarea
-                id="learningGoal"
-                value={learningGoal}
-                onChange={(event) => setLearningGoal(event.target.value)}
-                required
-              />
-            </FormField>
-
             <div className="grid gap-4 md:grid-cols-2">
-              <FormField id="gradeBand" label="Grade band">
+              <FormField id="gradeBand" label="2. Grade band">
                 <Select
                   id="gradeBand"
                   value={gradeBand}
-                  onChange={(event) =>
-                    setGradeBand(event.target.value as (typeof GRADE_BANDS)[number])
-                  }
+                  onChange={(event) => {
+                    setGradeBand(event.target.value as (typeof GRADE_BANDS)[number]);
+                    setGoalLocked(true);
+                  }}
                 >
                   {GRADE_BANDS.map((option) => (
                     <option key={option} value={option}>
@@ -275,15 +299,16 @@ export function WorksheetGeneratorForm() {
                 </Select>
               </FormField>
 
-              <FormField id="instructionalLevel" label="Instructional level">
+              <FormField id="instructionalLevel" label="3. Instructional level">
                 <Select
                   id="instructionalLevel"
                   value={instructionalLevel}
-                  onChange={(event) =>
+                  onChange={(event) => {
                     setInstructionalLevel(
                       event.target.value as (typeof INSTRUCTIONAL_LEVELS)[number],
-                    )
-                  }
+                    );
+                    setGoalLocked(true);
+                  }}
                 >
                   {INSTRUCTIONAL_LEVELS.map((option) => (
                     <option key={option} value={option}>
@@ -306,17 +331,18 @@ export function WorksheetGeneratorForm() {
 
             <FormField
               id="differentiationLevel"
-              label="Differentiation level"
-              description="Level 1 = maximum support; Level 2 = moderate support; Level 3 = minimal support."
+              label="4. Differentiation level"
+              description="Level 1 = maximum support; Level 2 = moderate support; Level 3 = minimal support. Accuracy % in the goal adjusts with this choice."
             >
               <Select
                 id="differentiationLevel"
                 value={differentiationLevel}
-                onChange={(event) =>
+                onChange={(event) => {
                   setDifferentiationLevel(
                     event.target.value as (typeof DIFFERENTIATION_LEVELS)[number],
-                  )
-                }
+                  );
+                  setGoalLocked(true);
+                }}
               >
                 {DIFFERENTIATION_LEVELS.map((option) => (
                   <option key={option} value={option}>
@@ -338,22 +364,88 @@ export function WorksheetGeneratorForm() {
 
             <fieldset className="space-y-2">
               <legend className="text-sm font-semibold">
-                Support needs (select all that apply)
+                5. Support needs (select all that apply)
               </legend>
               <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
                 {SUPPORT_NEEDS.map((option) => (
                   <label key={option} className="flex items-start gap-2 text-sm">
                     <Checkbox
                       checked={supportNeeds.includes(option)}
-                      onChange={(event) =>
-                        setSupportNeeds(toggleValue(supportNeeds, option, event.target.checked))
-                      }
+                      onChange={(event) => {
+                        setSupportNeeds(toggleValue(supportNeeds, option, event.target.checked));
+                        setGoalLocked(true);
+                      }}
                     />
                     <span>{option}</span>
                   </label>
                 ))}
               </div>
             </fieldset>
+
+            <FormField
+              id="topicOrSkill"
+              label="6. Topic or skill"
+              description={
+                availableTopics.length
+                  ? `${availableTopics.length} topics match your subject, grade band, instructional level, and supports.`
+                  : "No topics matched — adjust grade band or instructional level."
+              }
+            >
+              <Select
+                id="topicOrSkill"
+                value={topicId}
+                onChange={(event) => {
+                  setTopicId(event.target.value);
+                  setGoalLocked(true);
+                }}
+                required
+                disabled={availableTopics.length === 0}
+              >
+                {availableTopics.length === 0 ? (
+                  <option value="">No topics available</option>
+                ) : (
+                  availableTopics.map((topic) => (
+                    <option key={topic.id} value={topic.id}>
+                      {topic.label}
+                    </option>
+                  ))
+                )}
+              </Select>
+            </FormField>
+
+            <FormField
+              id="learningGoal"
+              label="7. Learning goal (auto-generated)"
+              description={`Format: By the end of the IEP, the student will … with ${accuracyPercentForDifferentiation(differentiationLevel)}% accuracy as measured by work samples/observation. Edit if needed.`}
+            >
+              <Textarea
+                id="learningGoal"
+                value={learningGoal}
+                onChange={(event) => {
+                  setGoalLocked(false);
+                  setLearningGoal(event.target.value);
+                }}
+                required
+              />
+            </FormField>
+            {!goalLocked ? (
+              <Button
+                type="button"
+                variant="secondary"
+                onClick={() => {
+                  if (!selectedTopic) return;
+                  setGoalLocked(true);
+                  setLearningGoal(
+                    buildIepLearningGoal({
+                      topic: selectedTopic,
+                      differentiationLevel,
+                    }),
+                  );
+                }}
+              >
+                Reset goal from topic
+              </Button>
+            ) : null}
 
             <fieldset className="space-y-2">
               <div className="flex flex-wrap items-center justify-between gap-2">
@@ -456,7 +548,7 @@ export function WorksheetGeneratorForm() {
               </label>
             </div>
 
-            <Button type="button" disabled={pending} onClick={runGenerate}>
+            <Button type="button" disabled={pending || !topicId} onClick={runGenerate}>
               {pending ? "Generating…" : "Generate Worksheet Packet"}
             </Button>
           </div>
