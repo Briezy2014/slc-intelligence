@@ -16,11 +16,31 @@ describe("student, goal, and progress validation", () => {
       lastName: "Learner",
       localIdentifier: "DEV-1",
       enrollmentStatus: "active",
+      gradeLevel: "4",
     });
     expect(parsed.firstName).toBe("Fictional");
+    expect(parsed.gradeLevel).toBe("4");
     expect(
       studentSchema.safeParse({ organizationId, firstName: "", lastName: "Learner" }).success,
     ).toBe(false);
+  });
+
+  it("accepts optional date of birth and address when provided", () => {
+    const parsed = studentSchema.parse({
+      organizationId,
+      firstName: "Fictional",
+      lastName: "Learner",
+      localIdentifier: "S2",
+      enrollmentStatus: "active",
+      dateOfBirth: "2015-04-12",
+      addressLine1: "123 Example St",
+      city: "Columbus",
+      state: "OH",
+      postalCode: "43215",
+    });
+    expect(parsed.dateOfBirth).toBe("2015-04-12");
+    expect(parsed.addressLine1).toBe("123 Example St");
+    expect(parsed.postalCode).toBe("43215");
   });
 
   it("validates IEP cycle date ordering", () => {

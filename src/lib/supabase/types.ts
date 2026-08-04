@@ -254,6 +254,12 @@ export type Student = {
   enrollment_status: RecordStatus;
   start_date: Nullable<DateString>;
   end_date: Nullable<DateString>;
+  date_of_birth: Nullable<DateString>;
+  address_line1: Nullable<string>;
+  address_line2: Nullable<string>;
+  city: Nullable<string>;
+  state: Nullable<string>;
+  postal_code: Nullable<string>;
   has_iep: boolean;
   has_section_504: boolean;
   has_gifted: boolean;

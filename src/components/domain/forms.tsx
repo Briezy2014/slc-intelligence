@@ -14,20 +14,14 @@ import {
   saveStudentEnrollmentAction,
   saveStudentProgramAssignmentAction,
   saveStudentStaffAssignmentAction,
-  saveStudentAction,
 } from "@/lib/actions/students";
 import { ROLE_LABELS } from "@/lib/permissions/matrix";
-import type {
-  Classroom,
-  Program,
-  RoleCode,
-  School,
-  Student,
-  UserProfile,
-} from "@/lib/supabase/types";
+import type { Classroom, Program, RoleCode, School, UserProfile } from "@/lib/supabase/types";
 
 export { GoalForm } from "@/components/domain/goal-form";
 export { ProgressEntryForm } from "@/components/domain/progress-entry-form";
+export { StudentForm } from "@/components/domain/student-form";
+export { StudentPlacementCard } from "@/components/domain/student-placement-card";
 
 function submitAction(action: (formData: FormData) => Promise<unknown>) {
   return action as unknown as (formData: FormData) => void;
@@ -187,170 +181,6 @@ export function ClassroomForm({
         </Select>
       </FormField>
       <Button type="submit">{classroom ? "Save classroom" : "Create classroom"}</Button>
-    </form>
-  );
-}
-
-export function StudentForm({
-  organizationId,
-  student,
-}: {
-  organizationId: string;
-  student?: Student | null;
-}) {
-  return (
-    <form action={submitAction(saveStudentAction)} className="space-y-4">
-      <input type="hidden" name="organizationId" value={organizationId} />
-      {student ? <input type="hidden" name="studentId" value={student.id} /> : null}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="firstName" label="First name">
-          <Input
-            id="firstName"
-            name="firstName"
-            required
-            placeholder="S1"
-            defaultValue={student?.first_name ?? ""}
-          />
-        </FormField>
-        <FormField id="lastName" label="Last name">
-          <Input
-            id="lastName"
-            name="lastName"
-            required
-            placeholder="Student"
-            defaultValue={student?.last_name ?? ""}
-          />
-        </FormField>
-      </div>
-      <FormField id="preferredName" label="Preferred name (optional)">
-        <Input
-          id="preferredName"
-          name="preferredName"
-          placeholder="S1"
-          defaultValue={student?.preferred_name ?? ""}
-        />
-      </FormField>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="localIdentifier" label="Classroom code">
-          <Input
-            id="localIdentifier"
-            name="localIdentifier"
-            required
-            placeholder="S1"
-            defaultValue={student?.local_identifier ?? ""}
-          />
-        </FormField>
-        <FormField id="gradeLevel" label="Grade level">
-          <Select id="gradeLevel" name="gradeLevel" defaultValue={student?.grade_level ?? ""}>
-            <option value="">Choose grade level</option>
-            {[
-              "PreK",
-              "K",
-              "1",
-              "2",
-              "3",
-              "4",
-              "5",
-              "6",
-              "7",
-              "8",
-              "9",
-              "10",
-              "11",
-              "12",
-              "Transition",
-            ].map((grade) => (
-              <option key={grade} value={grade}>
-                {grade}
-              </option>
-            ))}
-          </Select>
-        </FormField>
-      </div>
-      <FormField id="enrollmentStatus" label="Enrollment status">
-        <Select
-          id="enrollmentStatus"
-          name="enrollmentStatus"
-          defaultValue={student?.enrollment_status ?? "active"}
-        >
-          <StatusOptions />
-        </Select>
-      </FormField>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <FormField id="startDate" label="Start date">
-          <Input
-            id="startDate"
-            name="startDate"
-            type="date"
-            defaultValue={student?.start_date ?? ""}
-          />
-        </FormField>
-        <FormField id="endDate" label="End date">
-          <Input id="endDate" name="endDate" type="date" defaultValue={student?.end_date ?? ""} />
-        </FormField>
-      </div>
-      <div className="border-border space-y-3 rounded-[var(--radius-md)] border p-4">
-        <h3 className="font-semibold">Support plans</h3>
-        <p className="text-muted text-sm">
-          Staff caseload flags for IEP, Section 504, Gifted, and English learner (EL). These are
-          organizational indicators, not legal determinations.
-        </p>
-        <div className="grid gap-4 sm:grid-cols-2">
-          <FormField id="hasIep" label="IEP">
-            <Select id="hasIep" name="hasIep" defaultValue={student?.has_iep ? "true" : "false"}>
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </Select>
-          </FormField>
-          <FormField id="hasSection504" label="Section 504">
-            <Select
-              id="hasSection504"
-              name="hasSection504"
-              defaultValue={student?.has_section_504 ? "true" : "false"}
-            >
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </Select>
-          </FormField>
-          <FormField id="hasGifted" label="Gifted">
-            <Select
-              id="hasGifted"
-              name="hasGifted"
-              defaultValue={student?.has_gifted ? "true" : "false"}
-            >
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </Select>
-          </FormField>
-          <FormField id="hasEnglishLearner" label="English learner (EL)">
-            <Select
-              id="hasEnglishLearner"
-              name="hasEnglishLearner"
-              defaultValue={student?.has_english_learner ? "true" : "false"}
-            >
-              <option value="false">No</option>
-              <option value="true">Yes</option>
-            </Select>
-          </FormField>
-        </div>
-        <FormField id="homeLanguage" label="Home language (optional)">
-          <Input
-            id="homeLanguage"
-            name="homeLanguage"
-            defaultValue={student?.home_language ?? ""}
-            placeholder="Spanish, Arabic, etc."
-          />
-        </FormField>
-        <FormField id="supportPlanNotes" label="Support plan notes (optional)">
-          <Textarea
-            id="supportPlanNotes"
-            name="supportPlanNotes"
-            defaultValue={student?.support_plan_notes ?? ""}
-            placeholder="Brief caseload notes"
-          />
-        </FormField>
-      </div>
-      <Button type="submit">{student ? "Save student" : "Create student"}</Button>
     </form>
   );
 }

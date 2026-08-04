@@ -35,7 +35,7 @@ export default async function StudentsPage({
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Students" }]} />
       <PageHeader
         title="Students"
-        description="Authorized student roster with search, filter, and pagination-ready parameters."
+        description="Open a student hub for profile, grade, and links into behavior, progress, families, services, and more."
         actions={
           state.configured && state.data.canCreate ? (
             <Link
@@ -63,7 +63,7 @@ export default async function StudentsPage({
             <Input
               name="q"
               aria-label="Search students"
-              placeholder="Search by name or local ID"
+              placeholder="Search by name or student ID"
               defaultValue={state.data.filters.search}
             />
             <Select

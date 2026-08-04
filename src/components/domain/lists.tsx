@@ -165,11 +165,11 @@ export function StudentList({ students }: { students: Student[] }) {
   return (
     <LinkedTable
       caption="Students"
-      headers={["Student", "Local ID", "Grade", "Status", "Start date"]}
+      headers={["Student", "Student ID", "Grade", "Status", "Student data"]}
       rows={students.map((student) => [
         <Link
           key={student.id}
-          href={`/students/${student.id}`}
+          href={`/students/${student.id}/overview`}
           className="text-accent font-semibold hover:underline"
         >
           {student.last_name}, {student.preferred_name || student.first_name}
@@ -177,7 +177,13 @@ export function StudentList({ students }: { students: Student[] }) {
         student.local_identifier,
         student.grade_level ?? "Not set",
         <StatusBadge key={`${student.id}-status`} status={student.enrollment_status} />,
-        student.start_date ?? "Not set",
+        <Link
+          key={`${student.id}-hub`}
+          href={`/students/${student.id}/overview`}
+          className="text-highlight font-semibold hover:underline"
+        >
+          Open hub →
+        </Link>,
       ])}
     />
   );
