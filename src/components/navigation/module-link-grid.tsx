@@ -43,7 +43,7 @@ export function ModuleLinkGrid({
               <span className="text-foreground block font-semibold">{link.label}</span>
               <span className="text-muted mt-1 block text-sm">{link.description}</span>
               <span className="text-highlight mt-2 block text-sm font-semibold">
-                {selected ? "Open now" : "Tap to open →"}
+                {selected ? "Working here" : "Tap to open →"}
               </span>
             </span>
             <ChevronRight className="text-highlight mt-1 size-5 shrink-0" aria-hidden="true" />

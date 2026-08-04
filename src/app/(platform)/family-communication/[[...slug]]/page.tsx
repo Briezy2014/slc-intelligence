@@ -13,9 +13,12 @@ import { listCommunications } from "@/lib/data/communications";
 
 export const metadata: Metadata = { title: "Family communication" };
 
+const RESERVED_SLUGS = new Set(["contacts", "communications", "templates", "exports"]);
+
 function viewFromSlug(slug: string[]): FamilyCommunicationView {
   if (slug[0] === "contacts") return "contacts";
   if (slug[0] === "communications") return "communications";
+  if (slug[0] === "templates") return "templates";
   return "dashboard";
 }
 
@@ -27,17 +30,14 @@ export default async function FamilyCommunicationPage({
   const { slug = [] } = await params;
   const view = viewFromSlug(slug);
   const state = await listCommunications({
-    communicationId:
-      slug[0] && !["contacts", "communications", "templates", "exports"].includes(slug[0])
-        ? slug[0]
-        : undefined,
+    communicationId: slug[0] && !RESERVED_SLUGS.has(slug[0]) ? slug[0] : undefined,
   });
   return (
     <main id="main-content">
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Family Communication" }]} />
       <PageHeader
         title="Family Communication"
-        description="Tap a card, answer the dropdowns, save with Visibility = Family visible. Then check Messages for families."
+        description="Add contacts, choose a professional template, write the message, and track letters by date and time."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -46,8 +46,9 @@ export default async function FamilyCommunicationPage({
       ) : (
         <div className="space-y-6">
           <Alert title="Start here to send something home" tone="info">
-            Tap <strong>Write a message</strong>, choose the student and behavior from the
-            dropdowns, keep Visibility on Family visible, and save.{" "}
+            Tap <strong>Contacts</strong> to add who can receive notes,{" "}
+            <strong>Message templates</strong> for ready-to-use letters, then{" "}
+            <strong>Write a message</strong> to insert, set date/time, and save.{" "}
             <Link href="/parent-share" className="text-highlight font-semibold underline">
               Messages for families
             </Link>{" "}
@@ -63,12 +64,17 @@ export default async function FamilyCommunicationPage({
               {
                 href: "/family-communication/contacts",
                 label: "Contacts",
-                description: "Who can receive school-to-home messages.",
+                description: "Add and review who can receive school-to-home messages.",
+              },
+              {
+                href: "/family-communication/templates",
+                label: "Message templates",
+                description: "Dozens of professional family letters ready to customize.",
               },
               {
                 href: "/family-communication/communications",
                 label: "Write a message",
-                description: "Student + behavior dropdowns, templates, then save.",
+                description: "Student, template, date/time, then save and track.",
               },
               {
                 href: "/parent-share",

@@ -90,6 +90,8 @@ export async function saveContactAction(formData: FormData): Promise<ActionState
       newState: payload,
       paths: [
         "/family-communication",
+        "/family-communication/contacts",
+        `/students/${values.studentId}/family-communication`,
         `/students/${values.studentId}/family-communication/contacts`,
       ],
     });
@@ -210,8 +212,12 @@ export async function saveCommunicationLogAction(formData: FormData): Promise<Ac
       },
       paths: [
         "/family-communication",
+        "/family-communication/communications",
+        "/family-communication/templates",
         "/parent-share",
+        `/students/${values.studentId}/family-communication`,
         `/students/${values.studentId}/family-communication/communications`,
+        `/students/${values.studentId}/family-communication/templates`,
       ],
     });
     return { status: "success", message: "Communication log saved." };

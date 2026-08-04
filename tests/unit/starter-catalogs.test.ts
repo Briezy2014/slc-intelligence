@@ -16,7 +16,7 @@ describe("starter catalogs", () => {
     expect(counts.interventions).toBeGreaterThanOrEqual(40);
     expect(counts.accommodations).toBeGreaterThanOrEqual(30);
     expect(counts.executiveFunctionSkills).toBeGreaterThanOrEqual(20);
-    expect(counts.communicationTemplates).toBeGreaterThanOrEqual(40);
+    expect(counts.communicationTemplates).toBeGreaterThanOrEqual(60);
     expect(GOAL_TEMPLATES.every((item) => item.area && item.statement)).toBe(true);
     expect(INTERVENTION_TEMPLATES.every((item) => item.name && item.description)).toBe(true);
     expect(ACCOMMODATION_TEMPLATES.every((item) => item.name && item.description)).toBe(true);
@@ -46,13 +46,13 @@ describe("starter catalogs", () => {
       studentFirstName: "Alex",
       contactFirstName: "Jordan",
       staffName: "Ms. Rivera",
-      focusArea: "starting and completing assigned work",
+      focusArea: "refusing to start or complete assigned work",
       behaviorDescription:
-        "We are addressing a school concern related to starting and completing assigned work. We respond with a calm, planned approach.",
+        "We are writing to share a school concern regarding refusing to start or complete assigned work. Our team is responding with a calm, planned approach that prioritizes safety while we teach a safer or more appropriate way for needs to be met.",
       classroomSupports: "precorrection; break/help card; task chunking",
       homePartnership: "Please share what is working at home.",
     });
-    expect(draft.summary).toContain("starting and completing assigned work");
+    expect(draft.summary).toContain("refusing to start or complete assigned work");
     expect(draft.summary).toContain("break/help card");
     expect(draft.summary).toContain("calm, planned approach");
     expect(draft.summary).not.toContain("{{");

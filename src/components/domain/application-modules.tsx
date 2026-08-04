@@ -272,6 +272,19 @@ export function CommunicationsWorkspace({
   view?: FamilyCommunicationView;
 }) {
   const showComposeTools = view === "communications";
+  const communicationsBasePath = studentId
+    ? `/students/${studentId}/family-communication`
+    : "/family-communication";
+  const studentLookup = new Map(
+    data.students.map((student) => [
+      student.id,
+      `${student.last_name}, ${student.preferred_name || student.first_name}`,
+    ]),
+  );
+  const visibleContacts = studentId
+    ? data.contacts.filter((contact) => contact.student_id === studentId)
+    : data.contacts;
+
   return (
     <div className="space-y-6">
       {showComposeTools ? (
@@ -295,7 +308,23 @@ export function CommunicationsWorkspace({
         canEnterCommunication={data.permissions.canEnterCommunication}
         studentId={studentId}
         view={view}
+        communicationsBasePath={communicationsBasePath}
       />
+      {view === "contacts" ? (
+        <TableShell
+          caption="All contacts"
+          headers={["Name", "Student", "Relationship", "Email", "Phone", "Primary"]}
+          emptyMessage="No contacts saved yet. Use Add a family contact above."
+          rows={visibleContacts.map((contact) => [
+            `${contact.last_name}, ${contact.first_name}`,
+            studentLookup.get(contact.student_id) ?? "—",
+            contact.relationship,
+            contact.email || "—",
+            contact.phone_primary || "—",
+            contact.is_primary ? "Yes" : "No",
+          ])}
+        />
+      ) : null}
       {showComposeTools ? (
         <>
           <CommunicationEsignPanel data={data} />
@@ -308,7 +337,7 @@ export function CommunicationsWorkspace({
           </form>
           <TableShell
             caption="Your saved messages"
-            headers={["Subject", "Language", "Visibility", "E-sign", "Status", "Occurred"]}
+            headers={["Subject", "Language", "Visibility", "E-sign", "Status", "Date & time"]}
             emptyMessage="No messages saved yet. Use Write a message / Template & language above, keep Visibility on Family visible if parents may see it, then save."
             rows={data.communications.map((log) => [
               log.subject,
@@ -316,7 +345,10 @@ export function CommunicationsWorkspace({
               log.visibility.replaceAll("_", " "),
               log.esign_status || "none",
               log.status.replaceAll("_", " "),
-              new Date(log.occurred_at).toLocaleString(),
+              new Date(log.occurred_at).toLocaleString(undefined, {
+                dateStyle: "medium",
+                timeStyle: "short",
+              }),
             ])}
           />
         </>

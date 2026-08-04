@@ -33,7 +33,7 @@ describe("AI Assist local intelligence", () => {
     });
     expect(communications.length).toBeGreaterThan(0);
     const draft = communications.map((item) => item.draftText).join("\n");
-    expect(draft.toLowerCase()).toContain("starting and completing assigned work");
+    expect(draft.toLowerCase()).toContain("refusing to start or complete assigned work");
     expect(draft.toLowerCase()).toContain("alex");
     expect(draft.toLowerCase()).not.toContain("we are supporting task refusal");
     expect(draft.toLowerCase()).not.toContain("related to behavior");
@@ -53,7 +53,7 @@ describe("AI Assist local intelligence", () => {
       .map((item) => item.draftText)
       .join("\n")
       .toLowerCase();
-    expect(draft).toContain("school-appropriate language");
+    expect(draft).toContain("inappropriate language at school");
     expect(draft).toContain("jordan");
     expect(draft).not.toContain("supporting profanity");
     expect(draft).not.toContain("supporting preventing");
