@@ -29,7 +29,7 @@ export default function SupportsHubPage() {
             {
               href: "/interventions",
               label: "Interventions",
-              description: "Start a plan from the library in two dropdowns.",
+              description: "What we tried — plan, log use, export the saved record.",
             },
             {
               href: "/services",

@@ -162,14 +162,7 @@ export function ServicesWorkspace({
         data.plans.length ? (
           <TableShell
             caption="Student services"
-            headers={[
-              "Student",
-              "Service",
-              "Provider",
-              "Goals",
-              "Status",
-              "Documentation",
-            ]}
+            headers={["Student", "Service", "Provider", "Goals", "Status", "Documentation"]}
             emptyMessage="No related services assigned yet."
             rows={data.plans.map((plan) => {
               const student = data.students.find((entry) => entry.id === plan.student_id);
@@ -183,11 +176,7 @@ export function ServicesWorkspace({
                 student ? studentName(student) : "Authorized student",
                 definition?.name ?? plan.title,
                 snap.providerName || "Not set",
-                goals
-                  ? goals.length > 80
-                    ? `${goals.slice(0, 80)}…`
-                    : goals
-                  : "—",
+                goals ? (goals.length > 80 ? `${goals.slice(0, 80)}…` : goals) : "—",
                 plan.status.replaceAll("_", " "),
                 describeDocumentationGap({
                   recordedMinutes: log?.calculated_duration_minutes ?? null,
@@ -219,11 +208,7 @@ export function ServicesWorkspace({
                 definitions={data.definitions}
                 defaultPlanId={firstPlan.id}
               />
-              <input
-                type="hidden"
-                name="serviceComponentId"
-                value={firstComponent?.id ?? ""}
-              />
+              <input type="hidden" name="serviceComponentId" value={firstComponent?.id ?? ""} />
               <FormField id="logProviderUserId" label="Provider who delivered">
                 <Select id="logProviderUserId" name="providerUserId" defaultValue="">
                   <option value="">Me (signed-in user)</option>
@@ -310,11 +295,7 @@ export function ServicesWorkspace({
               student ? studentName(student) : "Authorized student",
               definition?.name ?? plan?.title ?? "Service",
               log.service_status.replaceAll("_", " "),
-              log.notes
-                ? log.notes.length > 60
-                  ? `${log.notes.slice(0, 60)}…`
-                  : log.notes
-                : "—",
+              log.notes ? (log.notes.length > 60 ? `${log.notes.slice(0, 60)}…` : log.notes) : "—",
             ];
           })}
         />
@@ -361,7 +342,13 @@ export function ServicesWorkspace({
                 </Select>
               </FormField>
               <FormField id="reviewDate" label="Review date">
-                <Input id="reviewDate" name="reviewDate" type="date" defaultValue={today} required />
+                <Input
+                  id="reviewDate"
+                  name="reviewDate"
+                  type="date"
+                  defaultValue={today}
+                  required
+                />
               </FormField>
               <FormField id="reviewSummary" label="Summary">
                 <Textarea id="reviewSummary" name="reviewSummary" rows={4} required />
@@ -377,7 +364,9 @@ export function ServicesWorkspace({
               </Button>
             </form>
           ) : !firstPlan ? (
-            <p className="text-muted mt-4 text-sm">Assign a related service before adding a review.</p>
+            <p className="text-muted mt-4 text-sm">
+              Assign a related service before adding a review.
+            </p>
           ) : (
             <PermissionNote />
           )}
@@ -406,8 +395,8 @@ export function ServicesWorkspace({
         <Card>
           <CardTitle>Service types (definitions)</CardTitle>
           <CardDescription>
-            Optional admin area. OT, PT, Speech, APE, and common related services load automatically.
-            Add a custom type only if something is missing.
+            Optional admin area. OT, PT, Speech, APE, and common related services load
+            automatically. Add a custom type only if something is missing.
           </CardDescription>
           {data.permissions.canManageDefinitions ? (
             <form action={submitAction(saveServiceDefinitionAction)} className="mt-4 space-y-3">

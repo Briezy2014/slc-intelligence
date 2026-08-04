@@ -11,15 +11,17 @@ import {
   InterventionLibraryForm,
   InterventionPlanForm,
 } from "@/components/domain/phase-modules";
+import { InterventionTriedExport } from "@/components/domain/intervention-tried-export";
 import { listInterventions } from "@/lib/data/interventions";
 
 export const metadata: Metadata = { title: "Interventions" };
 
-type InterventionsView = "dashboard" | "library" | "new-library";
+type InterventionsView = "dashboard" | "library" | "new-library" | "tried";
 
 function viewFromSlug(slug: string[]): InterventionsView {
   if (slug[0] === "library" && slug[1] === "new") return "new-library";
   if (slug[0] === "library") return "library";
+  if (slug[0] === "tried" || slug[0] === "export") return "tried";
   return "dashboard";
 }
 
@@ -39,7 +41,7 @@ export default async function InterventionsPage({
       <Breadcrumbs items={[{ href: "/", label: "Home" }, { label: "Interventions" }]} />
       <PageHeader
         title="Interventions"
-        description="Pick a library intervention, assign it to a student, then log fidelity when you use it."
+        description="Track what you tried with a student — the strategy, when you used it, and how it went. Everything you log is saved and exportable."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -47,16 +49,21 @@ export default async function InterventionsPage({
         <SafeErrorState message={state.error} />
       ) : (
         <div className="space-y-6">
-          <Alert title="Two steps for most days" tone="info">
-            1) Open <strong>Start a plan</strong> and answer the two dropdowns. 2) Open the student
-            later to log fidelity/dosage. Library items fill in automatically for your organization.
+          <Alert title="Clear purpose" tone="info">
+            Interventions = <strong>what we tried</strong>. 1) Start a plan from the library. 2) Log
+            dosage (sessions/minutes) when you use it. 3) Export the saved record for your team.
           </Alert>
           <ModuleLinkGrid
             links={[
               {
                 href: "/interventions",
-                label: "Start a plan",
-                description: "Question 1: student. Question 2: library intervention.",
+                label: "Start what we’re trying",
+                description: "Student + library intervention → save the plan.",
+              },
+              {
+                href: "/interventions/tried",
+                label: "What we tried / export",
+                description: "Saved logs and plans — CSV, PDF, or email.",
               },
               {
                 href: "/interventions/library",
@@ -73,10 +80,10 @@ export default async function InterventionsPage({
 
           {view === "dashboard" ? (
             <Card>
-              <CardTitle>Start an intervention plan</CardTitle>
+              <CardTitle>Start what we’re trying</CardTitle>
               <CardDescription>
-                Answer two questions from the dropdowns, then save. You can open the student record
-                afterward for fidelity notes.
+                Pick the student and the intervention from the library. Save it so you can log use
+                and export later.
               </CardDescription>
               {state.data.students.length === 0 ? (
                 <div className="mt-4">
@@ -95,6 +102,8 @@ export default async function InterventionsPage({
               )}
             </Card>
           ) : null}
+
+          {view === "tried" ? <InterventionTriedExport data={state.data} /> : null}
 
           {view === "new-library" ? (
             <Card>

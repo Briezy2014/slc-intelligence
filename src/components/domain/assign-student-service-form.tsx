@@ -159,11 +159,7 @@ export function AssignStudentServiceForm({
             />
           </FormField>
           <FormField id="assignServiceFrequency" label="Frequency">
-            <Input
-              id="assignServiceFrequency"
-              name="frequency"
-              placeholder="2x / week"
-            />
+            <Input id="assignServiceFrequency" name="frequency" placeholder="2x / week" />
           </FormField>
         </div>
 

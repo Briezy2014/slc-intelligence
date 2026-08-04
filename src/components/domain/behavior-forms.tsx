@@ -392,11 +392,7 @@ export function BehaviorObservationForm({
       ) : null}
 
       {showAdvancedMethods ? (
-        <FormField
-          id="measurementMethod"
-          label="Advanced recording type"
-          description={methodHelp}
-        >
+        <FormField id="measurementMethod" label="Advanced recording type" description={methodHelp}>
           <Select
             id="measurementMethod"
             name="measurementMethod"
@@ -476,7 +472,10 @@ export function BehaviorObservationForm({
         </FormField>
       </div>
 
-      {!showAdvancedMethods || method === "frequency" || method === "abc" || method === "duration" ? (
+      {!showAdvancedMethods ||
+      method === "frequency" ||
+      method === "abc" ||
+      method === "duration" ? (
         <div className="space-y-4">
           <FormField
             id="recordedAntecedent"
@@ -589,9 +588,7 @@ export function BehaviorObservationForm({
                 variant="secondary"
                 aria-label="Decrease minutes"
                 onClick={() =>
-                  setDurationMinutes((current) =>
-                    String(Math.max(0, Number(current || "0") - 1)),
-                  )
+                  setDurationMinutes((current) => String(Math.max(0, Number(current || "0") - 1)))
                 }
               >
                 −
@@ -609,9 +606,7 @@ export function BehaviorObservationForm({
                 type="button"
                 variant="secondary"
                 aria-label="Increase minutes"
-                onClick={() =>
-                  setDurationMinutes((current) => String(Number(current || "0") + 1))
-                }
+                onClick={() => setDurationMinutes((current) => String(Number(current || "0") + 1))}
               >
                 +
               </Button>

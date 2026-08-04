@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { generateWorksheetPacketAction } from "@/lib/actions/worksheet-generator";
+import { replaceAiImageMarkers } from "@/lib/worksheet-generator/ai-images";
 import {
   DIFFERENTIATION_LEVELS,
   GRADE_BANDS,
@@ -17,6 +18,7 @@ import {
   PACKET_LENGTHS,
   PRINTING_FORMATS,
   SUPPORT_NEEDS,
+  WORKSHEET_EDUCATOR_REVIEW_NOTE,
   WORKSHEET_PRIVACY_NOTICE,
   WORKSHEET_SUBJECTS,
   WORKSHEET_TYPES,
@@ -81,6 +83,7 @@ export function WorksheetGeneratorForm() {
   const [printMessage, setPrintMessage] = useState<string | null>(null);
   const [resultTitle, setResultTitle] = useState("");
   const [resultContent, setResultContent] = useState("");
+  const [imageAssets, setImageAssets] = useState<Record<string, string>>({});
   const [showResults, setShowResults] = useState(false);
 
   const recommendedPreview = useMemo(
@@ -100,10 +103,13 @@ export function WorksheetGeneratorForm() {
     return firstPages
       .map((page) => {
         const escaped = escapeHtml(page.trim());
-        return replaceVisualMarkersWithSvg(escaped).replaceAll("\n", "<br/>");
+        return replaceAiImageMarkers(replaceVisualMarkersWithSvg(escaped), imageAssets).replaceAll(
+          "\n",
+          "<br/>",
+        );
       })
       .join('<hr style="margin:16px 0;border-color:#444"/>');
-  }, [resultContent]);
+  }, [resultContent, imageAssets]);
 
   function runGenerate() {
     setError(null);
@@ -136,7 +142,16 @@ export function WorksheetGeneratorForm() {
       }
       setResultTitle(result.packet.title);
       setResultContent(result.packet.content);
-      setMessage(result.message ?? null);
+      setImageAssets(result.packet.imageAssets ?? {});
+      const hasAiImage = Boolean(
+        result.packet.imageAssets && Object.keys(result.packet.imageAssets).length,
+      );
+      setMessage(
+        hasAiImage
+          ? "Packet ready with drawings and a theme illustration. Preview below, then Print / Save as PDF."
+          : (result.message ??
+              "Packet ready with printable drawings. Preview below, then Print / Save as PDF."),
+      );
       setShowResults(true);
     });
   }
@@ -148,6 +163,7 @@ export function WorksheetGeneratorForm() {
       content: resultContent,
       printingFormat,
       autoPrint,
+      imageAssets,
     });
     if (!result.ok) {
       setPrintMessage(result.message);
@@ -155,7 +171,7 @@ export function WorksheetGeneratorForm() {
     }
     setPrintMessage(
       autoPrint
-        ? "Print dialog opened. Choose “Save as PDF” (or your PDF printer) to download the packet with visuals."
+        ? "Print dialog opened. Choose “Save as PDF” (or your PDF printer) — pictures print with the pages."
         : "Printable packet opened in a new tab. Use Print → Save as PDF.",
     );
   }
@@ -170,9 +186,10 @@ export function WorksheetGeneratorForm() {
       title: resultTitle,
       content: resultContent,
       printingFormat,
+      imageAssets,
     });
     setPrintMessage(
-      "Downloaded a printable HTML file with visuals. Open it, then Print → Save as PDF if needed.",
+      "Downloaded a printable HTML file with pictures embedded. Open it, then Print → Save as PDF if needed.",
     );
   }
 
@@ -181,13 +198,16 @@ export function WorksheetGeneratorForm() {
       <Alert title="Privacy notice" tone="warning">
         {WORKSHEET_PRIVACY_NOTICE}
       </Alert>
+      <Alert title="Before you print" tone="info">
+        {WORKSHEET_EDUCATOR_REVIEW_NOTE}
+      </Alert>
 
       {!showResults ? (
         <Card>
           <CardTitle>Worksheet packet options</CardTitle>
           <CardDescription>
-            Enter a learning goal and select options. Generate a customized printable packet with
-            real visuals for educator review, then Print or Save as PDF.
+            Enter a learning goal and options. Generate a printable packet with large drawings (and
+            a theme illustration when your API key supports images), then Print or Save as PDF.
           </CardDescription>
 
           <div className="mt-4 space-y-4">
@@ -445,8 +465,8 @@ export function WorksheetGeneratorForm() {
         <Card>
           <CardTitle>Generated worksheet packet</CardTitle>
           <CardDescription>
-            Preview visuals below, edit text if needed, then Print or Save as PDF. Visual markers
-            like [[VISUAL:coin-penny]] become drawings in the printable packet.
+            Pictures appear in the preview and in Print / PDF. Student pages do not include AI
+            disclaimer footers.
           </CardDescription>
           <div className="mt-4 space-y-3">
             <FormField id="resultTitle" label="Packet title">
@@ -457,22 +477,23 @@ export function WorksheetGeneratorForm() {
               />
             </FormField>
 
-            {hasVisualMarkers(resultContent) ? (
+            {hasVisualMarkers(resultContent) || Object.keys(imageAssets).length ? (
               <div className="border-border rounded-[var(--radius-md)] border p-3">
-                <p className="text-sm font-semibold">Visual preview (first pages)</p>
+                <p className="text-sm font-semibold">Picture preview (first pages)</p>
                 <p className="text-muted mt-1 text-xs">
-                  These drawings are included when you print or save as PDF.
+                  These drawings and illustrations are what students see when you print or save as
+                  PDF. Do not copy the raw text box below if you need pictures — use Print / PDF /
+                  HTML.
                 </p>
                 <div
-                  className="bg-background mt-3 max-h-80 overflow-auto rounded-[var(--radius-md)] p-3 text-sm text-black [&_figcaption]:text-xs [&_figure]:mr-3 [&_figure]:inline-block [&_svg]:max-w-full"
+                  className="mt-3 max-h-[28rem] overflow-auto rounded-[var(--radius-md)] p-4 text-sm text-black [&_figcaption]:mt-1 [&_figcaption]:text-xs [&_figcaption]:font-semibold [&_figure]:mr-4 [&_figure]:mb-3 [&_figure]:inline-block [&_img]:max-w-full [&_svg]:max-w-full"
                   style={{ background: "#fff" }}
                   dangerouslySetInnerHTML={{ __html: previewHtml }}
                 />
               </div>
             ) : (
-              <Alert title="No visual markers found" tone="warning">
-                This packet text has no [[VISUAL:...]] markers. Regenerate to include printable
-                drawings, or keep the text-only version.
+              <Alert title="No pictures found" tone="warning">
+                Regenerate the packet to include printable drawings.
               </Alert>
             )}
 

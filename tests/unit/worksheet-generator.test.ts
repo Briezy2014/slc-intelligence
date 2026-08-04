@@ -64,4 +64,47 @@ describe("worksheet generator visuals and print", () => {
     expect(html).not.toContain("[[VISUAL:");
     expect(replaceVisualMarkersWithSvg("[[VISUAL:coin-dime]]")).toContain("<svg");
   });
+
+  it("never prints the AI disclaimer footer on student pages", async () => {
+    const packet = await generateWorksheetPacket({
+      packetTitle: "Coin pack",
+      subject: "Math",
+      topicOrSkill: "Identifying coins",
+      learningGoal: "Identify penny, nickel, dime, and quarter.",
+      gradeBand: "Grades 6–8",
+      instructionalLevel: "Grade 2",
+      differentiationLevel: "Level 2: Moderate Support",
+      supportNeeds: ["Visual supports"],
+      worksheetTypes: ["Guided practice", "Matching", "Answer key"],
+      packetLength: "5 pages",
+      studentInterestOrTheme: "Space",
+      printingFormat: "Standard",
+      includeAnswerKey: true,
+      includeProgressMonitoring: false,
+    });
+    expect(packet.content).not.toMatch(/AI-generated instructional material/i);
+    expect(packet.content).not.toMatch(/Review for accuracy and appropriateness/i);
+
+    const html = buildPrintablePacketHtml({
+      title: packet.title,
+      content: `${packet.content}\nAI-generated instructional material. Review for accuracy and appropriateness before student use.`,
+      printingFormat: "Standard",
+    });
+    expect(html).not.toMatch(/AI-generated instructional material/i);
+    expect(html).not.toMatch(/Review for accuracy and appropriateness/i);
+    expect(html).toContain("<svg");
+  });
+
+  it("embeds AI theme images in printable HTML when provided", () => {
+    const html = buildPrintablePacketHtml({
+      title: "Theme pack",
+      content: "Page one\n[[AIIMAGE:theme-hero]]\n[[VISUAL:school]]",
+      imageAssets: {
+        "theme-hero": "data:image/png;base64,AAAA",
+      },
+    });
+    expect(html).toContain('src="data:image/png;base64,AAAA"');
+    expect(html).toContain("<svg");
+    expect(html).not.toContain("[[AIIMAGE:");
+  });
 });

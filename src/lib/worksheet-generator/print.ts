@@ -1,6 +1,9 @@
+import { replaceAiImageMarkers } from "@/lib/worksheet-generator/ai-images";
 import { replaceVisualMarkersWithSvg } from "@/lib/worksheet-generator/visuals";
 
 const PAGE_BREAK = "---------- PAGE BREAK ----------";
+const DISCLAIMER_RE =
+  /AI-generated instructional material\.?\s*|Review for accuracy and appropriateness before student use\.?/gi;
 
 function escapeHtml(value: string): string {
   return value
@@ -47,24 +50,27 @@ function printCss(printingFormat: string): string {
     .page-body { white-space: pre-wrap; }
     .visual {
       display: inline-block;
-      margin: 10px 12px 10px 0;
+      margin: 14px 16px 14px 0;
       vertical-align: top;
       text-align: center;
       max-width: 100%;
     }
-    .visual svg {
+    .visual svg, .visual img {
       display: block;
-      border: ${lowInk ? "2px solid #000" : "1px solid #999"};
-      border-radius: 8px;
+      border: ${lowInk ? "2px solid #000" : "1px solid #777"};
+      border-radius: 12px;
       background: #fff;
       max-width: 100%;
       height: auto;
+      box-shadow: 0 1px 2px rgba(0,0,0,.08);
     }
+    .visual-photo img { width: min(100%, 420px); }
     .visual figcaption {
       font-family: system-ui, sans-serif;
-      font-size: 12px;
-      margin-top: 4px;
+      font-size: 13px;
+      margin-top: 6px;
       color: #222;
+      font-weight: 600;
     }
     @media print {
       body { padding: 0; }
@@ -78,19 +84,23 @@ export function buildPrintablePacketHtml(options: {
   title: string;
   content: string;
   printingFormat?: string;
+  imageAssets?: Record<string, string>;
 }): string {
   const title = escapeHtml(options.title || "Worksheet packet");
   const pages = options.content
+    .replace(DISCLAIMER_RE, "")
     .split(PAGE_BREAK)
     .map((page) => page.trim())
     .filter(Boolean);
 
   const pageHtml = pages
     .map((page, index) => {
-      // Escape first, then re-inject SVG for visual markers that were escaped.
+      // Escape first, then re-inject SVG / AI images for markers that remain as text.
       const escaped = escapeHtml(page);
-      // Markers were escaped as [[VISUAL:id]] still (no < >), so replace works on escaped text.
-      const withVisuals = replaceVisualMarkersWithSvg(escaped).replaceAll("\n", "<br/>");
+      const withVisuals = replaceAiImageMarkers(
+        replaceVisualMarkersWithSvg(escaped),
+        options.imageAssets,
+      ).replaceAll("\n", "<br/>");
       return `<section class="page" aria-label="Page ${index + 1}"><div class="page-body">${withVisuals}</div></section>`;
     })
     .join("\n");
@@ -133,6 +143,7 @@ export function openPrintablePacket(options: {
   content: string;
   printingFormat?: string;
   autoPrint?: boolean;
+  imageAssets?: Record<string, string>;
 }): { ok: true } | { ok: false; message: string } {
   if (typeof window === "undefined" || typeof document === "undefined") {
     return { ok: false, message: "Printing is only available in the browser." };
@@ -203,6 +214,7 @@ export function downloadPrintableHtmlFile(options: {
   title: string;
   content: string;
   printingFormat?: string;
+  imageAssets?: Record<string, string>;
 }): void {
   const html = buildPrintablePacketHtml(options);
   const blob = new Blob([html], { type: "text/html;charset=utf-8" });

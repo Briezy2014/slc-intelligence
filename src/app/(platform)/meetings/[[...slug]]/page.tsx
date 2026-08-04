@@ -2,10 +2,7 @@ import type { Metadata } from "next";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
-import {
-  MeetingsWorkspace,
-  type MeetingsView,
-} from "@/components/domain/application-modules";
+import { MeetingsWorkspace, type MeetingsView } from "@/components/domain/application-modules";
 import { ModuleLinkGrid } from "@/components/navigation/module-link-grid";
 import { listMeetings } from "@/lib/data/meetings";
 

@@ -103,11 +103,15 @@ export const PRINTING_FORMATS = [
   "Reduced visual clutter",
 ] as const;
 
+/** @deprecated Kept only so old packets can be stripped; never printed on student pages. */
 export const WORKSHEET_PACKET_FOOTER =
   "AI-generated instructional material. Review for accuracy and appropriateness before student use.";
 
 export const WORKSHEET_PRIVACY_NOTICE =
   "Do not enter student names, initials, birthdates, student ID numbers, addresses, medical information, parent information, or other personally identifiable student information. Enter generalized learning information only.";
+
+export const WORKSHEET_EDUCATOR_REVIEW_NOTE =
+  "Educator review happens in the app before you print — student pages do not show AI disclaimers.";
 
 export type WorksheetSubject = (typeof WORKSHEET_SUBJECTS)[number];
 export type WorksheetType = (typeof WORKSHEET_TYPES)[number];

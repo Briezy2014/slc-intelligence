@@ -21,7 +21,10 @@ export function ServicePlanLogFields({
   defaultPlanId: string;
 }) {
   const [planId, setPlanId] = useState(defaultPlanId);
-  const selected = useMemo(() => plans.find((plan) => plan.id === planId) ?? plans[0], [planId, plans]);
+  const selected = useMemo(
+    () => plans.find((plan) => plan.id === planId) ?? plans[0],
+    [planId, plans],
+  );
   const studentId = selected?.student_id ?? "";
 
   return (
