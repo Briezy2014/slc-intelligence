@@ -3,6 +3,7 @@ import { COMMUNICATION_TEMPLATES } from "@/lib/catalogs/communication-templates"
 import { EF_SKILL_TEMPLATES } from "@/lib/catalogs/ef-skill-templates";
 import { GOAL_TEMPLATES } from "@/lib/catalogs/goal-templates";
 import { INTERVENTION_TEMPLATES } from "@/lib/catalogs/intervention-templates";
+import { SERVICE_TEMPLATES } from "@/lib/catalogs/service-templates";
 import { getLearningProgressionCounts } from "@/lib/catalogs/learning-progressions";
 
 export * from "@/lib/catalogs/types";
@@ -17,6 +18,7 @@ export * from "@/lib/catalogs/education-document-templates";
 export * from "@/lib/catalogs/ohio-education-templates";
 export * from "@/lib/catalogs/behavior-templates";
 export * from "@/lib/catalogs/classroom-operations-templates";
+export * from "@/lib/catalogs/service-templates";
 
 export function getStarterCatalogCounts() {
   const progressions = getLearningProgressionCounts();
@@ -26,6 +28,7 @@ export function getStarterCatalogCounts() {
     accommodations: ACCOMMODATION_TEMPLATES.length,
     executiveFunctionSkills: EF_SKILL_TEMPLATES.length,
     communicationTemplates: COMMUNICATION_TEMPLATES.length,
+    services: SERVICE_TEMPLATES.length,
     learningProgressions: progressions.nodes,
     total:
       GOAL_TEMPLATES.length +
@@ -33,6 +36,7 @@ export function getStarterCatalogCounts() {
       ACCOMMODATION_TEMPLATES.length +
       EF_SKILL_TEMPLATES.length +
       COMMUNICATION_TEMPLATES.length +
+      SERVICE_TEMPLATES.length +
       progressions.nodes,
   };
 }

@@ -18,6 +18,11 @@ import type {
   StudentServicePlan,
 } from "@/lib/supabase/types";
 
+export type ServiceProviderOption = {
+  userId: string;
+  label: string;
+};
+
 export type ServicesData = {
   organizationId: string | null;
   organizationName: string | null;
@@ -31,6 +36,7 @@ export type ServicesData = {
   participants: ServiceDeliveryParticipant[];
   reviews: ServiceReviewRecord[];
   exports: ServiceExport[];
+  providers: ServiceProviderOption[];
   permissions: {
     canManageDefinitions: boolean;
     canManagePlans: boolean;
@@ -55,6 +61,7 @@ const emptyServicesData: ServicesData = {
   participants: [],
   reviews: [],
   exports: [],
+  providers: [],
   permissions: {
     canManageDefinitions: false,
     canManagePlans: false,
@@ -91,33 +98,66 @@ export async function listServices(
     if (options.studentId) plansQuery = plansQuery.eq("student_id", options.studentId);
     if (options.servicePlanId) plansQuery = plansQuery.eq("id", options.servicePlanId);
 
-    const [studentsResult, cyclesResult, definitionsResult, plansResult] = await Promise.all([
-      context.supabase
-        .from("students")
-        .select("*")
-        .eq("organization_id", context.organizationId)
-        .order("last_name"),
-      context.supabase
-        .from("iep_cycles")
-        .select("*")
-        .eq("organization_id", context.organizationId)
-        .order("start_date", { ascending: false }),
-      context.supabase
-        .from("service_definitions")
-        .select("*")
-        .eq("organization_id", context.organizationId)
-        .order("name"),
-      plansQuery,
-    ]);
+    const [studentsResult, cyclesResult, definitionsResult, plansResult, membershipsResult] =
+      await Promise.all([
+        context.supabase
+          .from("students")
+          .select("*")
+          .eq("organization_id", context.organizationId)
+          .order("last_name"),
+        context.supabase
+          .from("iep_cycles")
+          .select("*")
+          .eq("organization_id", context.organizationId)
+          .order("start_date", { ascending: false }),
+        context.supabase
+          .from("service_definitions")
+          .select("*")
+          .eq("organization_id", context.organizationId)
+          .order("name"),
+        plansQuery,
+        context.supabase
+          .from("organization_memberships")
+          .select("user_id,role_code,status")
+          .eq("organization_id", context.organizationId)
+          .eq("status", "active"),
+      ]);
 
     if (
       studentsResult.error ||
       cyclesResult.error ||
       definitionsResult.error ||
-      plansResult.error
+      plansResult.error ||
+      membershipsResult.error
     ) {
       return safeDataError(emptyServicesData);
     }
+
+    const membershipUserIds = Array.from(
+      new Set((membershipsResult.data ?? []).map((row) => row.user_id).filter(Boolean)),
+    );
+    const profilesResult = membershipUserIds.length
+      ? await context.supabase
+          .from("user_profiles")
+          .select("id,display_name,preferred_name,status")
+          .in("id", membershipUserIds)
+      : { data: [], error: null };
+    if (profilesResult.error) return safeDataError(emptyServicesData);
+
+    const profileById = new Map((profilesResult.data ?? []).map((profile) => [profile.id, profile]));
+    const providers: ServiceProviderOption[] = (membershipsResult.data ?? [])
+      .map((membership) => {
+        const profile = profileById.get(membership.user_id);
+        const label =
+          profile?.preferred_name ||
+          profile?.display_name ||
+          membership.role_code.replaceAll("_", " ");
+        return {
+          userId: membership.user_id,
+          label: `${label} (${membership.role_code.replaceAll("_", " ")})`,
+        };
+      })
+      .sort((a, b) => a.label.localeCompare(b.label));
 
     const planIds = (plansResult.data ?? []).map((plan) => plan.id);
     const [componentsResult, schedulesResult, logsResult, reviewsResult, exportsResult] =
@@ -187,6 +227,7 @@ export async function listServices(
         participants: participantsResult.data ?? [],
         reviews: reviewsResult.data ?? [],
         exports: exportsResult.data ?? [],
+        providers,
         permissions: {
           canManageDefinitions: permissions["service.definition.manage"],
           canManagePlans: permissions["service.plan.manage"],

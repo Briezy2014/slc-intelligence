@@ -4,11 +4,19 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
 import {
   ExecutiveFunctionWorkspace,
-  ModuleLinkGrid,
+  type ExecutiveFunctionView,
 } from "@/components/domain/application-modules";
+import { ModuleLinkGrid } from "@/components/navigation/module-link-grid";
 import { listExecutiveFunction } from "@/lib/data/executive-function";
 
 export const metadata: Metadata = { title: "Student executive function" };
+
+function viewFromSlug(slug: string[]): ExecutiveFunctionView {
+  if (slug[0] === "checklists") return "checklists";
+  if (slug[0] === "schedules") return "schedules";
+  if (slug[0] === "observations" || slug[0] === "tasks") return "observations";
+  return "dashboard";
+}
 
 export default async function StudentExecutiveFunctionPage({
   params,
@@ -16,6 +24,7 @@ export default async function StudentExecutiveFunctionPage({
   params: Promise<{ studentId: string; slug?: string[] }>;
 }) {
   const { studentId, slug = [] } = await params;
+  const view = viewFromSlug(slug);
   const state = await listExecutiveFunction({
     studentId,
     planId:
@@ -34,7 +43,7 @@ export default async function StudentExecutiveFunctionPage({
       />
       <PageHeader
         title="Student executive function"
-        description="Student-scoped EF supports, checklists, schedule blocks, and observations."
+        description="This student’s EF plans, observations, and checklists."
       />
       {!state.configured ? (
         <ConfigurationState />
@@ -47,7 +56,12 @@ export default async function StudentExecutiveFunctionPage({
               {
                 href: `/students/${studentId}/executive-function`,
                 label: "Plans",
-                description: "Review EF support plans.",
+                description: "EF support plans for this student.",
+              },
+              {
+                href: `/students/${studentId}/executive-function/observations`,
+                label: "Observations",
+                description: "Log prompt level / independence.",
               },
               {
                 href: `/students/${studentId}/executive-function/checklists`,
@@ -57,11 +71,11 @@ export default async function StudentExecutiveFunctionPage({
               {
                 href: `/students/${studentId}/executive-function/schedules`,
                 label: "Schedules",
-                description: "Student schedule blocks.",
+                description: "Optional schedule blocks.",
               },
             ]}
           />
-          <ExecutiveFunctionWorkspace data={state.data} studentId={studentId} />
+          <ExecutiveFunctionWorkspace data={state.data} studentId={studentId} view={view} />
         </div>
       )}
     </main>

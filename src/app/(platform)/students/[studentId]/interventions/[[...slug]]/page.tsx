@@ -88,7 +88,15 @@ export default async function StudentInterventionsPage({
                 Use the forms below after a plan exists. If nothing appears, go back to Plans and
                 save one first.
               </Alert>
-              <InterventionEvidenceForms data={state.data} planId={planId} />
+              <InterventionEvidenceForms
+                data={state.data}
+                planId={planId}
+                focus={
+                  section === "fidelity" || section === "dosage" || section === "reviews"
+                    ? section
+                    : "all"
+                }
+              />
             </>
           ) : null}
           <InterventionDashboard

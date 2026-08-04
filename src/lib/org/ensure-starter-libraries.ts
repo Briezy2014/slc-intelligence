@@ -4,6 +4,7 @@ import {
   COMMUNICATION_TEMPLATES,
   EF_SKILL_TEMPLATES,
   INTERVENTION_TEMPLATES,
+  SERVICE_TEMPLATES,
   getStarterCatalogCounts,
 } from "@/lib/catalogs";
 import { writeAuditEvent } from "@/lib/audit/log";
@@ -18,7 +19,8 @@ async function existingNames(
     | "intervention_library_items"
     | "accommodation_library_items"
     | "executive_function_skill_areas"
-    | "communication_templates",
+    | "communication_templates"
+    | "service_definitions",
 ) {
   const { data, error } = await supabase
     .from(table)
@@ -43,15 +45,23 @@ export async function ensureStarterLibrariesForOrganization(args: {
   accommodations: number;
   executiveFunctionSkills: number;
   communicationTemplates: number;
+  services: number;
 }> {
   const { supabase, organizationId, actorUserId } = args;
   const counts = getStarterCatalogCounts();
 
-  const [interventionNames, accommodationNames, efNames, communicationNames] = await Promise.all([
+  const [
+    interventionNames,
+    accommodationNames,
+    efNames,
+    communicationNames,
+    serviceNames,
+  ] = await Promise.all([
     existingNames(supabase, organizationId, "intervention_library_items"),
     existingNames(supabase, organizationId, "accommodation_library_items"),
     existingNames(supabase, organizationId, "executive_function_skill_areas"),
     existingNames(supabase, organizationId, "communication_templates"),
+    existingNames(supabase, organizationId, "service_definitions"),
   ]);
 
   // Fast path: catalogs already fully present.
@@ -59,7 +69,8 @@ export async function ensureStarterLibrariesForOrganization(args: {
     interventionNames.size >= INTERVENTION_TEMPLATES.length &&
     accommodationNames.size >= ACCOMMODATION_TEMPLATES.length &&
     efNames.size >= EF_SKILL_TEMPLATES.length &&
-    communicationNames.size >= COMMUNICATION_TEMPLATES.length
+    communicationNames.size >= COMMUNICATION_TEMPLATES.length &&
+    serviceNames.size >= SERVICE_TEMPLATES.length
   ) {
     return {
       imported: 0,
@@ -67,6 +78,7 @@ export async function ensureStarterLibrariesForOrganization(args: {
       accommodations: 0,
       executiveFunctionSkills: 0,
       communicationTemplates: 0,
+      services: 0,
     };
   }
 
@@ -115,6 +127,16 @@ export async function ensureStarterLibrariesForOrganization(args: {
     created_by: actorUserId,
   }));
 
+  const services = SERVICE_TEMPLATES.filter((item) => !serviceNames.has(item.name)).map((item) => ({
+    organization_id: organizationId,
+    name: item.name,
+    service_area: item.serviceArea,
+    description: item.description,
+    default_delivery_type: item.defaultDeliveryType,
+    status: "active" as const,
+    created_by: actorUserId,
+  }));
+
   if (interventions.length) {
     const { error } = await supabase.from("intervention_library_items").insert(interventions);
     if (error) throw error;
@@ -131,9 +153,17 @@ export async function ensureStarterLibrariesForOrganization(args: {
     const { error } = await supabase.from("communication_templates").insert(communications);
     if (error) throw error;
   }
+  if (services.length) {
+    const { error } = await supabase.from("service_definitions").insert(services);
+    if (error) throw error;
+  }
 
   const imported =
-    interventions.length + accommodations.length + efSkills.length + communications.length;
+    interventions.length +
+    accommodations.length +
+    efSkills.length +
+    communications.length +
+    services.length;
 
   if (imported > 0 && args.audit !== false) {
     await writeAuditEvent({
@@ -149,6 +179,7 @@ export async function ensureStarterLibrariesForOrganization(args: {
         accommodations: accommodations.length,
         executiveFunctionSkills: efSkills.length,
         communicationTemplates: communications.length,
+        services: services.length,
       },
     });
   }
@@ -159,5 +190,6 @@ export async function ensureStarterLibrariesForOrganization(args: {
     accommodations: accommodations.length,
     executiveFunctionSkills: efSkills.length,
     communicationTemplates: communications.length,
+    services: services.length,
   };
 }

@@ -92,14 +92,23 @@ export async function saveExecutiveFunctionObservationAction(
   const context = await getActionContext(values.organizationId);
   if (!("supabase" in context)) return context;
   try {
-    if (!(await canEf(context, "can_observe_ef", values.studentId))) {
+    const plan = (
+      await context.supabase
+        .from("student_executive_function_plans")
+        .select("id,student_id")
+        .eq("organization_id", context.organizationId)
+        .eq("id", values.planId)
+        .maybeSingle()
+    ).data;
+    const studentId = plan?.student_id ?? values.studentId;
+    if (!plan || !(await canEf(context, "can_observe_ef", studentId))) {
       return { status: "error", message: UNAUTHORIZED_ACTION_MESSAGE };
     }
     const payload = {
       organization_id: context.organizationId,
       ef_plan_id: values.planId,
       support_id: values.supportId || null,
-      student_id: values.studentId,
+      student_id: studentId,
       observation_date: values.observationDate,
       observer_user_id: context.user.id,
       prompt_level: values.promptLevel,
@@ -121,7 +130,7 @@ export async function saveExecutiveFunctionObservationAction(
       resourceType: "executive_function_observation",
       resourceId: result.data.id,
       newState: { prompt_level: values.promptLevel, no_mastery_claim: true },
-      paths: ["/executive-function", `/students/${values.studentId}/executive-function`],
+      paths: ["/executive-function", `/students/${studentId}/executive-function`],
     });
     return { status: "success", message: "Executive function observation saved." };
   } catch {

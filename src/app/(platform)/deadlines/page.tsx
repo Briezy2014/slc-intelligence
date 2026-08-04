@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
 import { ConfigurationState, SafeErrorState } from "@/components/domain/page-states";
@@ -51,7 +52,13 @@ export default async function DeadlinesPage() {
               item.studentLabel ?? "—",
               item.dueDate ? new Date(item.dueDate).toLocaleString() : "Not set",
               item.status,
-              item.href,
+              item.href ? (
+                <Link href={item.href} className="text-highlight font-semibold hover:underline">
+                  Open →
+                </Link>
+              ) : (
+                "—"
+              ),
             ])}
           />
         </div>

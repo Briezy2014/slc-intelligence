@@ -28,13 +28,27 @@ export const servicePlanSchema = z
     studentId: z.string().uuid(),
     iepCycleId: optionalUuid,
     serviceDefinitionId: optionalUuid,
-    title: z.string().trim().min(1, "Service plan title is required.").max(180),
+    title: z.string().trim().max(180).optional().or(z.literal("")),
     description: z.string().trim().max(4000).optional(),
+    notes: z.string().trim().max(4000).optional(),
+    providerUserId: optionalUuid,
+    providerName: z.string().trim().max(180).optional(),
+    providerGoals: z.string().trim().max(4000).optional(),
+    serviceMinutes: z.coerce.number().int().positive().optional(),
+    frequency: z.string().trim().max(180).optional(),
+    deliveryType: z
+      .enum(["push_in", "pull_out", "consultation", "individual", "group", "other"])
+      .optional()
+      .or(z.literal("")),
     status: z
       .enum(["draft", "active", "under_review", "revised", "ended", "archived"])
       .default("draft"),
     startDate: optionalDate,
     endDate: optionalDate,
+  })
+  .refine((value) => Boolean(value.title?.trim()) || Boolean(value.serviceDefinitionId), {
+    message: "Choose a service type or enter a title.",
+    path: ["title"],
   })
   .refine((value) => !value.startDate || !value.endDate || value.endDate >= value.startDate, {
     message: "End date must be on or after start date.",
@@ -80,6 +94,7 @@ export const serviceDeliveryLogSchema = z
       "other",
     ]),
     recordStatus: z.enum(["draft", "finalized", "corrected", "archived"]).default("draft"),
+    providerUserId: optionalUuid,
     notes: z.string().trim().max(4000).optional(),
   })
   .refine((value) => !value.startTime || !value.endTime || value.endTime >= value.startTime, {
