@@ -85,6 +85,7 @@ When documents conflict, surface the conflict for product-owner resolution. Do n
 | `SUPABASE_PRODUCTION_SETUP.md`                | Phase 18 Supabase setup                                               |
 | `VERCEL_PRODUCTION_SETUP.md`                  | Phase 18 Vercel setup                                                 |
 | `GODADDY_DNS_SETUP.md`                        | Phase 18 DNS setup                                                    |
+| `SCHOOL_NETWORK_ACCESS.md`                    | Fortinet / school SSL inspection IT playbook                          |
 | `DEPLOYMENT_CHECKLIST.md`                     | Phase 18 deployment checklist                                         |
 | `PRODUCTION_SMOKE_TEST_CHECKLIST.md`          | Phase 18 smoke tests                                                  |
 | `ROLLBACK_GUIDE.md`                           | Phase 18 rollback guide                                               |

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Breadcrumbs } from "@/components/navigation/breadcrumbs";
 import { PageHeader } from "@/components/layout/page-header";
+import { Alert } from "@/components/ui/alert";
 
 export const metadata: Metadata = {
   title: "Support",
@@ -16,6 +18,18 @@ export default function SupportPage() {
         description="Product-owner and authorized-user support pathways for SLC Intelligence."
       />
       <div className="text-muted space-y-4">
+        <Alert title="Chromebook / Fortinet certificate error?" tone="warning">
+          If Chrome shows <strong>NET::ERR_CERT_AUTHORITY_INVALID</strong> and names Fortinet, send
+          district IT this page:{" "}
+          <Link
+            className="text-highlight font-semibold underline-offset-4 hover:underline"
+            href="/school-network-access"
+          >
+            School network access
+          </Link>
+          . That includes the SSL-inspection allowlist and Fortinet CA trust steps. We cannot push
+          Fortinet trust from the app itself.
+        </Alert>
         <p>
           For production access issues, authentication problems, or deployment defects, contact the
           product owner through the approved organizational support channel.
